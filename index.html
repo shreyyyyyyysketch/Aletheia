@@ -644,7 +644,15 @@
   </div>
 
   <script>
-    const DEFAULT_FIREBASE_CONFIG = null;
+    const DEFAULT_FIREBASE_CONFIG = {
+      apiKey: "AIzaSyDxIDge8bkj4vRNyYUGnAYT7PTqDdsqQl8",
+      authDomain: "aletheia-4e747.firebaseapp.com",
+      projectId: "aletheia-4e747",
+      storageBucket: "aletheia-4e747.firebasestorage.app",
+      messagingSenderId: "826637660446",
+      appId: "1:826637660446:web:93d9dfb32863449ff3990f",
+      measurementId: "G-V736LJY1LR"
+    };
     const STORAGE_KEY = 'albo_web_state_v2';
     const FB_CONFIG_STORAGE = 'aletheia_firebase_config_v1';
     const USERS_STORAGE_KEY = 'albo_web_users_v1';
@@ -2400,16 +2408,19 @@ Context:
     });
     document.getElementById('googleSignInTriggerBtn').addEventListener('click', async () => {
       if (fbAuth) {
+        const basicProvider = new firebase.auth.GoogleAuthProvider();
         try {
-          const provider = new firebase.auth.GoogleAuthProvider();
-          provider.addScope('https://www.googleapis.com/auth/calendar.events');
-          provider.addScope('https://www.googleapis.com/auth/tasks');
-          const res = await fbAuth.signInWithPopup(provider);
+          const res = await fbAuth.signInWithPopup(basicProvider);
           if (res && res.credential && res.credential.accessToken) fbGoogleAccessToken = res.credential.accessToken;
           document.getElementById('authModal').classList.add('hidden');
-          showToast('Signed in with Google (Calendar & Tasks ready)!');
+          showToast('Signed in with Google — Cloud Sync active!');
         }
-        catch (err) { showToast('Google Sign-In error: ' + (err.message || 'Check authorized domains')); }
+        catch (err) {
+          if (err && err.code === 'auth/popup-blocked') {
+            try { await fbAuth.signInWithRedirect(basicProvider); return; } catch (e2) {}
+          }
+          showToast('Google Sign-In error: ' + (err && err.message ? err.message : 'Check authorized domains'));
+        }
         return;
       }
       document.getElementById('googleQuickForm').classList.toggle('hidden'); document.getElementById('googleNameInput').focus();

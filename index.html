@@ -697,7 +697,7 @@
       try { if (email) localStorage.setItem(CURRENT_USER_KEY, email); else localStorage.removeItem(CURRENT_USER_KEY); } catch (e) {}
     }
 
-    let fbApp = null, fbAuth = null, fbDb = null, fbUser = null, fbGoogleAccessToken = null, fbUnsubscribe = null, fbSyncTimer = null;
+    let fbApp = null, fbAuth = null, fbDb = null, fbUser = null, fbGoogleAccessToken = null, fbGoogleTasksAuthed = false, fbUnsubscribe = null, fbSyncTimer = null;
 
     function getSavedFirebaseConfig() {
       if (DEFAULT_FIREBASE_CONFIG && DEFAULT_FIREBASE_CONFIG.apiKey) return DEFAULT_FIREBASE_CONFIG;
@@ -817,7 +817,7 @@
 
       // Extract fenced code blocks & display math blocks first
       const blocks = [];
-      let work = raw.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, (_, lang, code) => {
+      let work = raw.replace(/```[ \t]*([a-zA-Z0-9_+#.-]*)[ \t]*\n([\s\S]*?)```/g, (_, lang, code) => {
         const idx = blocks.length;
         const cleanCode = code.replace(/\n$/, '');
         blocks.push(`
@@ -829,7 +829,7 @@
             <pre class="p-3 text-[11px] font-mono overflow-x-auto leading-relaxed"><code>${escapeHtml(cleanCode)}</code></pre>
           </div>
         `);
-        return `@@BLOCK_${idx}@@`;
+        return `\n@@BLOCK_${idx}@@\n`;
       });
 
       work = work.replace(/\$\$([\s\S]+?)\$\$/g, (_, tex) => {
@@ -1265,7 +1265,7 @@
     function renderPlanScheduleSection(item) {
       const defDate = item.scheduledDate || getTomorrowIsoDate();
       const defTime = item.scheduledTime || '18:00';
-      const hasLiveGoogle = !!fbGoogleAccessToken;
+      const hasLiveGoogle = !!(fbGoogleAccessToken && fbGoogleTasksAuthed);
       return `
         <details class="rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] p-4 space-y-3" ${item.scheduledDate ? 'open' : ''}>
           <summary class="flex items-center justify-between cursor-pointer list-none">
@@ -1302,6 +1302,11 @@
               <i data-lucide="check-square" class="w-3.5 h-3.5 text-[#FF5A36]"></i> Add as Task
             </button>
           </div>
+          ${fbAuth ? `
+            <button type="button" data-connect-google-tasks="${item.id}" class="w-full py-1.5 px-3 rounded-xl bg-[#EFEEEB] hover:bg-[#E5E3DD] text-[#1C1B19] text-[11px] font-semibold flex items-center justify-center gap-1.5">
+              <i data-lucide="refresh-cw" class="w-3 h-3 text-[#FF5A36]"></i> ${fbGoogleTasksAuthed ? 'Google Calendar & Tasks Connected ✓' : 'Authorize Direct Google Calendar & Tasks Sync'}
+            </button>
+          ` : ''}
         </details>
       `;
     }
@@ -1693,7 +1698,8 @@
 
     function extractJsonObject(text) {
       if (!text) throw new Error('Empty AI response');
-      const cleaned = text.replace(/```json\s*/gi, '').replace(/```/g, '').trim();
+      // Only strip outer wrapper fences; NEVER strip triple backticks inside JSON string values (code blocks!)
+      const cleaned = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
       const s = cleaned.indexOf('{'), e = cleaned.lastIndexOf('}');
       if (s === -1 || e === -1 || e <= s) throw new Error('AI response did not contain JSON');
       return JSON.parse(cleaned.slice(s, e + 1));
@@ -2186,6 +2192,28 @@ Context:
 
       const addGtask = e.target.closest('[data-add-gtask]');
       if (addGtask) { handleAddGoogleTask(addGtask.dataset.addGtask); return; }
+
+      const connectGtasks = e.target.closest('[data-connect-google-tasks]');
+      if (connectGtasks) {
+        if (!fbAuth) { showToast('Firebase not configured.'); return; }
+        (async () => {
+          try {
+            const p = new firebase.auth.GoogleAuthProvider();
+            p.addScope('https://www.googleapis.com/auth/calendar.events');
+            p.addScope('https://www.googleapis.com/auth/tasks');
+            const res = await fbAuth.signInWithPopup(p);
+            if (res && res.credential && res.credential.accessToken) {
+              fbGoogleAccessToken = res.credential.accessToken;
+              fbGoogleTasksAuthed = true;
+              showToast('Google Calendar & Tasks authorized!');
+              openDetailModal(connectGtasks.dataset.connectGoogleTasks);
+            }
+          } catch (err) {
+            showToast('Auth note: ' + (err && err.message ? err.message : 'Enable Calendar & Tasks APIs in Google Cloud'));
+          }
+        })();
+        return;
+      }
 
       const copyExp = e.target.closest('[data-copy-explanation]');
       if (copyExp) {

@@ -2,7 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#FAF9F6" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Aletheia" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231C1B19'/%3E%3Cpath d='M32 13L15 49h7.5l3.6-8h11.8l3.6 8H49L32 13zm0 11.8l4.1 9.7h-8.2L32 24.8z' fill='%23FAF9F6'/%3E%3Ccircle cx='32' cy='46' r='3.5' fill='%23FF5A36'/%3E%3C/svg%3E" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231C1B19'/%3E%3Cpath d='M32 13L15 49h7.5l3.6-8h11.8l3.6 8H49L32 13zm0 11.8l4.1 9.7h-8.2L32 24.8z' fill='%23FAF9F6'/%3E%3Ccircle cx='32' cy='46' r='3.5' fill='%23FF5A36'/%3E%3C/svg%3E" />
+  <link rel="manifest" href="./manifest.json" />
   <title>Aletheia — Editorial Knowledge &amp; Life Vault</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -64,24 +72,19 @@
   <!-- ==================== TOP NAVIGATION ==================== -->
   <header class="sticky top-0 z-30 bg-[#FAF9F6]/92 backdrop-blur-md border-b border-[#E8E6E0]">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
-      <button id="brandHomeBtn" type="button" class="flex items-center gap-2.5 group focus:outline-none">
-        <svg class="w-7 h-7 transition-transform group-hover:rotate-[-6deg]" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-          <path d="M12 18C12 10 20 6 32 6C44 6 52 10 52 18V50C52 55 46 57 42 53L34 45C32.8 43.8 31.2 43.8 30 45L22 53C18 57 12 55 12 50V18Z" fill="#1C1B19"/>
-          <ellipse cx="25" cy="24" rx="5.5" ry="4.5" fill="#FFFFFF"/>
-          <ellipse cx="39" cy="24" rx="5.5" ry="4.5" fill="#FFFFFF"/>
-          <circle cx="26.5" cy="23" r="2.2" fill="#1C1B19"/>
-          <circle cx="40.5" cy="23" r="2.2" fill="#1C1B19"/>
-        </svg>
-        <div class="flex items-baseline gap-1.5">
-          <span class="font-editorial text-2xl font-semibold tracking-tight text-[#1C1B19]">Aletheia</span>
-          <span class="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-[#EFEEEB] text-[#6B6A66]">VAULT</span>
-        </div>
+      <button id="brandHomeBtn" type="button" class="flex items-baseline gap-1.5 group focus:outline-none">
+        <span class="font-editorial text-[26px] font-semibold tracking-tight text-[#1C1B19]">Aletheia</span>
+        <span class="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-[#EFEEEB] text-[#6B6A66]">VAULT</span>
       </button>
 
       <nav class="hidden md:flex items-center bg-[#EFEEEB] p-1 rounded-full gap-0.5" aria-label="Primary navigation">
         <button data-view="home" type="button" class="nav-tab px-4 py-1.5 rounded-full text-xs font-semibold transition-colors flex items-center gap-1.5">
           <span>Home</span>
           <span id="navHomeCount" class="text-[10px] px-1.5 py-0.2 rounded-full bg-white/20">0</span>
+        </button>
+        <button data-view="watch" type="button" class="nav-tab px-4 py-1.5 rounded-full text-xs font-semibold transition-colors flex items-center gap-1.5">
+          <span>Watch</span>
+          <span id="navWatchCount" class="text-[10px] px-1.5 py-0.2 rounded-full bg-white/20">0</span>
         </button>
         <button data-view="collections" type="button" class="nav-tab px-4 py-1.5 rounded-full text-xs font-semibold transition-colors">
           Collections
@@ -92,20 +95,20 @@
       </nav>
 
       <div class="flex items-center gap-2">
-        <button id="openAiSettingsBtn" type="button" class="px-3 py-1.5 rounded-full bg-[#F4F3F1] border border-[#E8E6E0] hover:border-[#1C1B19] text-xs font-semibold text-[#1C1B19] flex items-center gap-1.5 transition-colors" title="Configure Gemini AI & Supadata Reel Transcripts">
+        <button id="openAiSettingsBtn" type="button" class="hidden md:flex px-3 py-1.5 rounded-full bg-[#F4F3F1] border border-[#E8E6E0] hover:border-[#1C1B19] text-xs font-semibold text-[#1C1B19] items-center gap-1.5 transition-colors" title="Configure Gemini AI & Scraping Keys">
           <span id="aiStatusDot" class="w-2 h-2 rounded-full bg-amber-400"></span>
-          <span id="aiStatusText" class="hidden lg:inline">Connect AI</span>
+          <span id="aiStatusText" class="hidden lg:inline">AI Keys</span>
         </button>
-        <button id="openRandomizerBtn" type="button" class="px-3 py-1.5 rounded-full bg-white border border-[#E8E6E0] hover:border-[#1C1B19] text-xs font-semibold text-[#1C1B19] flex items-center gap-1.5 transition-colors" title="Study & Decide">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#FF5A36]"></i>
-          <span class="hidden sm:inline">Review</span>
+        <button id="openQuickSearchBtn" type="button" class="w-9 h-9 md:w-auto md:px-3 md:py-1.5 rounded-full bg-white border border-[#E8E6E0] hover:border-[#1C1B19] text-xs font-semibold text-[#1C1B19] flex items-center justify-center gap-1.5 transition-colors" title="Quick Search (⌘K)" aria-label="Search vault">
+          <i data-lucide="search" class="w-3.5 h-3.5 text-[#1C1B19]"></i>
+          <span class="hidden lg:inline text-[#6B6A66]">Search</span>
         </button>
-        <button id="openSaveModalBtn" type="button" class="px-4 py-1.5 rounded-full bg-[#1C1B19] hover:bg-[#31302D] text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-colors">
+        <button id="openSaveModalBtn" type="button" class="px-3.5 py-1.5 rounded-full bg-[#1C1B19] hover:bg-[#31302D] text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-colors">
           <i data-lucide="plus" class="w-3.5 h-3.5"></i>
           <span>Save</span>
         </button>
-        <button id="openAuthBtn" type="button" class="p-1 pr-2.5 rounded-full bg-white border border-[#E8E6E0] hover:border-[#1C1B19] text-xs font-semibold text-[#1C1B19] flex items-center gap-1.5 transition-colors" title="Account & Cloud Sync">
-          <span id="authAvatarBadge" class="w-6 h-6 rounded-full bg-[#EFEEEB] text-[#1C1B19] text-[11px] font-bold flex items-center justify-center">
+        <button id="openAuthBtn" type="button" class="p-1 sm:pr-2.5 rounded-full bg-white border border-[#E8E6E0] hover:border-[#1C1B19] text-xs font-semibold text-[#1C1B19] flex items-center gap-1.5 transition-colors" title="Account, AI Keys & Cloud Sync">
+          <span id="authAvatarBadge" class="w-7 h-7 sm:w-6 sm:h-6 rounded-full bg-[#EFEEEB] text-[#1C1B19] text-[11px] font-bold flex items-center justify-center">
             <i data-lucide="user" class="w-3.5 h-3.5"></i>
           </span>
           <span id="authHeaderLabel" class="hidden sm:inline">Sign in</span>
@@ -201,9 +204,17 @@
           <h2 class="font-editorial text-3xl font-medium tracking-tight text-[#1C1B19]">Your Curated Collections</h2>
           <p class="text-sm text-[#6B6A66] mt-1">Organize courses, internship prep, project ideas, and fun watchlists.</p>
         </div>
-        <button id="openNewCollectionBtn" type="button" class="self-start sm:self-auto px-4 py-2 rounded-full bg-[#1C1B19] hover:bg-[#31302D] text-white text-xs font-semibold flex items-center gap-1.5">
-          <i data-lucide="plus" class="w-3.5 h-3.5"></i> New Collection
-        </button>
+        <div class="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          <button id="openGraphModalBtn" type="button" class="px-3.5 py-2 rounded-full bg-white border border-[#E8E6E0] hover:border-[#1C1B19] text-[#1C1B19] text-xs font-semibold flex items-center gap-1.5">
+            <i data-lucide="git-branch" class="w-3.5 h-3.5 text-[#FF5A36]"></i> Graph View
+          </button>
+          <button id="openProjectBuilderBtn" type="button" class="px-3.5 py-2 rounded-full bg-white border border-[#E8E6E0] hover:border-[#FF5A36] text-[#1C1B19] text-xs font-semibold flex items-center gap-1.5">
+            <i data-lucide="hammer" class="w-3.5 h-3.5 text-[#FF5A36]"></i> Build Project
+          </button>
+          <button id="openNewCollectionBtn" type="button" class="px-4 py-2 rounded-full bg-[#1C1B19] hover:bg-[#31302D] text-white text-xs font-semibold flex items-center gap-1.5">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i> New Collection
+          </button>
+        </div>
       </div>
 
       <div id="collectionsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
@@ -258,20 +269,38 @@
       <!-- Study & Build Mode Panel -->
       <div id="decideStudyPanel" class="grid grid-cols-1 lg:grid-cols-12 gap-5">
         <div id="decideFeaturedCard" class="lg:col-span-7 bento-card rounded-3xl overflow-hidden"></div>
-        <!-- Quick Flashcard Drill Card -->
-        <div class="lg:col-span-5 bento-card rounded-3xl p-6 flex flex-col justify-between bg-gradient-to-b from-white to-[#FAF8F4]">
+        <!-- Spaced Repetition Flashcard Drill Card -->
+        <div class="lg:col-span-5 bento-card rounded-3xl p-6 flex flex-col justify-between bg-white">
           <div class="space-y-3">
-            <div class="flex items-center justify-between">
-              <span class="text-[10px] font-bold uppercase tracking-widest text-[#2C4D75] px-2.5 py-1 rounded-full bg-[#EEF2F6]">Active Recall Drill</span>
-              <span id="drillCounter" class="text-[11px] font-semibold text-[#6B6A66]">0 / 0</span>
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-[10px] font-bold uppercase tracking-widest text-[#1C1B19] px-2.5 py-1 rounded-full bg-[#F4F3F1] border border-[#E8E6E0] flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#FF5A36]"></span> Spaced Repetition
+              </span>
+              <span id="drillCounter" class="text-[11px] font-semibold text-[#6B6A66]">0 due</span>
             </div>
-            <div id="drillCardBox" class="min-h-[160px] rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] p-5 flex flex-col justify-center cursor-pointer hover:border-[#FF5A36] transition-colors">
+            <div id="drillMasteryRow" class="flex items-center gap-3 text-[10px] font-semibold text-[#6B6A66]">
+              <span>New: 0</span><span>•</span><span>Learning: 0</span><span>•</span><span>Mastered: 0</span>
+            </div>
+            <div id="drillCardBox" class="min-h-[165px] rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] p-5 flex flex-col justify-center cursor-pointer hover:border-[#FF5A36] transition-colors">
               <p class="text-xs text-[#6B6A66] text-center">Save an academic, tutorial, or project Reel to auto-generate flashcards here.</p>
             </div>
           </div>
-          <div class="mt-4 flex items-center justify-between gap-2">
-            <button id="drillFlipBtn" type="button" class="flex-1 py-2.5 rounded-xl bg-[#EFEEEB] hover:bg-[#E3E2E0] text-xs font-bold text-[#1C1B19]">Reveal Answer</button>
-            <button id="drillNextBtn" type="button" class="px-4 py-2.5 rounded-xl bg-[#1C1B19] hover:bg-[#31302D] text-white text-xs font-bold">Next Card →</button>
+          <div id="drillActionRow" class="mt-4 space-y-2">
+            <div id="drillPreFlipActions" class="flex items-center justify-between gap-2">
+              <button id="drillFlipBtn" type="button" class="flex-1 py-2.5 rounded-xl bg-[#1C1B19] hover:bg-[#31302D] text-white text-xs font-bold">Reveal Answer</button>
+              <button id="drillNextBtn" type="button" class="px-4 py-2.5 rounded-xl bg-[#EFEEEB] hover:bg-[#E3E2E0] text-[#1C1B19] text-xs font-bold">Skip →</button>
+            </div>
+            <div id="drillSrsRatingRow" class="hidden grid grid-cols-3 gap-2">
+              <button type="button" data-srs-rate="again" class="py-2.5 px-2 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] hover:border-red-500 text-xs font-bold text-[#1C1B19] flex flex-col items-center">
+                <span>Again</span><span class="text-[10px] font-medium text-[#6B6A66]">Today</span>
+              </button>
+              <button type="button" data-srs-rate="good" class="py-2.5 px-2 rounded-xl bg-[#1C1B19] hover:bg-[#31302D] text-white text-xs font-bold flex flex-col items-center">
+                <span>Good</span><span id="srsGoodHint" class="text-[10px] font-medium text-neutral-300">1d</span>
+              </button>
+              <button type="button" data-srs-rate="easy" class="py-2.5 px-2 rounded-xl bg-[#FF5A36] hover:bg-[#EB4D2A] text-white text-xs font-bold flex flex-col items-center">
+                <span>Easy</span><span id="srsEasyHint" class="text-[10px] font-medium text-white/80">3d</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -291,6 +320,38 @@
         </div>
       </div>
     </section>
+
+    <!-- ==================== VIEW 4: YOUTUBE WATCH QUEUE ==================== -->
+    <section id="view-watch" class="view-section hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div>
+          <h2 class="font-editorial text-3xl font-medium tracking-tight text-[#1C1B19]">YouTube Watch Queue</h2>
+          <p class="text-sm text-[#6B6A66] mt-1">Paste any YouTube video — pulls thumbnail, title, channel &amp; description for free and auto-categorizes it (0 Supadata credits).</p>
+        </div>
+        <span id="watchQueueStats" class="self-start sm:self-auto text-xs font-semibold px-3 py-1.5 rounded-full bg-white border border-[#E8E6E0] text-[#6B6A66]">0 unwatched</span>
+      </div>
+
+      <form id="watchAddForm" class="bento-card rounded-2xl p-3 sm:p-4 flex flex-col sm:flex-row gap-2.5">
+        <div class="relative flex-1">
+          <i data-lucide="youtube" class="w-4 h-4 text-[#FF5A36] absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+          <input id="watchUrlInput" type="text" required placeholder="Paste any youtube.com/watch?v=... or youtu.be/... link" class="editorial-input w-full pl-10 pr-3 py-2.5 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm" />
+        </div>
+        <button id="watchAddBtn" type="submit" class="px-5 py-2.5 rounded-xl bg-[#1C1B19] hover:bg-[#31302D] text-white text-xs font-bold flex items-center justify-center gap-1.5 shrink-0">
+          <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add &amp; Auto-Sort
+        </button>
+      </form>
+
+      <div class="flex items-center justify-between gap-2 flex-wrap">
+        <div id="watchFilterPills" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-0.5"></div>
+        <select id="watchStatusFilter" aria-label="Filter watched status" class="editorial-input px-3 py-1.5 rounded-xl bg-white border border-[#E8E6E0] text-xs font-semibold text-[#1C1B19]">
+          <option value="unwatched">Unwatched</option>
+          <option value="all">All Videos</option>
+          <option value="watched">Watched</option>
+        </select>
+      </div>
+
+      <div id="watchGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    </section>
   </main>
 
   <footer class="max-w-6xl w-full mx-auto px-4 sm:px-6 mt-12 pt-6 border-t border-[#E8E6E0] flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-[#6B6A66]">
@@ -299,14 +360,17 @@
   </footer>
 
   <!-- Mobile Bottom Nav -->
-  <nav class="md:hidden fixed bottom-0 inset-x-0 z-30 bg-[#FAF9F6]/95 backdrop-blur border-t border-[#E8E6E0] px-4 py-1.5 flex justify-around" aria-label="Mobile navigation">
-    <button data-view="home" type="button" class="mobile-nav-tab flex flex-col items-center gap-0.5 px-4 py-1 rounded-xl text-[11px] font-semibold">
+  <nav class="md:hidden fixed bottom-0 inset-x-0 z-30 bg-[#FAF9F6]/95 backdrop-blur border-t border-[#E8E6E0] px-2 py-1.5 flex justify-around" aria-label="Mobile navigation">
+    <button data-view="home" type="button" class="mobile-nav-tab flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl text-[11px] font-semibold">
       <i data-lucide="layout-grid" class="w-5 h-5"></i> Home
     </button>
-    <button data-view="collections" type="button" class="mobile-nav-tab flex flex-col items-center gap-0.5 px-4 py-1 rounded-xl text-[11px] font-semibold">
+    <button data-view="watch" type="button" class="mobile-nav-tab flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl text-[11px] font-semibold">
+      <i data-lucide="play-square" class="w-5 h-5"></i> Watch
+    </button>
+    <button data-view="collections" type="button" class="mobile-nav-tab flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl text-[11px] font-semibold">
       <i data-lucide="folder-heart" class="w-5 h-5"></i> Collections
     </button>
-    <button data-view="decide" type="button" class="mobile-nav-tab flex flex-col items-center gap-0.5 px-4 py-1 rounded-xl text-[11px] font-semibold">
+    <button data-view="decide" type="button" class="mobile-nav-tab flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl text-[11px] font-semibold">
       <i data-lucide="sparkles" class="w-5 h-5"></i> Study
     </button>
   </nav>
@@ -383,10 +447,16 @@
             <input id="autoSaveAfterAi" type="checkbox" checked class="coral-check w-4 h-4 rounded" />
             <span>Auto-save immediately after AI</span>
           </label>
-          <button id="extractLinkBtn" type="button" class="px-4 py-2 rounded-xl bg-[#FF5A36] hover:bg-[#EB4D2A] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-colors">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-            <span>Extract with AI</span>
-          </button>
+          <div class="flex items-center gap-2">
+            <button id="quickQueueBtn" type="button" class="px-3 py-2 rounded-xl bg-white border border-[#E8E6E0] hover:border-[#1C1B19] text-[#1C1B19] text-xs font-semibold flex items-center justify-center gap-1 transition-colors" title="Save link instantly without waiting for AI">
+              <i data-lucide="clock" class="w-3.5 h-3.5 text-[#6B6A66]"></i>
+              <span>Queue (1s)</span>
+            </button>
+            <button id="extractLinkBtn" type="button" class="px-4 py-2 rounded-xl bg-[#FF5A36] hover:bg-[#EB4D2A] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-colors">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+              <span>Extract with AI</span>
+            </button>
+          </div>
         </div>
 
         <details id="manualFieldsDetails" class="group border border-[#E8E6E0] rounded-2xl p-3.5 bg-white">
@@ -474,8 +544,16 @@
           <input id="geminiApiKeyInput" type="password" placeholder="AIza..." class="editorial-input w-full px-3.5 py-2 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm" />
         </div>
         <div>
-          <label for="supadataApiKeyInput" class="block text-xs font-semibold text-[#1C1B19] mb-1">Supadata API Key (Reels &amp; YouTube Shorts Audio)</label>
-          <input id="supadataApiKeyInput" type="password" placeholder="sd_... (free 100 credits/mo at supadata.ai)" class="editorial-input w-full px-3.5 py-2 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm" />
+          <label for="supadataApiKeyInput" class="block text-xs font-semibold text-[#1C1B19] mb-1">Supadata API Key (100 free credits/mo)</label>
+          <input id="supadataApiKeyInput" type="password" placeholder="sd_... (supadata.ai)" class="editorial-input w-full px-3.5 py-2 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm" />
+          <label class="mt-2 inline-flex items-center gap-2 text-[11px] font-medium text-[#6B6A66] cursor-pointer">
+            <input id="supadataSaverToggle" type="checkbox" checked class="coral-check w-3.5 h-3.5 rounded" />
+            <span>Credit-Saver Mode (skips extra metadata call — saves 33–50% credits)</span>
+          </label>
+        </div>
+        <div>
+          <label for="apifyApiKeyInput" class="block text-xs font-semibold text-[#1C1B19] mb-1">Apify API Token — Free Fallback ($5/mo, ~200 videos, no card)</label>
+          <input id="apifyApiKeyInput" type="password" placeholder="apify_api_... (optional fallback at apify.com)" class="editorial-input w-full px-3.5 py-2 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm" />
         </div>
         <div class="flex items-center justify-between pt-2">
           <button id="clearAiKeyBtn" type="button" class="text-xs font-semibold text-red-600 hover:underline">Remove keys</button>
@@ -535,6 +613,11 @@
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
+
+      <button id="authOpenAiSettingsBtn" type="button" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] hover:border-[#1C1B19] text-xs font-semibold text-[#1C1B19] transition-colors">
+        <span class="flex items-center gap-2"><i data-lucide="key-round" class="w-3.5 h-3.5 text-[#FF5A36]"></i> AI &amp; Scraping API Keys</span>
+        <span id="authAiSummaryText" class="text-[11px] text-[#6B6A66]">Configure →</span>
+      </button>
 
       <details id="firebaseConfigPanel" class="rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] p-3.5">
         <summary class="flex items-center justify-between cursor-pointer list-none">
@@ -638,6 +721,67 @@
     </div>
   </div>
 
+  <!-- ==================== MODAL: QUICK SEARCH (⌘K) ==================== -->
+  <div id="quickSearchModal" class="hidden fixed inset-0 z-50 bg-[#1C1B19]/45 backdrop-blur-sm flex items-start justify-center pt-16 p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-[#E8E6E0]">
+      <div class="flex items-center gap-2.5 px-4 py-3.5 border-b border-[#E8E6E0]">
+        <i data-lucide="search" class="w-4 h-4 text-[#6B6A66]"></i>
+        <input id="quickSearchInput" type="text" placeholder="Jump to any note, #tag, tool, or formula..." class="flex-1 bg-transparent text-sm text-[#1C1B19] focus:outline-none" />
+        <button id="closeQuickSearchBtn" type="button" class="p-1 rounded-full hover:bg-[#EFEEEB] text-[#6B6A66]" aria-label="Close search">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div id="quickSearchResults" class="max-h-[60vh] overflow-y-auto p-2 space-y-1"></div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: KNOWLEDGE GRAPH VIEW ==================== -->
+  <div id="graphModal" class="hidden fixed inset-0 z-50 bg-[#1C1B19]/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-3xl w-full overflow-hidden shadow-2xl border border-[#E8E6E0] flex flex-col">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-[#E8E6E0]">
+        <div>
+          <h3 class="font-editorial text-2xl font-medium text-[#1C1B19]">Knowledge Graph</h3>
+          <p class="text-xs text-[#6B6A66]">Notes connected by shared #topics and tools — tap any node to open.</p>
+        </div>
+        <button id="closeGraphModalBtn" type="button" class="p-1.5 rounded-full hover:bg-[#EFEEEB] text-[#6B6A66]" aria-label="Close graph">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div class="relative bg-[#FAF9F6] h-[62vh] min-h-[340px]">
+        <canvas id="knowledgeGraphCanvas" class="w-full h-full block cursor-pointer"></canvas>
+        <div id="graphEmptyState" class="hidden absolute inset-0 flex items-center justify-center p-6 text-center text-xs text-[#6B6A66]">
+          Save at least 1 note to visualize your vault's knowledge graph.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: COMBINE INTO A PROJECT ==================== -->
+  <div id="projectBuilderModal" class="hidden fixed inset-0 z-50 bg-[#1C1B19]/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 space-y-4 shadow-2xl border border-[#E8E6E0]">
+      <div class="flex items-start justify-between gap-2">
+        <div>
+          <h3 class="font-editorial text-2xl font-medium text-[#1C1B19]">Combine Saves into a Project</h3>
+          <p class="text-xs text-[#6B6A66] mt-0.5">Select 2–5 notes and Gemini will synthesize a weekend project spec, stack, and starter README.</p>
+        </div>
+        <button id="closeProjectBuilderBtn" type="button" class="p-1.5 rounded-full hover:bg-[#EFEEEB] text-[#6B6A66]" aria-label="Close">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div id="projectBuilderList" class="max-h-56 overflow-y-auto space-y-1.5 p-2 rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0]"></div>
+      <div>
+        <label for="projectGoalInput" class="block text-xs font-semibold text-[#1C1B19] mb-1">Project Goal / Timeline (optional)</label>
+        <input id="projectGoalInput" type="text" placeholder="e.g. Weekend ML portfolio project for summer internship" class="editorial-input w-full px-3.5 py-2 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm" />
+      </div>
+      <div class="flex justify-end gap-2 pt-1">
+        <button id="cancelProjectBuilderBtn" type="button" class="px-4 py-2 rounded-xl bg-[#EFEEEB] text-xs font-semibold text-[#1C1B19]">Cancel</button>
+        <button id="runProjectBuilderBtn" type="button" class="px-4 py-2 rounded-xl bg-[#FF5A36] hover:bg-[#EB4D2A] text-white text-xs font-bold flex items-center gap-1.5">
+          <i data-lucide="hammer" class="w-3.5 h-3.5"></i> Generate Project Spec
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast -->
   <div id="toast" class="fixed bottom-20 md:bottom-6 right-4 z-50 hidden bg-[#1C1B19] text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg">
     <span id="toastMsg"></span>
@@ -659,14 +803,16 @@
     const CURRENT_USER_KEY = 'albo_web_current_user_v1';
     const AI_KEY_STORAGE = 'albo_gemini_api_key_v1';
     const SUPADATA_KEY_STORAGE = 'albo_supadata_api_key_v1';
+    const APIFY_KEY_STORAGE = 'aletheia_apify_api_key_v1';
+    const SUPA_SAVER_STORAGE = 'aletheia_supa_saver_v1';
 
-    // Hybrid Academic/Builder + Fun Categories
+    // Restrained Monochrome + Terracotta Accent Categories
     const CATEGORIES = {
-      study:    { label: 'Study & Concepts', singular: 'Study', pillBg: '#EEF2F6', pillText: '#2C4D75', icon: 'graduation-cap', desc: 'Lectures, theory & academic notes', isAcademic: true },
-      projects: { label: 'Projects & Internships', singular: 'Project / Career', pillBg: '#FFF0EB', pillText: '#B33D14', icon: 'briefcase', desc: 'Portfolio ideas, career & interviews', isAcademic: true },
-      tools:    { label: 'Tools & Tutorials', singular: 'Tool / Tutorial', pillBg: '#E8F2EC', pillText: '#1E5E3A', icon: 'terminal', desc: 'Repos, APIs, workflows & how-tos', isAcademic: true },
-      media:    { label: 'Watch & Read', singular: 'Watch & Read', pillBg: '#F6EFEA', pillText: '#734826', icon: 'clapperboard', desc: 'Films, essays, books & culture', isAcademic: false },
-      life:     { label: 'Life & Fun', singular: 'Life & Fun', pillBg: '#F4F0FA', pillText: '#5B3E8A', icon: 'sparkles', desc: 'Spots, recipes & fun saves', isAcademic: false }
+      study:    { label: 'Study & Concepts', short: 'Study', singular: 'Study', pillBg: '#F4F3F1', pillText: '#1C1B19', icon: 'graduation-cap', desc: 'Lectures, theory & notes', isAcademic: true },
+      projects: { label: 'Projects & Internships', short: 'Projects', singular: 'Projects', pillBg: '#F4F3F1', pillText: '#1C1B19', icon: 'briefcase', desc: 'Portfolio, career & builds', isAcademic: true },
+      tools:    { label: 'Tools & Tutorials', short: 'Tools', singular: 'Tools', pillBg: '#F4F3F1', pillText: '#1C1B19', icon: 'terminal', desc: 'Repos, APIs & workflows', isAcademic: true },
+      media:    { label: 'Watch & Read', short: 'Watch & Read', singular: 'Watch & Read', pillBg: '#F4F3F1', pillText: '#1C1B19', icon: 'clapperboard', desc: 'Films, essays & books', isAcademic: false },
+      life:     { label: 'Life & Fun', short: 'Life & Fun', singular: 'Life & Fun', pillBg: '#F4F3F1', pillText: '#1C1B19', icon: 'sparkles', desc: 'Spots, recipes & fun', isAcademic: false }
     };
 
     function normalizeCategory(cat) {
@@ -684,7 +830,8 @@
           { id: 'col-tools', name: 'AI & Dev Tools', emoji: '💻', desc: 'GitHub repos, APIs, and cool tutorials.' },
           { id: 'col-fun', name: 'Watch & Unwind', emoji: '🎬', desc: 'Movies, reads, and weekend fun saves.' }
         ],
-        items: []
+        items: [],
+        watchQueue: []
       };
     }
 
@@ -752,6 +899,7 @@
             await fbDb.collection('users').doc(fbUser.uid).collection('aletheia').doc('feed').set({
               collections: state.collections || [],
               items: safeItems,
+              watchQueue: state.watchQueue || [],
               updatedAt: Date.now()
             }, { merge: true });
             updateCloudSyncBadge('☁️ Cloud synced', true);
@@ -935,8 +1083,11 @@
       });
 
       document.getElementById('navHomeCount').textContent = state.items.length;
+      const wc = document.getElementById('navWatchCount');
+      if (wc) wc.textContent = (state.watchQueue || []).filter(v => !v.watched).length;
       if (view === 'collections') renderCollections();
       else if (view === 'decide') renderDecide();
+      else if (view === 'watch') renderWatchQueue();
       else renderHome();
       lucide.createIcons();
     }
@@ -964,12 +1115,15 @@
         return `
           <button type="button" data-bento-cat="${k}" class="bento-cat-btn bento-card rounded-2xl p-4 sm:p-5 text-left flex flex-col justify-between ${active}">
             <div class="flex items-center justify-between gap-2 w-full">
-              <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full" style="background:${cat.pillBg};color:${cat.pillText};">
-                <i data-lucide="${cat.icon}" class="w-3 h-3"></i> ${cat.label}
+              <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-[#1C1B19]">
+                <span class="w-6 h-6 rounded-lg bg-[#F4F3F1] border border-[#E8E6E0] flex items-center justify-center shrink-0">
+                  <i data-lucide="${cat.icon}" class="w-3.5 h-3.5 ${filters.category === k ? 'text-[#FF5A36]' : 'text-[#1C1B19]'}"></i>
+                </span>
+                <span class="truncate">${cat.short}</span>
               </span>
               <span class="text-[11px] text-[#6B6A66] font-medium">${items.length}</span>
             </div>
-            <div class="mt-4">
+            <div class="mt-3.5">
               <div class="flex items-baseline gap-1.5">
                 <span class="font-editorial text-2xl sm:text-3xl font-medium text-[#1C1B19]">${todo}</span>
                 <span class="text-xs text-[#6B6A66]">to review</span>
@@ -1064,7 +1218,7 @@
                 <span class="w-1.5 h-1.5 rounded-full bg-[#FF5A36]"></span>
                 ${escapeHtml(item.source || 'Saved')}
               </span>
-              ${item.aiAnalyzed ? `<span class="px-2 py-1 rounded-full bg-[#FF5A36] text-white text-[10px] font-bold shadow-sm">✨ AI</span>` : ''}
+              ${item.queued ? `<span class="px-2 py-1 rounded-full bg-[#1C1B19] text-white text-[10px] font-bold shadow-sm">⏳ Queued</span>` : (item.aiAnalyzed ? `<span class="px-2 py-1 rounded-full bg-[#FF5A36] text-white text-[10px] font-bold shadow-sm">✨ AI</span>` : '')}
             </div>
             <button type="button" data-toggle-done="${item.id}" class="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-sm transition-colors ${item.done ? 'bg-[#1E5E3A] text-white' : 'bg-white/95 text-[#1C1B19] hover:bg-[#1C1B19] hover:text-white'}" title="${item.done ? 'Reviewed' : 'Mark reviewed'}">
               <i data-lucide="check" class="w-4 h-4"></i>
@@ -1083,7 +1237,7 @@
               <div class="flex items-center gap-1.5 flex-wrap">
                 ${tags.map(t => `<button type="button" data-click-tag="${escapeHtml(t.replace(/^#/, ''))}" class="text-[10px] font-semibold text-[#6B6A66] hover:text-[#FF5A36]">#${escapeHtml(t.replace(/^#/, ''))}</button>`).join('') || `<span class="text-[10px] text-[#9A9892]">${item.explanation ? '📝 Full breakdown' : 'Tap to open'}</span>`}
               </div>
-              ${item.done ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#E8F2EC] text-[#1E5E3A]">✓ Reviewed</span>` : `<span class="text-[11px] font-semibold text-[#1C1B19] opacity-0 group-hover:opacity-100 transition-opacity">Open →</span>`}
+              ${item.queued ? `<button type="button" data-process-queued="${item.id}" class="px-2.5 py-1 rounded-lg bg-[#FF5A36] hover:bg-[#EB4D2A] text-white text-[10px] font-bold">Analyze Now</button>` : (item.done ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#F4F3F1] text-[#1C1B19]">✓ Reviewed</span>` : `<span class="text-[11px] font-semibold text-[#1C1B19] opacity-0 group-hover:opacity-100 transition-opacity">Open →</span>`)}
             </div>
           </div>
         </article>
@@ -1144,13 +1298,54 @@
 
     // ==================== DUAL-MODE STUDY & DECIDE ====================
     function getAllFlashcards() {
+      const now = Date.now();
       const list = [];
       state.items.forEach(item => {
-        (item.flashcards || []).forEach(fc => {
-          if (fc && fc.q && fc.a) list.push({ ...fc, itemTitle: item.title, itemId: item.id });
+        (item.flashcards || []).forEach((fc, fcIdx) => {
+          if (fc && fc.q && fc.a) {
+            const srs = fc.srs || { status: 'new', intervalDays: 0, dueAt: 0, reps: 0 };
+            const isDue = !srs.dueAt || srs.dueAt <= now;
+            list.push({ ...fc, srs, isDue, fcIdx, itemTitle: item.title, itemId: item.id });
+          }
         });
       });
+      list.sort((a, b) => (b.isDue - a.isDue) || ((a.srs.dueAt || 0) - (b.srs.dueAt || 0)));
       return list;
+    }
+
+    function nextSrsInterval(curDays, rating) {
+      if (rating === 'again') return 0;
+      if (rating === 'good') {
+        if (curDays < 1) return 1;
+        if (curDays < 3) return 3;
+        if (curDays < 7) return 7;
+        return 14;
+      }
+      if (curDays < 3) return 3;
+      if (curDays < 7) return 7;
+      if (curDays < 14) return 14;
+      return 30;
+    }
+
+    function rateFlashcardSrs(rating) {
+      const all = getAllFlashcards();
+      if (!all.length) return;
+      if (drillIdx >= all.length) drillIdx = 0;
+      const cur = all[drillIdx];
+      const item = state.items.find(i => i.id === cur.itemId);
+      if (!item || !item.flashcards || !item.flashcards[cur.fcIdx]) return;
+
+      const prev = item.flashcards[cur.fcIdx].srs || { status: 'new', intervalDays: 0, dueAt: 0, reps: 0 };
+      const days = nextSrsInterval(prev.intervalDays || 0, rating);
+      const dueAt = days === 0 ? Date.now() : (Date.now() + days * 24 * 60 * 60 * 1000);
+      const status = rating === 'again' ? 'learning' : (days >= 7 ? 'mastered' : 'learning');
+      item.flashcards[cur.fcIdx].srs = { status, intervalDays: days, dueAt, reps: (prev.reps || 0) + 1 };
+      saveState();
+
+      drillFlipped = false;
+      drillIdx = 0;
+      renderDecide();
+      showToast(days === 0 ? 'Card reset — will resurface today.' : `Scheduled next review in ${days} day${days > 1 ? 's' : ''}!`);
     }
 
     function renderDecide() {
@@ -1213,19 +1408,41 @@
     function renderFlashcardDrill(allCards) {
       const box = document.getElementById('drillCardBox');
       const counter = document.getElementById('drillCounter');
-      const flipBtn = document.getElementById('drillFlipBtn');
+      const masteryRow = document.getElementById('drillMasteryRow');
+      const preRow = document.getElementById('drillPreFlipActions');
+      const srsRow = document.getElementById('drillSrsRatingRow');
+      const dueCount = allCards.filter(c => c.isDue).length;
+      const newC = allCards.filter(c => (c.srs?.status || 'new') === 'new').length;
+      const learnC = allCards.filter(c => c.srs?.status === 'learning').length;
+      const mastC = allCards.filter(c => c.srs?.status === 'mastered').length;
+      if (masteryRow) masteryRow.innerHTML = `<span>New: ${newC}</span><span>•</span><span>Learning: ${learnC}</span><span>•</span><span>Mastered: ${mastC}</span>`;
+      document.getElementById('decideFlashcardCount').textContent = `${dueCount} Due Today`;
+
       if (!allCards.length) {
-        counter.textContent = '0 / 0';
+        counter.textContent = '0 due';
+        preRow.classList.remove('hidden'); srsRow.classList.add('hidden');
         box.innerHTML = `<p class="text-xs text-[#6B6A66] text-center">Save a Study, Project, or Tutorial Reel to auto-generate flashcards here.</p>`;
         return;
       }
       if (drillIdx >= allCards.length) drillIdx = 0;
       const fc = allCards[drillIdx];
-      counter.textContent = `${drillIdx + 1} / ${allCards.length}`;
-      flipBtn.textContent = drillFlipped ? 'Show Question' : 'Reveal Answer';
+      const statusLabel = fc.isDue ? 'Due Today' : `Next in ${fc.srs.intervalDays || 1}d`;
+      counter.textContent = `${dueCount} due • ${drillIdx + 1}/${allCards.length}`;
+
+      if (drillFlipped) {
+        preRow.classList.add('hidden'); srsRow.classList.remove('hidden');
+        document.getElementById('srsGoodHint').textContent = `${nextSrsInterval(fc.srs?.intervalDays || 0, 'good')}d`;
+        document.getElementById('srsEasyHint').textContent = `${nextSrsInterval(fc.srs?.intervalDays || 0, 'easy')}d`;
+      } else {
+        preRow.classList.remove('hidden'); srsRow.classList.add('hidden');
+      }
+
       box.innerHTML = `
         <div class="space-y-2 animate-pop">
-          <div class="text-[10px] font-bold uppercase tracking-wider text-[#6B6A66]">${drillFlipped ? 'Answer' : 'Question'} • ${escapeHtml(fc.itemTitle)}</div>
+          <div class="flex items-center justify-between gap-2 text-[10px] font-bold uppercase tracking-wider text-[#6B6A66]">
+            <span class="truncate">${drillFlipped ? 'Answer' : 'Question'} • ${escapeHtml(fc.itemTitle)}</span>
+            <span class="shrink-0 ${fc.isDue ? 'text-[#FF5A36]' : 'text-[#6B6A66]'}">${statusLabel}</span>
+          </div>
           <div class="${drillFlipped ? 'text-xs text-[#1C1B19] leading-relaxed' : 'font-editorial text-lg font-medium text-[#1C1B19]'}">${escapeHtml(drillFlipped ? fc.a : fc.q)}</div>
         </div>
       `;
@@ -1503,20 +1720,27 @@
     // ==================== AI ENGINE ====================
     function getGeminiKey() { try { return localStorage.getItem(AI_KEY_STORAGE) || ''; } catch (e) { return ''; } }
     function getSupadataKey() { try { return localStorage.getItem(SUPADATA_KEY_STORAGE) || ''; } catch (e) { return ''; } }
-    function setAiKeys(g, s) {
+    function getApifyKey() { try { return localStorage.getItem(APIFY_KEY_STORAGE) || ''; } catch (e) { return ''; } }
+    function isSupadataSaverOn() { try { return localStorage.getItem(SUPA_SAVER_STORAGE) !== 'false'; } catch (e) { return true; } }
+    function setAiKeys(g, s, a, saver) {
       try {
         if (g) localStorage.setItem(AI_KEY_STORAGE, g); else localStorage.removeItem(AI_KEY_STORAGE);
         if (s) localStorage.setItem(SUPADATA_KEY_STORAGE, s); else localStorage.removeItem(SUPADATA_KEY_STORAGE);
+        if (a !== undefined) { if (a) localStorage.setItem(APIFY_KEY_STORAGE, a); else localStorage.removeItem(APIFY_KEY_STORAGE); }
+        if (saver !== undefined) localStorage.setItem(SUPA_SAVER_STORAGE, saver ? 'true' : 'false');
       } catch (e) {}
       updateAiStatusUI();
     }
 
     function updateAiStatusUI() {
-      const hasG = !!getGeminiKey(), hasS = !!getSupadataKey();
+      const hasG = !!getGeminiKey(), hasS = !!getSupadataKey(), hasA = !!getApifyKey();
       const dot = document.getElementById('aiStatusDot'), txt = document.getElementById('aiStatusText');
+      const authAiTxt = document.getElementById('authAiSummaryText');
       const badge = document.getElementById('modalAiModeBadge'), banner = document.getElementById('aiKeyPromptBanner');
       if (dot) dot.className = hasG ? 'w-2 h-2 rounded-full bg-emerald-500' : 'w-2 h-2 rounded-full bg-amber-400';
-      if (txt) txt.textContent = hasG && hasS ? 'Gemini + Reels' : (hasG ? 'Gemini Active' : 'Connect AI');
+      const label = hasG && (hasS || hasA) ? 'AI + Reels Live' : (hasG ? 'Gemini Active' : 'Connect AI');
+      if (txt) txt.textContent = label;
+      if (authAiTxt) authAiTxt.textContent = label + ' →';
       if (badge) {
         badge.textContent = hasG && hasS ? 'Gemini + Reel Audio' : (hasG ? 'Gemini Active' : 'Smart Local AI');
         badge.className = hasG ? 'text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#E8F2EC] text-[#1E5E3A]' : 'text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FFF0EB] text-[#B33D14]';
@@ -1625,15 +1849,17 @@
     async function fetchSupadataReelInfo(url, supadataKey, onStep) {
       const headers = { 'x-api-key': supadataKey };
       let caption = '', author = '', thumbnail = '', transcript = '', supadataErr = '';
-      try {
-        const mr = await fetch('https://api.supadata.ai/v1/metadata?url=' + encodeURIComponent(url), { headers });
-        if (mr.ok) {
-          const m = await mr.json();
-          caption = m.description || m.title || '';
-          author = (m.author && (m.author.displayName || m.author.username)) || '';
-          thumbnail = (m.media && m.media.thumbnailUrl) || m.thumbnail || '';
-        }
-      } catch (e) {}
+      if (!isSupadataSaverOn()) {
+        try {
+          const mr = await fetch('https://api.supadata.ai/v1/metadata?url=' + encodeURIComponent(url), { headers });
+          if (mr.ok) {
+            const m = await mr.json();
+            caption = m.description || m.title || '';
+            author = (m.author && (m.author.displayName || m.author.username)) || '';
+            thumbnail = (m.media && m.media.thumbnailUrl) || m.thumbnail || '';
+          }
+        } catch (e) {}
+      }
 
       try {
         const tr = await fetch('https://api.supadata.ai/v1/transcript?url=' + encodeURIComponent(url) + '&text=true&mode=auto', { headers });
@@ -1663,6 +1889,35 @@
         }
       } catch (e) { supadataErr = e && e.message ? e.message : 'Supadata error'; }
       return { caption, author, thumbnail, transcript: (transcript || '').trim(), supadataErr };
+    }
+
+    async function fetchApifyTranscript(url, apifyToken) {
+      let caption = '', author = '', thumbnail = '', transcript = '', apifyErr = '';
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 35000);
+      try {
+        const endpoint = 'https://api.apify.com/v2/acts/amrameng~video-transcript-api/run-sync-get-dataset-items?token=' + encodeURIComponent(apifyToken);
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ urls: [url] }),
+          signal: controller.signal
+        });
+        clearTimeout(timer);
+        if (res.ok) {
+          const rows = await res.json();
+          const row = Array.isArray(rows) ? rows[0] : rows;
+          if (row) {
+            transcript = row.transcript || row.text || (Array.isArray(row.segments) ? row.segments.map(s => s.text || '').join(' ') : '');
+            caption = row.description || row.title || '';
+            author = row.author || row.channel || '';
+            thumbnail = row.thumbnail || row.thumbnailUrl || '';
+          }
+        } else {
+          apifyErr = `Apify HTTP ${res.status}`;
+        }
+      } catch (e) { clearTimeout(timer); apifyErr = e && e.message ? e.message : 'Apify error'; }
+      return { caption, author, thumbnail, transcript: (transcript || '').trim(), apifyErr };
     }
 
     function extractVideoFrames(file) {
@@ -1842,6 +2097,7 @@ Context:
       };
     }
 
+    let processingQueuedId = null;
     async function analyzeAndMaybeSave() {
       const url = document.getElementById('saveUrlInput').value.trim();
       const caption = document.getElementById('saveCaptionInput').value.trim();
@@ -1861,6 +2117,7 @@ Context:
         let webMarkdown = '';
         if (url && /^https?:\/\//i.test(url)) {
           if (isSocialVideoUrl(url)) {
+            const apifyKey = getApifyKey();
             if (supadataKey) {
               steps[0] = { text: `Extracting ${source} audio via Supadata...`, done: false };
               setAiProgress(`Reading ${source} audio...`, steps);
@@ -1868,6 +2125,18 @@ Context:
               steps[0].done = !supaInfo.supadataErr;
               if (supaInfo.transcript) steps.push({ text: `Audio extracted (${supaInfo.transcript.split(/\s+/).length} words)`, done: true });
               else if (supaInfo.supadataErr) steps.push({ text: `Supadata note: ${supaInfo.supadataErr}`, done: false });
+            }
+            if (!supaInfo.transcript && apifyKey) {
+              steps.push({ text: `Trying Apify free fallback for ${source}...`, done: false });
+              setAiProgress(`Reading ${source} via Apify...`, steps);
+              const apInfo = await fetchApifyTranscript(url, apifyKey);
+              steps[steps.length - 1].done = !!apInfo.transcript;
+              if (apInfo.transcript) {
+                supaInfo = { ...supaInfo, ...apInfo, supadataErr: '' };
+                steps[steps.length - 1].text = `Apify extracted audio (${apInfo.transcript.split(/\s+/).length} words)`;
+              } else if (apInfo.apifyErr) {
+                steps[steps.length - 1].text = `Apify note: ${apInfo.apifyErr}`;
+              }
             }
           } else {
             steps[0] = { text: `Reading ${source} content...`, done: false };
@@ -1930,6 +2199,10 @@ Context:
         const coverImg = pendingUploadDataUrl || (frames[0] || '') || supaInfo.thumbnail || (oembed?.thumbnail_url || '') || ytThumbFallback;
         if (autoSave && !apiErrorMsg && !result.needsMoreContext) {
           const newItem = buildItemFromExtracted(result, source, url, coverImg, aiLabel);
+          if (processingQueuedId) {
+            state.items = state.items.filter(i => i.id !== processingQueuedId);
+            processingQueuedId = null;
+          }
           state.items.unshift(newItem);
           saveState();
           setTimeout(() => {
@@ -1969,10 +2242,11 @@ Context:
                 const d = snap.data();
                 state = {
                   collections: Array.isArray(d.collections) && d.collections.length ? d.collections : getDefaultState().collections,
-                  items: d.items.map(i => ({ ...i, category: normalizeCategory(i.category) }))
+                  items: d.items.map(i => ({ ...i, category: normalizeCategory(i.category) })),
+                  watchQueue: Array.isArray(d.watchQueue) ? d.watchQueue : []
                 };
                 saveState(true); updateCloudSyncBadge('☁️ Cloud synced', true);
-                if (activeView === 'collections') renderCollections(); else if (activeView === 'decide') renderDecide(); else renderHome();
+                if (activeView === 'collections') renderCollections(); else if (activeView === 'decide') renderDecide(); else if (activeView === 'watch') renderWatchQueue(); else renderHome();
                 return;
               }
               state = (localBefore && localBefore.items.length) ? localBefore : getDefaultState();
@@ -2102,7 +2376,40 @@ Context:
     // ==================== LISTENERS ====================
     document.getElementById('brandHomeBtn').addEventListener('click', () => switchView('home'));
     document.querySelectorAll('.nav-tab, .mobile-nav-tab').forEach(b => b.addEventListener('click', () => switchView(b.dataset.view)));
-    document.getElementById('openRandomizerBtn').addEventListener('click', () => switchView('decide'));
+    function openQuickSearchModal() {
+      document.getElementById('quickSearchModal').classList.remove('hidden');
+      const inp = document.getElementById('quickSearchInput');
+      inp.value = '';
+      renderQuickSearchResults('');
+      setTimeout(() => inp.focus(), 40);
+      lucide.createIcons();
+    }
+    function renderQuickSearchResults(q) {
+      const term = (q || '').trim().toLowerCase();
+      const matches = state.items.filter(i => !term || [i.title, i.notes, i.explanation, (i.tags || []).join(' '), (i.tools || []).join(' ')].join(' ').toLowerCase().includes(term)).slice(0, 12);
+      const box = document.getElementById('quickSearchResults');
+      if (!matches.length) {
+        box.innerHTML = `<div class="p-6 text-center text-xs text-[#6B6A66]">${state.items.length ? 'No matching notes found.' : 'Your vault is empty — tap + Save to add your first note.'}</div>`;
+        return;
+      }
+      box.innerHTML = matches.map(i => `
+        <button type="button" data-quick-open="${i.id}" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-[#FAF9F6] flex items-center justify-between gap-2 transition-colors">
+          <div class="min-w-0">
+            <div class="text-xs font-semibold text-[#1C1B19] truncate">${escapeHtml(i.title)}</div>
+            <div class="text-[11px] text-[#6B6A66] truncate">${escapeHtml(i.source || '')} ${(i.tags || []).slice(0, 3).map(t => '#' + t.replace(/^#/, '')).join(' ')}</div>
+          </div>
+          <span class="text-[10px] font-semibold text-[#FF5A36] shrink-0">Open →</span>
+        </button>
+      `).join('');
+    }
+    document.getElementById('openQuickSearchBtn').addEventListener('click', openQuickSearchModal);
+    document.getElementById('closeQuickSearchBtn').addEventListener('click', () => document.getElementById('quickSearchModal').classList.add('hidden'));
+    document.getElementById('quickSearchModal').addEventListener('click', e => { if (e.target.id === 'quickSearchModal') document.getElementById('quickSearchModal').classList.add('hidden'); });
+    document.getElementById('quickSearchInput').addEventListener('input', e => renderQuickSearchResults(e.target.value));
+    document.getElementById('quickSearchResults').addEventListener('click', e => {
+      const btn = e.target.closest('[data-quick-open]');
+      if (btn) { document.getElementById('quickSearchModal').classList.add('hidden'); openDetailModal(btn.dataset.quickOpen); }
+    });
 
     document.getElementById('clearAllBtn').addEventListener('click', () => {
       state = getDefaultState(); saveState(); activeCollectionId = null;
@@ -2125,7 +2432,7 @@ Context:
     });
 
     document.addEventListener('keydown', e => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); switchView('home'); document.getElementById('searchInput').focus(); }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openQuickSearchModal(); }
       if (e.key === 'Escape') ['saveModal', 'detailModal', 'aiSettingsModal', 'newCollectionModal', 'authModal'].forEach(id => document.getElementById(id).classList.add('hidden'));
     });
 
@@ -2150,6 +2457,19 @@ Context:
         return;
       }
 
+      const procQ = e.target.closest('[data-process-queued]');
+      if (procQ) {
+        e.stopPropagation();
+        const qItem = state.items.find(i => i.id === procQ.dataset.processQueued);
+        if (qItem) {
+          processingQueuedId = qItem.id;
+          openSaveModal();
+          document.getElementById('saveUrlInput').value = qItem.url || '';
+          document.getElementById('saveCaptionInput').value = qItem.notes || '';
+          analyzeAndMaybeSave();
+        }
+        return;
+      }
       const openDetail = e.target.closest('[data-open-detail]');
       if (openDetail) { openDetailModal(openDetail.dataset.openDetail); return; }
 
@@ -2232,6 +2552,9 @@ Context:
     document.getElementById('drillNextBtn').addEventListener('click', () => {
       const all = getAllFlashcards(); if (!all.length) return;
       drillIdx = (drillIdx + 1) % all.length; drillFlipped = false; renderFlashcardDrill(all);
+    });
+    document.querySelectorAll('[data-srs-rate]').forEach(btn => {
+      btn.addEventListener('click', () => rateFlashcardSrs(btn.dataset.srsRate));
     });
     document.getElementById('unwindSpinBtn').addEventListener('click', () => {
       const pool = state.items.filter(i => !i.done && !CATEGORIES[normalizeCategory(i.category)].isAcademic);
@@ -2377,18 +2700,418 @@ Context:
     function openAiSettingsModal() {
       document.getElementById('geminiApiKeyInput').value = getGeminiKey();
       document.getElementById('supadataApiKeyInput').value = getSupadataKey();
+      document.getElementById('apifyApiKeyInput').value = getApifyKey();
+      document.getElementById('supadataSaverToggle').checked = isSupadataSaverOn();
       document.getElementById('aiSettingsModal').classList.remove('hidden');
       lucide.createIcons();
     }
     document.getElementById('openAiSettingsBtn').addEventListener('click', openAiSettingsModal);
+    document.getElementById('authOpenAiSettingsBtn').addEventListener('click', () => { document.getElementById('authModal').classList.add('hidden'); openAiSettingsModal(); });
     document.getElementById('bannerOpenAiBtn').addEventListener('click', openAiSettingsModal);
     document.getElementById('closeAiSettingsBtn').addEventListener('click', () => document.getElementById('aiSettingsModal').classList.add('hidden'));
     document.getElementById('cancelAiSettingsBtn').addEventListener('click', () => document.getElementById('aiSettingsModal').classList.add('hidden'));
-    document.getElementById('clearAiKeyBtn').addEventListener('click', () => { setAiKeys('', ''); document.getElementById('geminiApiKeyInput').value = ''; document.getElementById('supadataApiKeyInput').value = ''; showToast('Keys removed.'); });
-    document.getElementById('aiKeyForm').addEventListener('submit', e => {
-      e.preventDefault(); setAiKeys(document.getElementById('geminiApiKeyInput').value.trim(), document.getElementById('supadataApiKeyInput').value.trim());
-      document.getElementById('aiSettingsModal').classList.add('hidden'); showToast('AI keys saved!');
+    document.getElementById('clearAiKeyBtn').addEventListener('click', () => {
+      setAiKeys('', '', '', true);
+      document.getElementById('geminiApiKeyInput').value = '';
+      document.getElementById('supadataApiKeyInput').value = '';
+      document.getElementById('apifyApiKeyInput').value = '';
+      showToast('AI & scraping keys removed.');
     });
+    document.getElementById('aiKeyForm').addEventListener('submit', e => {
+      e.preventDefault();
+      setAiKeys(
+        document.getElementById('geminiApiKeyInput').value.trim(),
+        document.getElementById('supadataApiKeyInput').value.trim(),
+        document.getElementById('apifyApiKeyInput').value.trim(),
+        document.getElementById('supadataSaverToggle').checked
+      );
+      document.getElementById('aiSettingsModal').classList.add('hidden'); showToast('AI & scraping settings saved!');
+    });
+
+    // 1-Second Quick Queue
+    document.getElementById('quickQueueBtn').addEventListener('click', () => {
+      const url = document.getElementById('saveUrlInput').value.trim();
+      const cap = document.getElementById('saveCaptionInput').value.trim();
+      if (!url && !cap) { showToast('Paste a link or quick note first.'); return; }
+      const src = url ? detectPlatform(url) : 'Quick Note';
+      const ytId = extractYouTubeId(url);
+      const title = cap ? cap.split(/[\n.!]/)[0].slice(0, 60) : (src + ' — Queued for AI');
+      const queuedItem = {
+        id: 'item-' + Date.now(),
+        title, category: 'study', difficulty: '', tags: ['Queued'],
+        source: src, url, image: ytId ? `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg` : '',
+        notes: cap || url, explanation: '', personalNote: '',
+        tools: [], projectAngle: '', flashcards: [],
+        collectionIds: [], done: false, aiAnalyzed: false, queued: true, createdAt: Date.now()
+      };
+      state.items.unshift(queuedItem);
+      saveState();
+      document.getElementById('saveModal').classList.add('hidden');
+      switchView('home');
+      showToast('⏳ Queued in 1s! Tap Analyze Now whenever ready.');
+    });
+
+    // Interactive Knowledge Graph View
+    let graphNodes = [];
+    function openKnowledgeGraph() {
+      document.getElementById('graphModal').classList.remove('hidden');
+      lucide.createIcons();
+      const canvas = document.getElementById('knowledgeGraphCanvas');
+      const emptyEl = document.getElementById('graphEmptyState');
+      if (!state.items.length) { emptyEl.classList.remove('hidden'); return; }
+      emptyEl.classList.add('hidden');
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      const W = rect.width, H = rect.height, cx = W / 2, cy = H / 2;
+      const r = Math.min(W, H) * 0.34;
+      graphNodes = state.items.slice(0, 28).map((item, idx, arr) => {
+        const angle = (idx / Math.max(1, arr.length)) * Math.PI * 2 - Math.PI / 2;
+        return { item, x: cx + Math.cos(angle) * r * (0.75 + (idx % 3) * 0.12), y: cy + Math.sin(angle) * r * (0.75 + (idx % 2) * 0.14), radius: item.done ? 9 : 11 };
+      });
+      const edges = [];
+      for (let i = 0; i < graphNodes.length; i++) {
+        const aTags = new Set([...(graphNodes[i].item.tags || []), ...(graphNodes[i].item.tools || [])].map(t => t.toLowerCase()));
+        for (let j = i + 1; j < graphNodes.length; j++) {
+          const bTags = [...(graphNodes[j].item.tags || []), ...(graphNodes[j].item.tools || [])].map(t => t.toLowerCase());
+          const shared = bTags.filter(t => aTags.has(t));
+          if (shared.length) edges.push({ a: graphNodes[i], b: graphNodes[j], label: shared[0] });
+        }
+      }
+      function drawGraph(hoverIdx) {
+        ctx.clearRect(0, 0, W, H);
+        edges.forEach(e => {
+          const isHl = hoverIdx >= 0 && (graphNodes[hoverIdx] === e.a || graphNodes[hoverIdx] === e.b);
+          ctx.beginPath(); ctx.moveTo(e.a.x, e.a.y); ctx.lineTo(e.b.x, e.b.y);
+          ctx.strokeStyle = isHl ? '#FF5A36' : '#D9D6CE'; ctx.lineWidth = isHl ? 2 : 1; ctx.stroke();
+        });
+        graphNodes.forEach((n, i) => {
+          const isH = i === hoverIdx;
+          ctx.beginPath(); ctx.arc(n.x, n.y, isH ? n.radius + 3 : n.radius, 0, Math.PI * 2);
+          ctx.fillStyle = isH ? '#FF5A36' : (n.item.done ? '#6B6A66' : '#1C1B19'); ctx.fill();
+          ctx.strokeStyle = '#FAF9F6'; ctx.lineWidth = 2; ctx.stroke();
+          ctx.font = '600 11px Manrope, sans-serif'; ctx.fillStyle = '#1C1B19'; ctx.textAlign = 'center';
+          const lbl = n.item.title.length > 22 ? n.item.title.slice(0, 21) + '…' : n.item.title;
+          ctx.fillText(lbl, n.x, n.y + n.radius + 14);
+        });
+      }
+      drawGraph(-1);
+      canvas.onmousemove = ev => {
+        const b = canvas.getBoundingClientRect(), mx = ev.clientX - b.left, my = ev.clientY - b.top;
+        const hi = graphNodes.findIndex(n => Math.hypot(n.x - mx, n.y - my) <= n.radius + 8);
+        drawGraph(hi);
+      };
+      canvas.onclick = ev => {
+        const b = canvas.getBoundingClientRect(), mx = ev.clientX - b.left, my = ev.clientY - b.top;
+        const hi = graphNodes.findIndex(n => Math.hypot(n.x - mx, n.y - my) <= n.radius + 10);
+        if (hi >= 0) { document.getElementById('graphModal').classList.add('hidden'); openDetailModal(graphNodes[hi].item.id); }
+      };
+    }
+    document.getElementById('openGraphModalBtn').addEventListener('click', openKnowledgeGraph);
+    document.getElementById('closeGraphModalBtn').addEventListener('click', () => document.getElementById('graphModal').classList.add('hidden'));
+    document.getElementById('graphModal').addEventListener('click', e => { if (e.target.id === 'graphModal') document.getElementById('graphModal').classList.add('hidden'); });
+
+    // Combine Saves into a Project Builder
+    document.getElementById('openProjectBuilderBtn').addEventListener('click', () => {
+      const box = document.getElementById('projectBuilderList');
+      if (state.items.length < 2) { showToast('Save at least 2 notes first to combine them into a project!'); return; }
+      box.innerHTML = state.items.map(i => `
+        <label class="flex items-start gap-2.5 p-2 rounded-xl hover:bg-white cursor-pointer">
+          <input type="checkbox" value="${i.id}" class="proj-pick-cb coral-check mt-0.5 w-4 h-4 rounded" />
+          <div class="min-w-0">
+            <div class="text-xs font-semibold text-[#1C1B19] truncate">${escapeHtml(i.title)}</div>
+            <div class="text-[10px] text-[#6B6A66] truncate">${escapeHtml((i.tags || []).slice(0, 3).map(t => '#' + t).join(' ') || i.source || '')}</div>
+          </div>
+        </label>
+      `).join('');
+      document.getElementById('projectBuilderModal').classList.remove('hidden');
+      lucide.createIcons();
+    });
+    document.getElementById('closeProjectBuilderBtn').addEventListener('click', () => document.getElementById('projectBuilderModal').classList.add('hidden'));
+    document.getElementById('cancelProjectBuilderBtn').addEventListener('click', () => document.getElementById('projectBuilderModal').classList.add('hidden'));
+    document.getElementById('runProjectBuilderBtn').addEventListener('click', async () => {
+      const ids = Array.from(document.querySelectorAll('.proj-pick-cb:checked')).map(c => c.value);
+      if (ids.length < 2 || ids.length > 5) { showToast('Select between 2 and 5 saved notes.'); return; }
+      const apiKey = getGeminiKey();
+      if (!apiKey) { showToast('Connect your Gemini API key first.'); return; }
+      const selected = state.items.filter(i => ids.includes(i.id));
+      const goal = document.getElementById('projectGoalInput').value.trim() || 'Strong portfolio project for internships';
+      const btn = document.getElementById('runProjectBuilderBtn');
+      btn.disabled = true; btn.textContent = 'Synthesizing spec...';
+      try {
+        const ctxText = selected.map((s, idx) => `Note ${idx + 1}: ${s.title}
+Tags: ${(s.tags || []).join(', ')}
+Tools: ${(s.tools || []).join(', ')}
+Summary: ${s.notes || ''}
+Breakdown excerpt: ${(s.explanation || '').slice(0, 700)}`).join('\n\n');
+        const prompt = `You are Aletheia, an engineering mentor. Combine these saved notes into ONE cohesive portfolio project spec.
+Goal: ${goal}
+
+${ctxText}
+
+Return ONLY valid JSON:
+{"title":"Project Name","tags":["Project","Tag2"],"notes":"2-sentence elevator pitch for a resume/portfolio.","tools":["tool1","tool2"],"projectAngle":"Why recruiters/interviewers will love this project.","explanation":"Detailed Markdown blueprint with ## Architecture & Stack, ## Weekend Build Milestones, and ## Starter README.md (inside a fenced markdown code block)."}`;
+        const res = await runGeminiRequest(apiKey, [{ text: prompt }], { json: true, useSearch: false, maxTokens: 2500 });
+        const parsed = extractJsonObject(res.text);
+        const newProj = {
+          id: 'item-' + Date.now(), title: parsed.title || 'Combined Portfolio Project',
+          category: 'projects', difficulty: 'Intermediate',
+          tags: Array.isArray(parsed.tags) ? parsed.tags : ['PortfolioProject'],
+          source: 'Aletheia Project Spec', url: '', image: '',
+          notes: parsed.notes || '', explanation: parsed.explanation || '', personalNote: '',
+          tools: Array.isArray(parsed.tools) ? parsed.tools : [],
+          projectAngle: parsed.projectAngle || '', flashcards: [],
+          collectionIds: [], done: false, aiAnalyzed: true, aiModel: res.model, createdAt: Date.now()
+        };
+        state.items.unshift(newProj);
+        saveState();
+        document.getElementById('projectBuilderModal').classList.add('hidden');
+        switchView('home');
+        openDetailModal(newProj.id);
+        showToast(`🚀 Created project spec "${newProj.title}"!`);
+      } catch (err) {
+        showToast('Project synthesis failed: ' + (err && err.message ? err.message : 'Try again'));
+      } finally {
+        btn.disabled = false; btn.innerHTML = '<i data-lucide="hammer" class="w-3.5 h-3.5"></i> Generate Project Spec';
+        lucide.createIcons();
+      }
+    });
+
+    // ==================== YOUTUBE WATCH QUEUE (FREE METADATA + AUTO-SORT) ====================
+    const WATCH_CATS = {
+      tech:     { label: 'Tech & Coding' },
+      career:   { label: 'Career & Internships' },
+      lectures: { label: 'Lectures & Theory' },
+      essays:   { label: 'Podcasts & Essays' },
+      chill:    { label: 'Chill & Fun' }
+    };
+    let watchFilterCat = 'all';
+    let watchFilterStatus = 'unwatched';
+
+    function parseIsoDuration(iso) {
+      if (!iso) return '';
+      const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+      if (!m) return '';
+      const h = parseInt(m[1] || '0', 10), min = parseInt(m[2] || '0', 10), sec = parseInt(m[3] || '0', 10);
+      if (h > 0) return `${h}:${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+      return `${min}:${String(sec).padStart(2, '0')}`;
+    }
+
+    async function fetchFreeYouTubeDetails(url) {
+      const ytId = extractYouTubeId(url);
+      if (!ytId) return null;
+      let title = '', channel = '', description = '', duration = '', thumbnail = `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg`;
+
+      // 1. Primary: Official YouTube Data API v3 (10,000 free calls/day; 1 unit per video)
+      const ytApiKey = (DEFAULT_FIREBASE_CONFIG && DEFAULT_FIREBASE_CONFIG.apiKey) || getGeminiKey();
+      if (ytApiKey) {
+        try {
+          const r = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${encodeURIComponent(ytId)}&key=${encodeURIComponent(ytApiKey)}`);
+          if (r.ok) {
+            const d = await r.json();
+            const v = d && d.items && d.items[0];
+            if (v && v.snippet) {
+              title = v.snippet.title || '';
+              channel = v.snippet.channelTitle || '';
+              description = (v.snippet.description || '').trim();
+              duration = parseIsoDuration(v.contentDetails && v.contentDetails.duration);
+              const th = v.snippet.thumbnails || {};
+              thumbnail = (th.maxres || th.standard || th.high || th.medium || {}).url || thumbnail;
+            }
+          }
+        } catch (e) {}
+      }
+
+      // 2. Zero-setup fallback: Free oEmbed for Title + Channel + Thumbnail
+      if (!title) {
+        const oe = await fetchPublicOembed('https://www.youtube.com/watch?v=' + ytId);
+        if (oe) {
+          title = oe.title || '';
+          channel = oe.author_name || '';
+          if (oe.thumbnail_url) thumbnail = oe.thumbnail_url;
+        }
+      }
+
+      // 3. Free Jina Reader fallback for Description if YouTube Data API wasn't enabled yet
+      if (!description) {
+        try {
+          const ctrl = new AbortController();
+          const t = setTimeout(() => ctrl.abort(), 9000);
+          const jr = await fetch('https://r.jina.ai/https://www.youtube.com/watch?v=' + ytId, { headers: { 'Accept': 'text/plain' }, signal: ctrl.signal });
+          clearTimeout(t);
+          if (jr.ok) {
+            const txt = await jr.text();
+            const descMatch = txt.match(/(?:Description|Markdown Content:)[\s\S]{0,40}\n([\s\S]{20,600})/i);
+            if (descMatch) description = descMatch[1].replace(/\s+/g, ' ').trim().slice(0, 420);
+          }
+        } catch (e) {}
+      }
+
+      return { ytId, title: title || 'YouTube Video', channel: channel || 'YouTube', description, duration, thumbnail };
+    }
+
+    async function autoCategorizeWatchVideo(title, channel, description) {
+      const apiKey = getGeminiKey();
+      const text = `${title} ${channel} ${(description || '').slice(0, 500)}`;
+      if (apiKey) {
+        try {
+          const prompt = `Categorize this YouTube video into EXACTLY ONE key from: tech, career, lectures, essays, chill.
+- tech: coding, AI, software, engineering, frameworks, dev tools
+- career: internships, resumes, interviews, portfolio, jobs, startups
+- lectures: college courses, math, physics, biology, CS theory, tutorials
+- essays: podcasts, documentaries, book talks, deep video essays, philosophy
+- chill: entertainment, vlogs, comedy, gaming, music, movies, sports
+Return ONLY JSON: {"category":"tech"|"career"|"lectures"|"essays"|"chill"}
+Video: ${text}`;
+          const res = await runGeminiRequest(apiKey, [{ text: prompt }], { json: true, useSearch: false, maxTokens: 120 });
+          const parsed = extractJsonObject(res.text);
+          if (parsed && WATCH_CATS[parsed.category]) return parsed.category;
+        } catch (e) {}
+      }
+      const l = text.toLowerCase();
+      if (/(internship|resume|interview|career|portfolio|leetcode|hiring|job|faang|startup)/i.test(l)) return 'career';
+      if (/(lecture|mit |stanford|calculus|physics|biology|algorithm|theorem|course|exam|linear algebra|neural network)/i.test(l)) return 'lectures';
+      if (/(python|javascript|react|code|coding|programming|ai |llm|github|api|docker|linux|tutorial|build a |fastapi|pytorch)/i.test(l)) return 'tech';
+      if (/(podcast|essay|documentary|history|philosophy|book|interview with|explained)/i.test(l)) return 'essays';
+      return 'chill';
+    }
+
+    function renderWatchQueue() {
+      if (!Array.isArray(state.watchQueue)) state.watchQueue = [];
+      const list = state.watchQueue;
+      const unwatchedCount = list.filter(v => !v.watched).length;
+      const statsEl = document.getElementById('watchQueueStats');
+      if (statsEl) statsEl.textContent = `${unwatchedCount} unwatched • ${list.length} total`;
+      const wc = document.getElementById('navWatchCount');
+      if (wc) wc.textContent = unwatchedCount;
+
+      const pills = [{ key: 'all', label: `All (${list.length})` }, ...Object.keys(WATCH_CATS).map(k => ({ key: k, label: `${WATCH_CATS[k].label} (${list.filter(v => v.category === k).length})` }))];
+      document.getElementById('watchFilterPills').innerHTML = pills.map(p => `
+        <button type="button" data-watch-cat="${p.key}" class="px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${watchFilterCat === p.key ? 'bg-[#1C1B19] text-white' : 'bg-white border border-[#E8E6E0] text-[#6B6A66] hover:border-[#1C1B19]'}">${p.label}</button>
+      `).join('');
+
+      const filtered = list.filter(v => {
+        if (watchFilterCat !== 'all' && v.category !== watchFilterCat) return false;
+        if (watchFilterStatus === 'unwatched' && v.watched) return false;
+        if (watchFilterStatus === 'watched' && !v.watched) return false;
+        return true;
+      });
+
+      const grid = document.getElementById('watchGrid');
+      if (!filtered.length) {
+        grid.innerHTML = `<div class="col-span-full bento-card rounded-3xl p-10 text-center space-y-2"><p class="font-editorial text-2xl font-medium text-[#1C1B19]">${list.length ? 'No videos in this filter' : 'Your Watch Queue is clean'}</p><p class="text-xs text-[#6B6A66]">Paste any YouTube link above to auto-sort it without generating heavy notes.</p></div>`;
+        lucide.createIcons();
+        return;
+      }
+
+      grid.innerHTML = filtered.map(v => {
+        const cat = WATCH_CATS[v.category] || WATCH_CATS.chill;
+        return `
+          <article class="bento-card rounded-3xl overflow-hidden flex flex-col ${v.watched ? 'opacity-75' : ''}">
+            <div class="relative aspect-video bg-[#1C1B19] overflow-hidden">
+              <img src="${escapeHtml(v.thumbnail)}" alt="${escapeHtml(v.title)}" class="w-full h-full object-cover" />
+              <span class="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-white/95 text-[#1C1B19] text-[10px] font-bold shadow-sm">${cat.label}</span>
+              ${v.duration ? `<span class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded-md bg-[#1C1B19]/90 text-white text-[10px] font-mono font-bold">${escapeHtml(v.duration)}</span>` : ''}
+            </div>
+            <div class="p-4 flex-1 flex flex-col justify-between gap-3">
+              <div class="space-y-1.5">
+                <div class="text-[11px] font-semibold text-[#6B6A66] truncate">${escapeHtml(v.channel || 'YouTube')}</div>
+                <h3 class="font-editorial text-lg font-medium leading-snug text-[#1C1B19] ${v.watched ? 'line-through text-[#6B6A66]' : ''}">${escapeHtml(v.title)}</h3>
+                ${v.description ? `
+                  <details class="pt-1">
+                    <summary class="text-[11px] font-semibold text-[#6B6A66] hover:text-[#1C1B19] cursor-pointer list-none">Description ↓</summary>
+                    <p class="mt-1.5 text-[11px] text-[#6B6A66] leading-relaxed whitespace-pre-line max-h-36 overflow-y-auto">${escapeHtml(v.description.slice(0, 800))}</p>
+                  </details>
+                ` : ''}
+              </div>
+              <div class="space-y-2 pt-2 border-t border-[#F4F3F1]">
+                <details>
+                  <summary class="text-[11px] font-semibold text-[#FF5A36] cursor-pointer list-none flex items-center gap-1"><i data-lucide="play-circle" class="w-3.5 h-3.5"></i> Watch inline</summary>
+                  <iframe src="https://www.youtube.com/embed/${escapeHtml(v.ytId)}" title="${escapeHtml(v.title)}" class="mt-2 w-full aspect-video rounded-xl border border-[#E8E6E0] bg-black" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </details>
+                <div class="flex items-center justify-between gap-1.5">
+                  <button type="button" data-watch-toggle="${v.id}" class="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold ${v.watched ? 'bg-[#1C1B19] text-white' : 'bg-[#F4F3F1] text-[#1C1B19] hover:bg-[#1C1B19] hover:text-white'}">${v.watched ? '✓ Watched' : 'Mark Watched'}</button>
+                  <div class="flex items-center gap-1.5">
+                    <button type="button" data-watch-to-note="${v.id}" class="px-2.5 py-1.5 rounded-lg bg-white border border-[#E8E6E0] hover:border-[#FF5A36] text-[11px] font-semibold text-[#1C1B19]" title="Turn into full Obsidian Study Note">To Note</button>
+                    <a href="${escapeHtml(v.url)}" target="_blank" rel="noopener noreferrer" class="p-1.5 rounded-lg bg-[#F4F3F1] hover:bg-[#E8E6E0] text-[#1C1B19]" title="Open on YouTube"><i data-lucide="external-link" class="w-3.5 h-3.5"></i></a>
+                    <button type="button" data-watch-del="${v.id}" class="p-1.5 rounded-lg hover:bg-red-50 text-[#6B6A66] hover:text-red-600" title="Remove"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    document.getElementById('watchAddForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const inp = document.getElementById('watchUrlInput');
+      const btn = document.getElementById('watchAddBtn');
+      const url = inp.value.trim();
+      const ytId = extractYouTubeId(url);
+      if (!ytId) { showToast('Paste a valid YouTube video URL.'); return; }
+      btn.disabled = true; btn.textContent = 'Fetching & sorting...';
+      try {
+        const info = await fetchFreeYouTubeDetails(url);
+        const cat = await autoCategorizeWatchVideo(info.title, info.channel, info.description);
+        if (!Array.isArray(state.watchQueue)) state.watchQueue = [];
+        state.watchQueue.unshift({
+          id: 'yt-' + Date.now(), ytId: info.ytId, url, title: info.title,
+          channel: info.channel, description: info.description, duration: info.duration,
+          thumbnail: info.thumbnail, category: cat, watched: false, createdAt: Date.now()
+        });
+        saveState();
+        inp.value = '';
+        renderWatchQueue();
+        showToast(`Added to ${(WATCH_CATS[cat] || WATCH_CATS.chill).label}!`);
+      } catch (err) {
+        showToast('Could not fetch video details.');
+      } finally {
+        btn.disabled = false; btn.innerHTML = '<i data-lucide="plus" class="w-3.5 h-3.5"></i> Add &amp; Auto-Sort';
+        lucide.createIcons();
+      }
+    });
+
+    document.getElementById('watchFilterPills').addEventListener('click', e => {
+      const b = e.target.closest('[data-watch-cat]');
+      if (b) { watchFilterCat = b.dataset.watchCat; renderWatchQueue(); }
+    });
+    document.getElementById('watchStatusFilter').addEventListener('change', e => {
+      watchFilterStatus = e.target.value; renderWatchQueue();
+    });
+    document.getElementById('watchGrid').addEventListener('click', e => {
+      const tog = e.target.closest('[data-watch-toggle]');
+      if (tog) {
+        const v = (state.watchQueue || []).find(x => x.id === tog.dataset.watchToggle);
+        if (v) { v.watched = !v.watched; saveState(); renderWatchQueue(); }
+        return;
+      }
+      const del = e.target.closest('[data-watch-del]');
+      if (del) {
+        state.watchQueue = (state.watchQueue || []).filter(x => x.id !== del.dataset.watchDel);
+        saveState(); renderWatchQueue(); showToast('Removed from Watch Queue.');
+        return;
+      }
+      const toNote = e.target.closest('[data-watch-to-note]');
+      if (toNote) {
+        const v = (state.watchQueue || []).find(x => x.id === toNote.dataset.watchToNote);
+        if (v) {
+          openSaveModal();
+          document.getElementById('saveUrlInput').value = v.url;
+          document.getElementById('saveCaptionInput').value = `${v.title} (${v.channel})\n${(v.description || '').slice(0, 600)}`;
+          showToast('Loaded into AI Extractor — tap Extract with AI!');
+        }
+      }
+    });
+
+    // Register Service Worker for true standalone Android/iOS PWA install
+    if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
 
     // Collection Modal
     document.getElementById('openNewCollectionBtn').addEventListener('click', () => { document.getElementById('newCollectionForm').reset(); document.getElementById('newCollectionModal').classList.remove('hidden'); });

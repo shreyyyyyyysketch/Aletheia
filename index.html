@@ -8,8 +8,8 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Aletheia" />
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231C1B19'/%3E%3Cpath d='M32 13L15 49h7.5l3.6-8h11.8l3.6 8H49L32 13zm0 11.8l4.1 9.7h-8.2L32 24.8z' fill='%23FAF9F6'/%3E%3Ccircle cx='32' cy='46' r='3.5' fill='%23FF5A36'/%3E%3C/svg%3E" />
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231C1B19'/%3E%3Cpath d='M32 13L15 49h7.5l3.6-8h11.8l3.6 8H49L32 13zm0 11.8l4.1 9.7h-8.2L32 24.8z' fill='%23FAF9F6'/%3E%3Ccircle cx='32' cy='46' r='3.5' fill='%23FF5A36'/%3E%3C/svg%3E" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
+  <link rel="apple-touch-icon" sizes="192x192" href="./icon-192.png" />
   <link rel="manifest" href="./manifest.json" />
   <title>Aletheia — Editorial Knowledge &amp; Life Vault</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -3244,7 +3244,50 @@ Video: ${text}`;
       document.getElementById(id).addEventListener('click', e => { if (e.target.id === id) document.getElementById(id).classList.add('hidden'); });
     });
 
-    updateAiStatusUI(); initFirebaseIfConfigured(); updateAuthUI(); switchView('home');
+    function handleIncomingWebShare() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const sUrl = (params.get('shared_url') || '').trim();
+        const sText = (params.get('shared_text') || '').trim();
+        const sTitle = (params.get('shared_title') || '').trim();
+        if (!sUrl && !sText && !sTitle) return;
+
+        // Clean query params immediately so refresh doesn't re-trigger
+        window.history.replaceState({}, '', window.location.pathname);
+
+        // Extract first URL from shared_url or shared_text (Instagram & YouTube often put links in text)
+        const combined = [sUrl, sText].filter(Boolean).join(' ');
+        const urlMatch = combined.match(/https?:\/\/[^\s]+/i);
+        const targetUrl = urlMatch ? urlMatch[0].replace(/[),.;]+$/, '') : '';
+        const extraNote = combined.replace(targetUrl, '').trim() || sTitle;
+
+        const isLongYouTube = targetUrl && !!extractYouTubeId(targetUrl) && !isYouTubeShortUrl(targetUrl);
+        if (isLongYouTube) {
+          switchView('watch');
+          const inp = document.getElementById('watchUrlInput');
+          inp.value = targetUrl;
+          showToast('📺 Shared YouTube video — adding to Watch Queue...');
+          setTimeout(() => document.getElementById('watchAddForm').requestSubmit(), 250);
+          return;
+        }
+
+        openSaveModal();
+        if (targetUrl) {
+          const uInp = document.getElementById('saveUrlInput');
+          uInp.value = targetUrl;
+          uInp.dispatchEvent(new Event('input'));
+        }
+        if (extraNote) document.getElementById('saveCaptionInput').value = extraNote;
+        if (getGeminiKey() && (targetUrl || extraNote)) {
+          showToast('✨ Received shared link — starting AI breakdown...');
+          setTimeout(() => analyzeAndMaybeSave(), 300);
+        } else {
+          showToast('Link loaded from Share — tap Extract or Queue (1s)!');
+        }
+      } catch (e) {}
+    }
+
+    updateAiStatusUI(); initFirebaseIfConfigured(); updateAuthUI(); switchView('home'); handleIncomingWebShare();
   </script>
 </body>
 </html>

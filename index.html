@@ -34,47 +34,148 @@
       --coral: #FF5A36;
       --coral-hover: #EB4D2A;
       --border-soft: #E8E6E0;
+      --header-bg: rgba(250, 249, 246, 0.94);
+      --glass-bg: rgba(255, 255, 255, 0.78);
+      --glass-border: rgba(28, 27, 25, 0.08);
+      --glass-active: rgba(28, 27, 25, 0.10);
+      --glass-shadow: 0 12px 32px -6px rgba(28, 27, 25, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+    html.dark {
+      --surface: #0E0E0D;
+      --surface-card: #181816;
+      --surface-low: #20201D;
+      --surface-container: #262623;
+      --ink: #F5F4F0;
+      --ink-muted: #9C9A93;
+      --border-soft: rgba(255, 255, 255, 0.08);
+      --header-bg: rgba(14, 14, 13, 0.88);
+      --glass-bg: rgba(24, 24, 22, 0.74);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --glass-active: rgba(255, 255, 255, 0.14);
+      --glass-shadow: 0 14px 36px -6px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.16);
     }
     body {
       font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background-color: var(--surface);
       color: var(--ink);
       -webkit-font-smoothing: antialiased;
+      transition: background-color 0.25s ease, color 0.25s ease;
     }
     .font-editorial { font-family: 'Newsreader', Georgia, 'Times New Roman', serif; }
+    .tabular-nums { font-variant-numeric: tabular-nums; }
+    .frosted-header {
+      background: var(--header-bg);
+      backdrop-filter: blur(22px) saturate(180%);
+      -webkit-backdrop-filter: blur(22px) saturate(180%);
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .liquid-glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(26px) saturate(190%);
+      -webkit-backdrop-filter: blur(26px) saturate(190%);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
+    }
+    .mobile-nav-tab { transition: background-color 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s ease, transform 0.15s ease; }
+    .mobile-nav-tab:active { transform: scale(0.92); }
+    .mobile-nav-active { background: var(--glass-active); color: var(--ink) !important; }
     .bento-card {
       background: var(--surface-card);
       border: 1px solid var(--border-soft);
       box-shadow: 0 1px 3px rgba(28, 27, 25, 0.03), 0 1px 2px rgba(28, 27, 25, 0.02);
-      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease, border-color 0.2s ease;
     }
     .bento-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 24px -4px rgba(28, 27, 25, 0.06), 0 4px 8px -2px rgba(28, 27, 25, 0.03);
-      border-color: #D3D0C7;
+      box-shadow: 0 10px 24px -4px rgba(28, 27, 25, 0.08), 0 4px 8px -2px rgba(28, 27, 25, 0.03);
+    }
+    .bento-card:active { transform: scale(0.98); }
+    .hero-ambient {
+      background:
+        radial-gradient(110% 85% at 92% 6%, rgba(255, 90, 54, 0.24) 0%, rgba(255, 90, 54, 0) 58%),
+        radial-gradient(80% 70% at 8% 100%, rgba(255, 175, 120, 0.10) 0%, rgba(28, 27, 25, 0) 60%),
+        #161614;
+      border: 1px solid rgba(255, 255, 255, 0.07);
     }
     .editorial-input:focus {
       outline: none;
       border-color: var(--coral);
-      box-shadow: 0 0 0 2px rgba(255, 90, 54, 0.16);
+      box-shadow: 0 0 0 2px rgba(255, 90, 54, 0.18);
     }
-    .nav-pill-active { background-color: #1C1B19; color: #FFFFFF; }
+    .nav-pill-active { background-color: var(--ink); color: var(--surface); }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    .drawer-slide { transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
-    @keyframes spinPop { 0% { transform: scale(0.96); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
-    .animate-pop { animation: spinPop 0.25s ease-out; }
+    .drawer-slide { transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1); }
+    @keyframes spinPop { 0% { transform: scale(0.96); opacity: 0.6; } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes cardRise { 0% { transform: translateY(10px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+    .animate-pop { animation: spinPop 0.26s cubic-bezier(0.22, 1, 0.36, 1); }
+    .card-enter { animation: cardRise 0.34s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .prog-blur-layer {
+      backdrop-filter: blur(22px) saturate(150%);
+      -webkit-backdrop-filter: blur(22px) saturate(150%);
+      mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.45) 36%, black 62%, black 100%);
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.45) 36%, black 62%, black 100%);
+    }
+    .prog-scrim-layer {
+      background: linear-gradient(to top, rgba(12, 12, 11, 0.90) 0%, rgba(12, 12, 11, 0.62) 52%, rgba(12, 12, 11, 0.14) 78%, transparent 100%);
+    }
     .coral-check:checked { accent-color: #FF5A36; }
+    #splashOverlay { transition: opacity 0.42s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.42s; }
+    #splashOverlay.splash-gone { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    /* Comprehensive Obsidian Dark Mode utility overrides */
+    html.dark .bg-white:not(.prog-pill-white) { background-color: #181816 !important; }
+    html.dark .bg-\[\#FAF9F6\] { background-color: #121210 !important; }
+    html.dark .bg-\[\#F4F3F1\] { background-color: #20201D !important; }
+    html.dark .bg-\[\#EFEEEB\] { background-color: #252522 !important; }
+    html.dark .bg-\[\#FFF8F6\], html.dark .bg-\[\#FFF0EB\] { background-color: rgba(255, 90, 54, 0.11) !important; }
+    html.dark .text-\[\#1C1B19\], html.dark .text-\[\#2B2B28\], html.dark .text-\[\#484644\] { color: #F5F4F0 !important; }
+    html.dark .text-\[\#6B6A66\], html.dark .text-\[\#9A9892\] { color: #9C9A93 !important; }
+    html.dark .border-\[\#E8E6E0\], html.dark .border-\[\#D3D0C7\], html.dark .border-\[\#F4F3F1\] { border-color: rgba(255, 255, 255, 0.09) !important; }
+    html.dark .border-\[\#F5DDD5\] { border-color: rgba(255, 90, 54, 0.28) !important; }
+    html.dark .hover\:bg-\[\#EFEEEB\]:hover { background-color: #2C2C28 !important; }
+    html.dark .hover\:bg-\[\#FAF9F6\]:hover { background-color: #20201D !important; }
+    html.dark .bg-\[\#1C1B19\]:not(.hero-ambient) { background-color: #F5F4F0 !important; color: #121210 !important; }
+    html.dark .bg-\[\#1C1B19\]:not(.hero-ambient) svg { color: #121210 !important; }
+    html.dark #aiProgressPanel { background-color: #1F1F1C !important; color: #F5F4F0 !important; border: 1px solid rgba(255,255,255,0.1); }
+    html.dark .obsidian-note pre { background-color: #0B0B0A !important; border-color: rgba(255,255,255,0.12) !important; }
+    html.dark .obsidian-note .bg-white { background-color: #121210 !important; }
+
+    /* Pure Monochrome Silver / Platinum accents in Dark Mode (zero orange/AI glow) */
+    html.dark { --coral: #F5F4F0; --coral-hover: #E0DED6; }
+    html.dark .hero-ambient {
+      background:
+        radial-gradient(120% 70% at 50% 0%, rgba(255, 255, 255, 0.075) 0%, rgba(255, 255, 255, 0) 62%),
+        #141413 !important;
+      border: 1px solid rgba(255, 255, 255, 0.09) !important;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 12px 30px -8px rgba(0, 0, 0, 0.6) !important;
+    }
+    html.dark .bg-\[\#FF5A36\] { background-color: #F5F4F0 !important; color: #121210 !important; }
+    html.dark .bg-\[\#FF5A36\] svg { color: #121210 !important; }
+    html.dark .hover\:bg-\[\#EB4D2A\]:hover { background-color: #E0DED6 !important; color: #121210 !important; }
+    html.dark .text-\[\#FF5A36\], html.dark .text-\[\#FF7A5C\], html.dark .text-\[\#FF8A6E\], html.dark .text-\[\#B33D14\] { color: #E8E6DF !important; }
+    html.dark .bg-\[\#FFF8F6\], html.dark .bg-\[\#FFF0EB\] { background-color: rgba(255, 255, 255, 0.05) !important; }
+    html.dark .border-\[\#F5DDD5\], html.dark .border-l-\[\#FF5A36\] { border-color: rgba(255, 255, 255, 0.18) !important; }
+    html.dark .ring-\[\#FF5A36\] { --tw-ring-color: rgba(245, 244, 240, 0.75) !important; }
+    html.dark .editorial-input:focus { border-color: rgba(245, 244, 240, 0.55) !important; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.10) !important; }
+    html.dark #heroDuePill { background-color: rgba(255, 255, 255, 0.12) !important; color: #F5F4F0 !important; }
+    html.dark .coral-check:checked { accent-color: #F5F4F0; }
   </style>
 </head>
-<body class="min-h-screen flex flex-col pb-20 md:pb-10">
+<body class="min-h-screen flex flex-col pb-28 md:pb-10">
+  <!-- Editorial Launch Splash (0.45s) -->
+  <div id="splashOverlay" class="fixed inset-0 z-[100] bg-[var(--surface)] flex flex-col items-center justify-center gap-2">
+    <div class="font-editorial text-4xl font-medium tracking-tight text-[var(--ink)] flex items-center gap-1.5">
+      <span>Aletheia</span><span class="w-2 h-2 rounded-full bg-[#FF5A36] animate-pulse mt-3"></span>
+    </div>
+  </div>
 
   <!-- ==================== TOP NAVIGATION ==================== -->
-  <header class="sticky top-0 z-30 bg-[#FAF9F6]/92 backdrop-blur-md border-b border-[#E8E6E0]">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
-      <button id="brandHomeBtn" type="button" class="flex items-baseline gap-1.5 group focus:outline-none">
-        <span class="font-editorial text-[26px] font-semibold tracking-tight text-[#1C1B19]">Aletheia</span>
-        <span class="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-[#EFEEEB] text-[#6B6A66]">VAULT</span>
+  <header class="sticky top-0 z-30 frosted-header">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-15 py-2.5 flex items-center justify-between gap-3">
+      <button id="brandHomeBtn" type="button" class="flex items-baseline gap-1 group focus:outline-none active:scale-95 transition-transform">
+        <span class="font-editorial text-[27px] font-semibold tracking-tight text-[#1C1B19] leading-none">Aletheia</span>
+        <span class="w-1.5 h-1.5 rounded-full bg-[#FF5A36] mb-0.5"></span>
       </button>
 
       <nav class="hidden md:flex items-center bg-[#EFEEEB] p-1 rounded-full gap-0.5" aria-label="Primary navigation">
@@ -99,7 +200,10 @@
           <span id="aiStatusDot" class="w-2 h-2 rounded-full bg-amber-400"></span>
           <span id="aiStatusText" class="hidden lg:inline">AI Keys</span>
         </button>
-        <button id="openQuickSearchBtn" type="button" class="w-9 h-9 md:w-auto md:px-3 md:py-1.5 rounded-full bg-white border border-[#E8E6E0] hover:border-[#1C1B19] text-xs font-semibold text-[#1C1B19] flex items-center justify-center gap-1.5 transition-colors" title="Quick Search (⌘K)" aria-label="Search vault">
+        <button id="themeToggleBtn" type="button" class="w-9 h-9 rounded-full bg-white border border-[#E8E6E0] hover:border-[#1C1B19] text-[#1C1B19] flex items-center justify-center transition-all active:scale-90" title="Toggle Dark / Light Mode" aria-label="Toggle theme">
+          <i id="themeToggleIcon" data-lucide="moon" class="w-3.5 h-3.5"></i>
+        </button>
+        <button id="openQuickSearchBtn" type="button" class="hidden md:flex px-3 py-1.5 rounded-full bg-white border border-[#E8E6E0] hover:border-[#1C1B19] text-xs font-semibold text-[#1C1B19] items-center justify-center gap-1.5 transition-colors" title="Quick Search (⌘K)" aria-label="Search vault">
           <i data-lucide="search" class="w-3.5 h-3.5 text-[#1C1B19]"></i>
           <span class="hidden lg:inline text-[#6B6A66]">Search</span>
         </button>
@@ -123,37 +227,40 @@
     <!-- ==================== VIEW 1: HOME ==================== -->
     <section id="view-home" class="view-section space-y-6">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        <!-- Dark Knowledge Engine Card -->
-        <div class="lg:col-span-5 bg-[#1C1B19] text-[#FAF9F6] rounded-3xl p-6 flex flex-col justify-between relative overflow-hidden shadow-sm">
+        <!-- Ambient Editorial Hero Card -->
+        <div class="lg:col-span-5 hero-ambient text-[#FAF9F6] rounded-3xl p-5 sm:p-6 flex flex-col justify-between relative overflow-hidden shadow-md">
           <div class="flex items-center justify-between gap-2">
-            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-white/10 text-neutral-300">
+            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-white/10 text-neutral-200 backdrop-blur-sm">
               <span class="w-1.5 h-1.5 rounded-full bg-[#FF5A36]"></span>
               <span id="tasteProfileOwner">Knowledge Vault</span>
             </span>
-            <button id="clearAllBtn" type="button" class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 text-neutral-300 transition-colors">
-              Clear all
-            </button>
+            <div class="flex items-center gap-1.5">
+              <span id="heroDuePill" class="hidden text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#FF5A36]/20 text-[#FF8A6E]">0 due</span>
+              <button id="clearAllBtn" type="button" class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 text-neutral-300 transition-colors">
+                Clear all
+              </button>
+            </div>
           </div>
 
-          <div class="mt-4">
-            <h1 class="font-editorial text-3xl sm:text-[34px] font-medium leading-tight tracking-tight text-white">Learn, build &amp; unwind.</h1>
+          <div class="mt-3.5">
+            <h1 id="heroGreetingTitle" class="font-editorial text-[28px] sm:text-[34px] font-medium leading-tight tracking-tight text-white">Learn, build &amp; unwind.</h1>
             <p class="text-xs text-neutral-400 mt-1">Turn Reels &amp; links into Obsidian notes, project specs, and fun picks.</p>
           </div>
 
-          <div class="mt-6 space-y-2.5">
+          <div class="mt-5 space-y-2">
             <div class="flex items-baseline justify-between">
               <div class="flex items-baseline gap-2">
-                <span id="completionPct" class="font-editorial text-4xl font-normal text-white leading-none">0%</span>
+                <span id="completionPct" class="font-editorial text-3xl sm:text-4xl font-normal text-white leading-none tabular-nums">0%</span>
                 <span class="text-xs text-neutral-400">Reviewed</span>
               </div>
-              <span id="completionLabel" class="text-[11px] text-neutral-400">0 of 0 completed</span>
+              <span id="completionLabel" class="text-[11px] text-neutral-400 tabular-nums">0 of 0 reviewed</span>
             </div>
             <div class="h-1.5 rounded-full bg-white/15 overflow-hidden">
-              <div id="completionBar" class="h-full bg-[#FF5A36] rounded-full transition-all duration-300" style="width: 0%"></div>
+              <div id="completionBar" class="h-full bg-[#FF5A36] rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
             </div>
             <div class="flex items-center justify-between pt-1 text-[11px]">
               <button id="showUncompletedLink" type="button" class="font-semibold text-[#FF7A5C] hover:underline">Show unreviewed (0) →</button>
-              <span id="libraryMetaStatus" class="text-neutral-500">Synced locally</span>
+              <span id="libraryMetaStatus" class="text-neutral-400">Synced locally</span>
             </div>
           </div>
         </div>
@@ -162,25 +269,25 @@
         <div id="tasteBentoCounts" class="lg:col-span-7 grid grid-cols-2 gap-3.5"></div>
       </div>
 
-      <!-- Search & Filter Bar -->
-      <div class="space-y-3">
-        <div class="flex flex-col md:flex-row gap-2.5">
-          <div class="relative flex-1">
+      <!-- Search (Desktop) & Single-Row Scrollable Filter Strip -->
+      <div class="space-y-2.5">
+        <div class="flex flex-col md:flex-row gap-2">
+          <div class="hidden md:block relative flex-1">
             <i data-lucide="search" class="w-4 h-4 text-[#6B6A66] absolute left-3.5 top-1/2 -translate-y-1/2"></i>
             <input id="searchInput" type="text" placeholder="Search notes, tools, #tags, concepts, or fun saves..." class="editorial-input w-full pl-10 pr-14 py-2.5 rounded-xl bg-white border border-[#E8E6E0] text-sm" />
             <span class="hidden sm:inline-block absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#F4F3F1] text-[#6B6A66] border border-[#E8E6E0]">⌘K</span>
           </div>
-          <div class="flex gap-2 flex-wrap sm:flex-nowrap">
-            <select id="topicFilter" aria-label="Filter by topic tag" class="editorial-input px-3 py-2 rounded-xl bg-white border border-[#E8E6E0] text-xs font-semibold text-[#1C1B19]">
+          <div class="flex gap-2 flex-nowrap overflow-x-auto no-scrollbar pb-0.5">
+            <select id="topicFilter" aria-label="Filter by topic tag" class="shrink-0 editorial-input px-3 py-1.5 rounded-full bg-white border border-[#E8E6E0] text-xs font-semibold text-[#1C1B19]">
               <option value="all"># All Topics</option>
             </select>
-            <select id="difficultyFilter" aria-label="Filter by difficulty" class="editorial-input px-3 py-2 rounded-xl bg-white border border-[#E8E6E0] text-xs font-semibold text-[#1C1B19]">
+            <select id="difficultyFilter" aria-label="Filter by difficulty" class="shrink-0 editorial-input px-3 py-1.5 rounded-full bg-white border border-[#E8E6E0] text-xs font-semibold text-[#1C1B19]">
               <option value="all">Level: All</option>
               <option value="Beginner">Beginner</option>
               <option value="Intermediate">Intermediate</option>
               <option value="Advanced">Advanced</option>
             </select>
-            <select id="statusFilter" aria-label="Filter by status" class="editorial-input px-3 py-2 rounded-xl bg-white border border-[#E8E6E0] text-xs font-semibold text-[#1C1B19]">
+            <select id="statusFilter" aria-label="Filter by status" class="shrink-0 editorial-input px-3 py-1.5 rounded-full bg-white border border-[#E8E6E0] text-xs font-semibold text-[#1C1B19]">
               <option value="all">Status: All</option>
               <option value="todo">Unreviewed</option>
               <option value="done">Reviewed</option>
@@ -359,21 +466,30 @@
     <span>Press <kbd class="px-1.5 py-0.5 rounded bg-[#EFEEEB] text-[#1C1B19] font-semibold">⌘K</kbd> to search</span>
   </footer>
 
-  <!-- Mobile Bottom Nav -->
-  <nav class="md:hidden fixed bottom-0 inset-x-0 z-30 bg-[#FAF9F6]/95 backdrop-blur border-t border-[#E8E6E0] px-2 py-1.5 flex justify-around" aria-label="Mobile navigation">
-    <button data-view="home" type="button" class="mobile-nav-tab flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl text-[11px] font-semibold">
-      <i data-lucide="layout-grid" class="w-5 h-5"></i> Home
+  <!-- Floating Liquid-Glass Mobile Bottom Dock -->
+  <div id="mobileLiquidDock" class="md:hidden fixed bottom-3.5 inset-x-3 z-30 flex items-center justify-center gap-2.5 pointer-events-none">
+    <nav class="pointer-events-auto liquid-glass rounded-full p-1.5 flex items-center gap-1 flex-1 max-w-[310px] justify-between" aria-label="Mobile navigation">
+      <button data-view="home" type="button" class="mobile-nav-tab flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 px-2 rounded-full text-[10px] font-semibold text-[#6B6A66]">
+        <i data-lucide="layout-grid" class="w-[18px] h-[18px]"></i>
+        <span>Home</span>
+      </button>
+      <button data-view="watch" type="button" class="mobile-nav-tab flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 px-2 rounded-full text-[10px] font-semibold text-[#6B6A66]">
+        <i data-lucide="play-square" class="w-[18px] h-[18px]"></i>
+        <span>Watch</span>
+      </button>
+      <button data-view="collections" type="button" class="mobile-nav-tab flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 px-2 rounded-full text-[10px] font-semibold text-[#6B6A66]">
+        <i data-lucide="folder-heart" class="w-[18px] h-[18px]"></i>
+        <span>Vault</span>
+      </button>
+      <button data-view="decide" type="button" class="mobile-nav-tab flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 px-2 rounded-full text-[10px] font-semibold text-[#6B6A66]">
+        <i data-lucide="sparkles" class="w-[18px] h-[18px]"></i>
+        <span>Study</span>
+      </button>
+    </nav>
+    <button id="mobileFloatingSearchBtn" type="button" class="pointer-events-auto liquid-glass w-[54px] h-[54px] rounded-full flex items-center justify-center text-[#1C1B19] active:scale-90 transition-transform shrink-0" aria-label="Search vault">
+      <i data-lucide="search" class="w-5 h-5"></i>
     </button>
-    <button data-view="watch" type="button" class="mobile-nav-tab flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl text-[11px] font-semibold">
-      <i data-lucide="play-square" class="w-5 h-5"></i> Watch
-    </button>
-    <button data-view="collections" type="button" class="mobile-nav-tab flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl text-[11px] font-semibold">
-      <i data-lucide="folder-heart" class="w-5 h-5"></i> Collections
-    </button>
-    <button data-view="decide" type="button" class="mobile-nav-tab flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl text-[11px] font-semibold">
-      <i data-lucide="sparkles" class="w-5 h-5"></i> Study
-    </button>
-  </nav>
+  </div>
 
   <!-- ==================== MODAL: ADD TO ALETHEIA WITH AI ==================== -->
   <div id="saveModal" class="hidden fixed inset-0 z-50 bg-[#1C1B19]/45 backdrop-blur-sm flex items-center justify-center p-4">
@@ -388,7 +504,7 @@
               <h3 class="font-editorial text-2xl font-medium text-[#1C1B19] leading-none">Add to Aletheia with AI</h3>
               <span id="modalAiModeBadge" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FFF0EB] text-[#B33D14]">Smart Local AI</span>
             </div>
-            <p class="text-xs text-[#6B6A66] mt-1">Paste an Instagram Reel, YouTube Short, academic site (arXiv, Wikipedia, docs, PubMed), or drop a PDF/clip.</p>
+            <p class="text-xs text-[#6B6A66] mt-1">Paste an Instagram Reel/Post, YouTube Short, academic site (arXiv, Wikipedia, docs, PubMed), or drop a PDF/clip.</p>
           </div>
         </div>
         <button id="closeSaveModalBtn" type="button" class="p-1.5 rounded-full hover:bg-[#EFEEEB] text-[#6B6A66]" aria-label="Close save modal">
@@ -517,8 +633,10 @@
   </div>
 
   <!-- ==================== SLIDE-OVER DRAWER: ITEM DETAIL ==================== -->
-  <div id="detailModal" class="hidden fixed inset-0 z-50 bg-[#1C1B19]/40 backdrop-blur-[2px] flex justify-end">
-    <div id="detailDrawerPanel" class="drawer-slide bg-white w-full max-w-xl h-full overflow-y-auto shadow-2xl border-l border-[#E8E6E0] flex flex-col">
+  <div id="detailModal" class="hidden fixed inset-0 z-50 bg-black/45 backdrop-blur-[3px] flex items-end sm:items-stretch sm:justify-end">
+    <div id="detailDrawerPanel" class="drawer-slide bg-white w-full max-w-xl h-[93vh] sm:h-full rounded-t-3xl sm:rounded-none overflow-y-auto shadow-2xl border-t sm:border-t-0 sm:border-l border-[#E8E6E0] flex flex-col relative">
+      <div class="sticky top-0 z-20 h-[2.5px] w-full bg-transparent shrink-0"><div id="drawerReadProgress" class="h-full bg-[#FF5A36] transition-all duration-100" style="width:0%"></div></div>
+      <div class="sm:hidden w-10 h-1 rounded-full bg-[#D3D0C7] mx-auto mt-2 shrink-0"></div>
       <div id="detailModalContent" class="flex-1 flex flex-col"></div>
     </div>
   </div>
@@ -782,8 +900,8 @@
     </div>
   </div>
 
-  <!-- Toast -->
-  <div id="toast" class="fixed bottom-20 md:bottom-6 right-4 z-50 hidden bg-[#1C1B19] text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg">
+  <!-- Dynamic-Island Floating Top Toast -->
+  <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 z-[90] hidden liquid-glass text-[#1C1B19] text-xs font-semibold px-4 py-2.5 rounded-full shadow-xl max-w-[90vw] text-center animate-pop">
     <span id="toastMsg"></span>
   </div>
 
@@ -1078,8 +1196,8 @@
         else { btn.classList.remove('nav-pill-active'); btn.classList.add('text-[#6B6A66]', 'hover:text-[#1C1B19]'); }
       });
       document.querySelectorAll('.mobile-nav-tab').forEach(btn => {
-        if (btn.dataset.view === view) { btn.classList.add('text-[#1C1B19]', 'bg-[#EFEEEB]'); btn.classList.remove('text-[#6B6A66]'); }
-        else { btn.classList.remove('text-[#1C1B19]', 'bg-[#EFEEEB]'); btn.classList.add('text-[#6B6A66]'); }
+        if (btn.dataset.view === view) { btn.classList.add('mobile-nav-active'); btn.classList.remove('text-[#6B6A66]'); }
+        else { btn.classList.remove('mobile-nav-active'); btn.classList.add('text-[#6B6A66]'); }
       });
 
       document.getElementById('navHomeCount').textContent = state.items.length;
@@ -1113,22 +1231,22 @@
         const todo = items.filter(i => !i.done).length;
         const active = filters.category === k ? 'ring-2 ring-[#FF5A36]' : '';
         return `
-          <button type="button" data-bento-cat="${k}" class="bento-cat-btn bento-card rounded-2xl p-4 sm:p-5 text-left flex flex-col justify-between ${active}">
-            <div class="flex items-center justify-between gap-2 w-full">
-              <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-[#1C1B19]">
+          <button type="button" data-bento-cat="${k}" class="bento-cat-btn bento-card rounded-2xl p-3 sm:p-4 text-left flex flex-col justify-between ${active}">
+            <div class="flex items-center justify-between gap-1.5 w-full">
+              <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-[#1C1B19] min-w-0">
                 <span class="w-6 h-6 rounded-lg bg-[#F4F3F1] border border-[#E8E6E0] flex items-center justify-center shrink-0">
                   <i data-lucide="${cat.icon}" class="w-3.5 h-3.5 ${filters.category === k ? 'text-[#FF5A36]' : 'text-[#1C1B19]'}"></i>
                 </span>
                 <span class="truncate">${cat.short}</span>
               </span>
-              <span class="text-[11px] text-[#6B6A66] font-medium">${items.length}</span>
+              <span class="text-[11px] text-[#6B6A66] font-medium tabular-nums">${items.length}</span>
             </div>
-            <div class="mt-3.5">
+            <div class="mt-2 sm:mt-3">
               <div class="flex items-baseline gap-1.5">
-                <span class="font-editorial text-2xl sm:text-3xl font-medium text-[#1C1B19]">${todo}</span>
-                <span class="text-xs text-[#6B6A66]">to review</span>
+                <span class="font-editorial text-2xl sm:text-3xl font-medium text-[#1C1B19] tabular-nums leading-none">${todo}</span>
+                <span class="text-[11px] text-[#6B6A66]">to review</span>
               </div>
-              <p class="text-[11px] text-[#6B6A66] mt-1 truncate">${cat.desc}</p>
+              <p class="hidden sm:block text-[11px] text-[#6B6A66] mt-1 truncate">${cat.desc}</p>
             </div>
           </button>
         `;
@@ -1191,40 +1309,75 @@
       if (filtered.length === 0 && hasFilters) {
         grid.innerHTML = `<div class="col-span-full bento-card rounded-3xl p-10 text-center space-y-2"><p class="font-editorial text-2xl font-medium">No saves match those filters</p><p class="text-xs text-[#6B6A66]">Try resetting your topic or category filter.</p></div>`;
       } else {
-        grid.innerHTML = filtered.map(item => renderItemCard(item)).join('') + dropTileHtml;
+        grid.innerHTML = filtered.map((item, idx) => renderItemCard(item, idx)).join('') + dropTileHtml;
       }
       lucide.createIcons();
     }
 
-    function renderItemCard(item) {
+    function renderItemCard(item, idx) {
       const normCat = normalizeCategory(item.category);
       const cat = CATEGORIES[normCat];
       const tags = (item.tags || []).slice(0, 3);
       const fcCount = (item.flashcards || []).length;
+      const delay = Math.min((idx || 0) * 35, 280);
 
-      const coverHtml = item.image
-        ? `<img src="${item.image}" alt="${escapeHtml(item.title)}" class="w-full h-44 object-cover" />`
-        : `<div class="w-full h-32 flex flex-col items-center justify-center p-4" style="background:${cat.pillBg};color:${cat.pillText};">
-            <i data-lucide="${cat.icon}" class="w-7 h-7 mb-1 opacity-80"></i>
-            <span class="text-[10px] font-bold uppercase tracking-wider opacity-75">${cat.label}</span>
-           </div>`;
+      // Full-bleed Progressive-Blur Glass Card when cover image is present
+      if (item.image) {
+        const metaParts = [
+          cat.singular,
+          item.difficulty || (tags[0] ? '#' + tags[0].replace(/^#/, '') : ''),
+          item.scheduledDate ? `📅 ${item.scheduledDate}` : (fcCount ? `${fcCount} cards` : '')
+        ].filter(Boolean);
 
-      return `
-        <article class="bento-card rounded-3xl overflow-hidden flex flex-col cursor-pointer group ${item.done ? 'opacity-80' : ''}" data-open-detail="${item.id}">
-          <div class="relative overflow-hidden">
-            ${coverHtml}
-            <div class="absolute top-3 left-3 flex items-center gap-1.5">
-              <span class="px-2.5 py-1 rounded-full bg-white/95 text-[#1C1B19] text-[10px] font-bold shadow-sm flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-[#FF5A36]"></span>
-                ${escapeHtml(item.source || 'Saved')}
-              </span>
-              ${item.queued ? `<span class="px-2 py-1 rounded-full bg-[#1C1B19] text-white text-[10px] font-bold shadow-sm">⏳ Queued</span>` : (item.aiAnalyzed ? `<span class="px-2 py-1 rounded-full bg-[#FF5A36] text-white text-[10px] font-bold shadow-sm">✨ AI</span>` : '')}
-            </div>
-            <button type="button" data-toggle-done="${item.id}" class="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-sm transition-colors ${item.done ? 'bg-[#1E5E3A] text-white' : 'bg-white/95 text-[#1C1B19] hover:bg-[#1C1B19] hover:text-white'}" title="${item.done ? 'Reviewed' : 'Mark reviewed'}">
+        return `
+          <article class="card-enter relative rounded-[26px] overflow-hidden min-h-[340px] flex flex-col justify-end cursor-pointer group border border-black/10 dark:border-white/10 shadow-md transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${item.done ? 'opacity-80' : ''}" style="animation-delay:${delay}ms" data-open-detail="${item.id}">
+            <img src="${item.image}" alt="${escapeHtml(item.title)}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
+            <div class="prog-blur-layer absolute inset-x-0 bottom-0 h-[62%] pointer-events-none"></div>
+            <div class="prog-scrim-layer absolute inset-0 pointer-events-none"></div>
+
+            <button type="button" data-toggle-done="${item.id}" class="absolute top-3.5 right-3.5 z-10 w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-md transition-all active:scale-90 ${item.done ? 'bg-[#1E5E3A] text-white' : 'bg-black/35 text-white border border-white/20 hover:bg-black/60'}" title="${item.done ? 'Reviewed' : 'Mark reviewed'}">
               <i data-lucide="check" class="w-4 h-4"></i>
             </button>
+
+            <div class="relative z-10 p-4 sm:p-5 space-y-2.5 text-white">
+              <div class="space-y-1">
+                <h3 class="font-editorial text-[22px] font-medium leading-snug text-white drop-shadow-sm ${item.done ? 'line-through opacity-75' : ''}">${escapeHtml(item.title)}</h3>
+                ${item.notes ? `<p class="text-[11.5px] text-white/75 leading-relaxed line-clamp-2">${escapeHtml(item.notes)}</p>` : ''}
+              </div>
+
+              <div class="flex items-center gap-2 text-[11px] text-white/80 font-medium flex-wrap pt-0.5">
+                ${metaParts.map((m, i) => `${i > 0 ? '<span class="text-white/30">|</span>' : ''}<span>${escapeHtml(m)}</span>`).join('')}
+              </div>
+
+              <div class="flex items-center gap-2 pt-1">
+                <span class="px-3.5 py-2 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-[11px] font-semibold text-white truncate max-w-[46%]">
+                  ${escapeHtml(item.queued ? '⏳ Queued' : (item.source || 'Saved'))}
+                </span>
+                ${item.queued
+                  ? `<button type="button" data-process-queued="${item.id}" class="prog-pill-white flex-1 py-2 px-4 rounded-full bg-white text-[#121210] text-xs font-bold text-center shadow-sm hover:bg-neutral-100 transition-colors">Analyze Now</button>`
+                  : `<span class="prog-pill-white flex-1 py-2 px-4 rounded-full bg-white text-[#121210] text-xs font-bold text-center shadow-sm group-hover:bg-neutral-100 transition-colors">${item.done ? '✓ Reviewed' : 'Open Note'}</span>`}
+              </div>
+            </div>
+          </article>
+        `;
+      }
+
+      // Clean Typographic Editorial Index Card when no cover image
+      return `
+        <article class="card-enter bento-card rounded-[26px] overflow-hidden flex flex-col cursor-pointer group ${item.done ? 'opacity-75' : ''}" style="animation-delay:${delay}ms" data-open-detail="${item.id}">
+          <div class="px-4 pt-4 pb-0 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-1.5">
+              <span class="px-2.5 py-0.5 rounded-full bg-[#F4F3F1] border border-[#E8E6E0] text-[#1C1B19] text-[10px] font-semibold flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#FF5A36]"></span>
+                ${escapeHtml(item.source || 'Note')}
+              </span>
+              ${item.queued ? `<span class="px-2 py-0.5 rounded-full bg-[#FF5A36] text-white text-[10px] font-bold">⏳ Queued</span>` : ''}
+            </div>
+            <button type="button" data-toggle-done="${item.id}" class="w-7 h-7 rounded-full flex items-center justify-center transition-all active:scale-90 ${item.done ? 'bg-[#1E5E3A] text-white' : 'bg-[#F4F3F1] text-[#1C1B19] border border-[#E8E6E0]'}" title="${item.done ? 'Reviewed' : 'Mark reviewed'}">
+              <i data-lucide="check" class="w-3.5 h-3.5"></i>
+            </button>
           </div>
-          <div class="p-5 flex-1 flex flex-col justify-between gap-3">
+          <div class="p-4 sm:p-5 flex-1 flex flex-col justify-between gap-3">
             <div class="space-y-1.5">
               <div class="flex items-center justify-between gap-2 text-[11px] text-[#6B6A66]">
                 <span class="font-semibold px-2 py-0.5 rounded-full" style="background:${cat.pillBg};color:${cat.pillText};">${cat.singular}</span>
@@ -1644,7 +1797,12 @@
         </div>
 
         <div class="p-6 space-y-5 flex-1">
-          ${item.image ? `<img src="${item.image}" alt="${escapeHtml(item.title)}" class="w-full h-52 object-cover rounded-2xl border border-[#E8E6E0]" />` : ''}
+          ${item.image ? `
+            <div class="relative group">
+              <img src="${item.image}" alt="${escapeHtml(item.title)}" class="w-full h-52 object-cover rounded-2xl border border-[#E8E6E0]" />
+              <button type="button" data-hide-cover="${item.id}" class="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-white text-[10px] font-semibold border border-white/15 hover:bg-black/80">Hide cover</button>
+            </div>
+          ` : ''}
           ${(() => {
             const ytId = extractYouTubeId(item.url || '');
             if (!ytId) return '';
@@ -1779,8 +1937,13 @@
       return /youtube\.com\/shorts\//i.test(url || '');
     }
 
+    function isInstagramPostUrl(url) {
+      return /instagram\.com\/p\//i.test(url || '');
+    }
+
     function detectPlatform(url) {
       const l = (url || '').toLowerCase();
+      if (isInstagramPostUrl(url)) return 'Instagram Post';
       if (l.includes('instagram.com')) return 'Instagram Reel';
       if (isYouTubeShortUrl(url)) return 'YouTube Shorts';
       if (l.includes('tiktok.com')) return 'TikTok';
@@ -1848,17 +2011,25 @@
 
     async function fetchSupadataReelInfo(url, supadataKey, onStep) {
       const headers = { 'x-api-key': supadataKey };
-      let caption = '', author = '', thumbnail = '', transcript = '', supadataErr = '';
-      if (!isSupadataSaverOn()) {
+      const isIgPost = isInstagramPostUrl(url);
+      let caption = '', author = '', thumbnail = '', transcript = '', supadataErr = '', mediaType = '';
+      if (isIgPost || !isSupadataSaverOn()) {
         try {
+          if (isIgPost && onStep) onStep('Reading Instagram Post caption & metadata...');
           const mr = await fetch('https://api.supadata.ai/v1/metadata?url=' + encodeURIComponent(url), { headers });
           if (mr.ok) {
             const m = await mr.json();
             caption = m.description || m.title || '';
             author = (m.author && (m.author.displayName || m.author.username)) || '';
             thumbnail = (m.media && m.media.thumbnailUrl) || m.thumbnail || '';
+            mediaType = (m.type || (m.media && m.media.type) || '').toLowerCase();
           }
         } catch (e) {}
+      }
+
+      // Skip audio transcription for Instagram photo/carousel posts (saves credits!)
+      if (isIgPost && mediaType && mediaType !== 'video') {
+        return { caption, author, thumbnail, transcript: '', supadataErr: '' };
       }
 
       try {
@@ -1929,20 +2100,26 @@
         const frames = [];
         video.onloadedmetadata = () => {
           const dur = isFinite(video.duration) && video.duration > 0 ? video.duration : 1;
-          const times = dur > 2 ? [0.2, dur * 0.45, dur * 0.8] : [0.1];
+          const times = dur > 2 ? [dur * 0.45, Math.min(1.5, dur * 0.25), dur * 0.78] : [Math.min(0.5, dur * 0.5)];
           let idx = 0;
+          const scored = [];
           const capture = () => {
             try {
               const c = document.createElement('canvas');
               const sc = Math.min(1, 640 / (video.videoWidth || 640));
               c.width = Math.max(160, Math.round((video.videoWidth || 640) * sc));
               c.height = Math.max(120, Math.round((video.videoHeight || 360) * sc));
-              c.getContext('2d').drawImage(video, 0, 0, c.width, c.height);
-              frames.push(c.toDataURL('image/jpeg', 0.78));
+              const ctx = c.getContext('2d');
+              ctx.drawImage(video, 0, 0, c.width, c.height);
+              const px = ctx.getImageData(0, 0, c.width, c.height).data;
+              let sum = 0;
+              for (let p = 0; p < px.length; p += 64) sum += (px[p] + px[p+1] + px[p+2]) / 3;
+              const avg = sum / Math.max(1, px.length / 64);
+              scored.push({ dataUrl: c.toDataURL('image/jpeg', 0.78), avg });
             } catch (e) {}
             idx++;
             if (idx < times.length) video.currentTime = Math.min(dur - 0.05, times[idx]);
-            else { URL.revokeObjectURL(objectUrl); resolve(frames); }
+            else { URL.revokeObjectURL(objectUrl); scored.sort((a, b) => b.avg - a.avg); const nonBlack = scored.filter(s => s.avg > 16).map(s => s.dataUrl); resolve(nonBlack.length ? nonBlack : scored.map(s => s.dataUrl)); }
           };
           video.onseeked = capture;
           video.currentTime = Math.min(dur - 0.05, times[0]);
@@ -3287,7 +3464,81 @@ Video: ${text}`;
       } catch (e) {}
     }
 
-    updateAiStatusUI(); initFirebaseIfConfigured(); updateAuthUI(); switchView('home'); handleIncomingWebShare();
+    // ==================== THEME, HAPTICS, GREETING & POLISH ====================
+    const THEME_STORAGE = 'aletheia_theme_v1';
+    function triggerHaptic(ms) { try { if (navigator.vibrate) navigator.vibrate(ms || 8); } catch (e) {} }
+
+    function applyTheme(mode) {
+      const isDark = mode === 'dark';
+      document.documentElement.classList.toggle('dark', isDark);
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', isDark ? '#0E0E0D' : '#FAF9F6');
+      const ic = document.getElementById('themeToggleIcon');
+      if (ic) { ic.setAttribute('data-lucide', isDark ? 'sun' : 'moon'); lucide.createIcons(); }
+      try { localStorage.setItem(THEME_STORAGE, mode); } catch (e) {}
+    }
+    const savedTheme = (() => { try { return localStorage.getItem(THEME_STORAGE); } catch (e) { return null; } })();
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+
+    document.getElementById('themeToggleBtn').addEventListener('click', () => {
+      triggerHaptic(10);
+      applyTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark');
+    });
+
+    const mobSearchBtn = document.getElementById('mobileFloatingSearchBtn');
+    if (mobSearchBtn) mobSearchBtn.addEventListener('click', () => { triggerHaptic(8); openQuickSearchModal(); });
+
+    // Reading progress hairline on Note Drawer scroll
+    const drawerPanel = document.getElementById('detailDrawerPanel');
+    if (drawerPanel) {
+      drawerPanel.addEventListener('scroll', () => {
+        const bar = document.getElementById('drawerReadProgress');
+        if (!bar) return;
+        const maxScroll = drawerPanel.scrollHeight - drawerPanel.clientHeight;
+        bar.style.width = maxScroll > 0 ? Math.min(100, Math.round((drawerPanel.scrollTop / maxScroll) * 100)) + '%' : '0%';
+      });
+    }
+
+    // Hide cover button inside Note Drawer + Haptic feedback on key interactions
+    document.addEventListener('click', e => {
+      const hideCov = e.target.closest('[data-hide-cover]');
+      if (hideCov) {
+        const it = state.items.find(i => i.id === hideCov.dataset.hideCover);
+        if (it) { it.image = ''; saveState(); openDetailModal(it.id); renderHome(); showToast('Cover hidden — switched to editorial index card.'); }
+        return;
+      }
+      if (e.target.closest('.mobile-nav-tab, .nav-tab, [data-toggle-done], [data-srs-rate], #drillFlipBtn')) triggerHaptic(8);
+    });
+
+    // Dynamic time-aware greeting + Due Today pill on Hero Card
+    function updateHeroGreetingAndDue() {
+      const hr = new Date().getHours();
+      const first = currentUser && currentUser.name ? currentUser.name.split(' ')[0] : '';
+      let greet = 'Learn, build & unwind.';
+      if (first) {
+        if (hr < 5) greet = `Late night grind, ${first}.`;
+        else if (hr < 12) greet = `Good morning, ${first}.`;
+        else if (hr < 17) greet = `Afternoon flow, ${first}.`;
+        else greet = `Good evening, ${first}.`;
+      }
+      const el = document.getElementById('heroGreetingTitle');
+      if (el) el.textContent = greet;
+      const due = getAllFlashcards().filter(c => c.isDue).length;
+      const pill = document.getElementById('heroDuePill');
+      if (pill) {
+        pill.textContent = `${due} due today`;
+        pill.classList.toggle('hidden', due === 0);
+      }
+    }
+
+    updateAiStatusUI(); initFirebaseIfConfigured(); updateAuthUI(); switchView('home'); updateHeroGreetingAndDue(); handleIncomingWebShare();
+
+    // Smooth 0.45s launch splash dissolve
+    setTimeout(() => {
+      const sp = document.getElementById('splashOverlay');
+      if (sp) sp.classList.add('splash-gone');
+    }, 420);
   </script>
 </body>
 </html>

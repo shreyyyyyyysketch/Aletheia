@@ -1,0 +1,19 @@
+{
+  "name": "Aletheia Vault",
+  "short_name": "Aletheia",
+  "description": "Editorial knowledge vault & YouTube watch queue for study, projects, and life.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#FAF9F6",
+  "theme_color": "#FAF9F6",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%231C1B19'/%3E%3Cpath d='M256 104L120 392h60l28.8-64h94.4l28.8 64H392L256 104zm0 94.4l32.8 77.6h-65.6L256 198.4z' fill='%23FAF9F6'/%3E%3Ccircle cx='256' cy='368' r='28' fill='%23FF5A36'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

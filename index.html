@@ -2449,18 +2449,19 @@
     }
 
     async function runGeminiRequest(apiKey, parts, options) {
-      const models = options.useSearch
+      const models = options.models || (options.useSearch
         ? [{ m: 'gemini-3.8-flash', search: true }, { m: 'gemini-3.5-flash-lite', search: false }, { m: 'gemini-3.8-flash', search: false }]
-        : [{ m: 'gemini-3.5-flash-lite', search: false }, { m: 'gemini-3.8-flash', search: false }, { m: 'gemini-4-hydrogen', search: false }, { m: 'gemini-3.6-flash', search: false }];
+        : [{ m: 'gemini-3.5-flash-lite', search: false }, { m: 'gemini-3.8-flash', search: false }, { m: 'gemini-3.6-flash', search: false }]);
 
       let lastErr = null;
       for (const att of models) {
         const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), options.timeoutMs || 22000);
+        const timer = setTimeout(() => controller.abort(), options.timeoutMs || 26000);
         try {
           if (options.onModelStep) options.onModelStep(`Structuring with ${att.m}...`);
           const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${att.m}:generateContent?key=${encodeURIComponent(apiKey)}`;
-          const body = { contents: [{ parts }], generationConfig: { temperature: 0.25, maxOutputTokens: options.maxTokens || 2500 } };
+          const body = { contents: [{ parts }], generationConfig: { temperature: 0.25, maxOutputTokens: options.maxTokens || 4096 } };
+          if (options.mediaResolution) body.generationConfig.mediaResolution = options.mediaResolution;
           if (att.search) body.tools = [{ google_search: {} }];
           else if (options.json) body.generationConfig.responseMimeType = 'application/json';
 
@@ -2529,8 +2530,8 @@ Context:
 
       const parts = [];
       if (hasNativeYt) {
-        parts.push({ file_data: { file_uri: payload.youtubeUrl } });
-        parts.push({ text: prompt + '\n\nWatch and listen to the full YouTube video directly (including on-screen slides, code, and formulas). Include key MM:SS timestamps where helpful.' });
+        parts.push({ file_data: { file_uri: payload.youtubeUrl }, video_metadata: { fps: 0.2 } });
+        parts.push({ text: prompt + '\n\nWatch and listen to this YouTube video (including slides, code, and formulas). Include key MM:SS timestamps where helpful.' });
       } else {
         parts.push({ text: prompt });
         if (hasDoc) parts.push({ inline_data: { mime_type: payload.docInline.mimeType, data: payload.docInline.base64 } });
@@ -2544,8 +2545,10 @@ Context:
       const res = await runGeminiRequest(apiKey, parts, {
         json: true,
         useSearch: !hasVisual && !hasRichText && !!payload.url,
-        maxTokens: hasNativeYt ? 3200 : 2500,
-        timeoutMs: hasNativeYt ? 80000 : 22000,
+        models: hasNativeYt ? [{ m: 'gemini-3.5-flash-lite', search: false }, { m: 'gemini-3.8-flash', search: false }] : undefined,
+        mediaResolution: hasNativeYt ? 'MEDIA_RESOLUTION_LOW' : undefined,
+        maxTokens: hasNativeYt ? 4096 : 3500,
+        timeoutMs: hasNativeYt ? 40000 : 26000,
         onModelStep: payload.onModelStep
       });
       const parsed = extractJsonObject(res.text);
@@ -2678,11 +2681,40 @@ Context:
         if (apiKey) {
           try { result = await callGeminiAnalyzer(apiKey, payload); aiLabel = result._modelUsed || 'Gemini'; }
           catch (err) {
-            apiErrorMsg = err && err.message ? err.message : 'Request failed';
-            steps[steps.length - 1] = { text: `Gemini error: ${apiErrorMsg}`, done: false };
-            setAiProgress('Could not reach Gemini AI', steps);
-            showToast(`Gemini error: ${apiErrorMsg.slice(0, 70)}`);
-            result = runSmartLocalAnalyzer(payload, apiErrorMsg);
+            // If native YouTube video mode timed out or was rejected, seamlessly fall back to fast transcript + Gemini text!
+            if (useNativeGeminiYt) {
+              steps[steps.length - 1] = { text: 'Native video slow — switching to fast transcript mode...', done: false };
+              setAiProgress('Switching to fast transcript...', steps);
+              const apifyKey = getApifyKey();
+              let fbTranscript = '';
+              if (supadataKey) {
+                const sRes = await fetchSupadataReelInfo(url, supadataKey, () => {});
+                if (sRes && sRes.transcript) fbTranscript = sRes.transcript;
+              }
+              if (!fbTranscript && apifyKey) {
+                const aRes = await fetchApifyTranscript(url, apifyKey);
+                if (aRes && aRes.transcript) fbTranscript = aRes.transcript;
+              }
+              try {
+                const fbPayload = { ...payload, youtubeUrl: '', transcript: fbTranscript || payload.transcript };
+                steps.push({ text: fbTranscript ? `Transcript ready (${fbTranscript.split(/\s+/).length} words) — building notes...` : 'Using title & search fallback...', done: false });
+                setAiProgress('Building Obsidian breakdown...', steps);
+                result = await callGeminiAnalyzer(apiKey, fbPayload);
+                aiLabel = result._modelUsed || 'Gemini';
+              } catch (err2) {
+                apiErrorMsg = err2 && err2.message ? err2.message : 'Request failed';
+                steps[steps.length - 1] = { text: `Gemini error: ${apiErrorMsg}`, done: false };
+                setAiProgress('Could not reach Gemini AI', steps);
+                showToast(`Gemini error: ${apiErrorMsg.slice(0, 70)}`);
+                result = runSmartLocalAnalyzer(payload, apiErrorMsg);
+              }
+            } else {
+              apiErrorMsg = err && err.message ? err.message : 'Request failed';
+              steps[steps.length - 1] = { text: `Gemini error: ${apiErrorMsg}`, done: false };
+              setAiProgress('Could not reach Gemini AI', steps);
+              showToast(`Gemini error: ${apiErrorMsg.slice(0, 70)}`);
+              result = runSmartLocalAnalyzer(payload, apiErrorMsg);
+            }
           }
         } else {
           await new Promise(r => setTimeout(r, 300));
@@ -3508,7 +3540,8 @@ Return ONLY valid JSON:
           if (jr.ok) {
             const txt = await jr.text();
             const descMatch = txt.match(/(?:Description|Markdown Content:)[\s\S]{0,40}\n([\s\S]{20,600})/i);
-            if (descMatch) description = descMatch[1].replace(/\s+/g, ' ').trim().slice(0, 420);
+            const cleanedDesc = descMatch ? descMatch[1].replace(/\s+/g, ' ').trim().slice(0, 420) : '';
+            if (cleanedDesc && !/(action_handle_signin|ServiceLogin|accounts\.google\.com|Sign in to YouTube)/i.test(cleanedDesc)) description = cleanedDesc;
           }
         } catch (e) {}
       }

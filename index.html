@@ -2456,7 +2456,7 @@
       let lastErr = null;
       for (const att of models) {
         const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 22000);
+        const timer = setTimeout(() => controller.abort(), options.timeoutMs || 22000);
         try {
           if (options.onModelStep) options.onModelStep(`Structuring with ${att.m}...`);
           const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${att.m}:generateContent?key=${encodeURIComponent(apiKey)}`;
@@ -2485,8 +2485,9 @@
     async function callGeminiAnalyzer(apiKey, payload) {
       const colList = state.collections.map(c => `${c.id}: ${c.name}`).join(', ');
       const hasVideo = !!payload.videoInline;
+      const hasNativeYt = !!payload.youtubeUrl;
       const hasDoc = !!payload.docInline;
-      const hasVisual = hasVideo || hasDoc || payload.frames.length > 0;
+      const hasVisual = hasVideo || hasNativeYt || hasDoc || payload.frames.length > 0;
       const hasRichText = !!(payload.transcript || payload.caption || payload.oembedTitle);
 
       const prompt = `You are Aletheia, an editorial AI knowledge assistant for a student & builder who saves Reels, tutorials, lectures, project ideas, and occasional fun content.
@@ -2526,15 +2527,27 @@ Context:
 - Caption/Note: ${payload.caption || 'None'}
 - Extracted Audio Transcript / Full Webpage Content: ${payload.transcript || 'None'}`;
 
-      const parts = [{ text: prompt }];
-      if (hasDoc) parts.push({ inline_data: { mime_type: payload.docInline.mimeType, data: payload.docInline.base64 } });
-      else if (hasVideo) parts.push({ inline_data: { mime_type: payload.videoInline.mimeType, data: payload.videoInline.base64 } });
-      else payload.frames.slice(0, 3).forEach(d => {
-        const m = d.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
-        if (m) parts.push({ inline_data: { mime_type: m[1], data: m[2] } });
-      });
+      const parts = [];
+      if (hasNativeYt) {
+        parts.push({ file_data: { file_uri: payload.youtubeUrl } });
+        parts.push({ text: prompt + '\n\nWatch and listen to the full YouTube video directly (including on-screen slides, code, and formulas). Include key MM:SS timestamps where helpful.' });
+      } else {
+        parts.push({ text: prompt });
+        if (hasDoc) parts.push({ inline_data: { mime_type: payload.docInline.mimeType, data: payload.docInline.base64 } });
+        else if (hasVideo) parts.push({ inline_data: { mime_type: payload.videoInline.mimeType, data: payload.videoInline.base64 } });
+        else payload.frames.slice(0, 3).forEach(d => {
+          const m = d.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
+          if (m) parts.push({ inline_data: { mime_type: m[1], data: m[2] } });
+        });
+      }
 
-      const res = await runGeminiRequest(apiKey, parts, { json: true, useSearch: !hasVisual && !hasRichText && !!payload.url, maxTokens: 2500, onModelStep: payload.onModelStep });
+      const res = await runGeminiRequest(apiKey, parts, {
+        json: true,
+        useSearch: !hasVisual && !hasRichText && !!payload.url,
+        maxTokens: hasNativeYt ? 3200 : 2500,
+        timeoutMs: hasNativeYt ? 80000 : 22000,
+        onModelStep: payload.onModelStep
+      });
       const parsed = extractJsonObject(res.text);
       parsed._modelUsed = res.model;
       return parsed;
@@ -2603,8 +2616,15 @@ Context:
 
         let supaInfo = { caption: '', author: '', thumbnail: '', transcript: '', supadataErr: '' };
         let webMarkdown = '';
+        const ytIdForNative = extractYouTubeId(url);
+        const useNativeGeminiYt = !!(ytIdForNative && apiKey && !pendingDocInline && !pendingVideoInline);
+        const nativeYtUrl = useNativeGeminiYt ? ('https://www.youtube.com/watch?v=' + ytIdForNative) : '';
+
         if (url && /^https?:\/\//i.test(url)) {
-          if (isSocialVideoUrl(url)) {
+          if (useNativeGeminiYt) {
+            steps[0] = { text: `Native Gemini YouTube video mode (0 scraping credits)`, done: true };
+            setAiProgress('Watching YouTube video with Gemini...', steps);
+          } else if (isSocialVideoUrl(url)) {
             const apifyKey = getApifyKey();
             if (supadataKey) {
               steps[0] = { text: `Extracting ${source} audio via Supadata...`, done: false };
@@ -2648,7 +2668,7 @@ Context:
         setAiProgress(apiKey ? 'Building Obsidian breakdown...' : 'Organizing save...', steps);
 
         const payload = {
-          url, source, caption: mergedCaption, transcript: supaInfo.transcript || webMarkdown || '',
+          url, source, youtubeUrl: nativeYtUrl, caption: mergedCaption, transcript: supaInfo.transcript || webMarkdown || '',
           frames, videoInline: pendingVideoInline, docInline: pendingDocInline,
           oembedTitle: oembed?.title || '', oembedAuthor: oembed?.author_name || supaInfo.author || '',
           onModelStep: msg => { steps[steps.length - 1].text = msg; setAiProgress(msg, steps); }

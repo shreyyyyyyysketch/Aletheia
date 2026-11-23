@@ -160,6 +160,31 @@
     html.dark .editorial-input:focus { border-color: rgba(245, 244, 240, 0.55) !important; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.10) !important; }
     html.dark #heroDuePill { background-color: rgba(255, 255, 255, 0.12) !important; color: #F5F4F0 !important; }
     html.dark .coral-check:checked { accent-color: #F5F4F0; }
+    /* Precision Pomodoro Chronometer Ticks & Heatmap Intensity Cells */
+    .pomo-tick { transition: background-color 0.25s ease, transform 0.25s ease, opacity 0.25s ease; }
+    .digit-drum-wrap {
+      display: inline-flex; align-items: flex-start; overflow: hidden; height: 1.15em; line-height: 1.15em;
+      mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%);
+    }
+    .digit-strip {
+      display: flex; flex-direction: column;
+      transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: transform;
+    }
+    .digit-strip > span { height: 1.15em; line-height: 1.15em; display: flex; align-items: center; justify-content: center; width: 0.64em; }
+    .hm-cell { width: 12px; height: 12px; border-radius: 3px; transition: transform 0.15s ease; }
+    .hm-cell:hover { transform: scale(1.25); }
+    .hm-0 { background: rgba(28, 27, 25, 0.08); }
+    .hm-1 { background: rgba(255, 90, 54, 0.28); }
+    .hm-2 { background: rgba(255, 90, 54, 0.54); }
+    .hm-3 { background: rgba(255, 90, 54, 0.80); }
+    .hm-4 { background: #FF5A36; }
+    html.dark .hm-0 { background: rgba(255, 255, 255, 0.07); }
+    html.dark .hm-1 { background: rgba(245, 244, 240, 0.24); }
+    html.dark .hm-2 { background: rgba(245, 244, 240, 0.48); }
+    html.dark .hm-3 { background: rgba(245, 244, 240, 0.74); }
+    html.dark .hm-4 { background: #F5F4F0; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col pb-28 md:pb-10">
@@ -183,9 +208,13 @@
           <span>Home</span>
           <span id="navHomeCount" class="text-[10px] px-1.5 py-0.2 rounded-full bg-white/20">0</span>
         </button>
-        <button data-view="watch" type="button" class="nav-tab px-4 py-1.5 rounded-full text-xs font-semibold transition-colors flex items-center gap-1.5">
+        <button data-view="watch" type="button" class="nav-tab px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors flex items-center gap-1.5">
           <span>Watch</span>
           <span id="navWatchCount" class="text-[10px] px-1.5 py-0.2 rounded-full bg-white/20">0</span>
+        </button>
+        <button data-view="courses" type="button" class="nav-tab px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors flex items-center gap-1.5">
+          <span>Courses</span>
+          <span id="navCoursesCount" class="text-[10px] px-1.5 py-0.2 rounded-full bg-white/20">0</span>
         </button>
         <button data-view="collections" type="button" class="nav-tab px-4 py-1.5 rounded-full text-xs font-semibold transition-colors">
           Collections
@@ -200,10 +229,14 @@
           <span id="aiStatusDot" class="w-2 h-2 rounded-full bg-amber-400"></span>
           <span id="aiStatusText" class="hidden lg:inline">AI Keys</span>
         </button>
+        <button id="headerPomoPill" type="button" class="hidden px-2.5 py-1.5 rounded-full bg-[#1C1B19] text-white text-[11px] font-mono font-bold items-center gap-1.5 shadow-sm active:scale-95 transition-transform" title="Focus timer running — tap for stats">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#FF5A36] animate-pulse"></span>
+          <span id="headerPomoTime">40:00</span>
+        </button>
         <button id="themeToggleBtn" type="button" class="w-9 h-9 rounded-full bg-white border border-[#E8E6E0] hover:border-[#1C1B19] text-[#1C1B19] flex items-center justify-center transition-all active:scale-90" title="Toggle Dark / Light Mode" aria-label="Toggle theme">
           <i id="themeToggleIcon" data-lucide="moon" class="w-3.5 h-3.5"></i>
         </button>
-        <button id="openQuickSearchBtn" type="button" class="hidden md:flex px-3 py-1.5 rounded-full bg-white border border-[#E8E6E0] hover:border-[#1C1B19] text-xs font-semibold text-[#1C1B19] items-center justify-center gap-1.5 transition-colors" title="Quick Search (⌘K)" aria-label="Search vault">
+        <button id="openQuickSearchBtn" type="button" class="flex w-9 h-9 md:w-auto md:px-3 md:py-1.5 rounded-full bg-white border border-[#E8E6E0] hover:border-[#1C1B19] text-xs font-semibold text-[#1C1B19] items-center justify-center gap-1.5 transition-all active:scale-90" title="Quick Search (⌘K)" aria-label="Search vault">
           <i data-lucide="search" class="w-3.5 h-3.5 text-[#1C1B19]"></i>
           <span class="hidden lg:inline text-[#6B6A66]">Search</span>
         </button>
@@ -227,41 +260,88 @@
     <!-- ==================== VIEW 1: HOME ==================== -->
     <section id="view-home" class="view-section space-y-6">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        <!-- Ambient Editorial Hero Card -->
+        <!-- Rolling Odometer Digital Clock Pomodoro Card (Tap clock for Habit Heatmap) -->
         <div class="lg:col-span-5 hero-ambient text-[#FAF9F6] rounded-3xl p-5 sm:p-6 flex flex-col justify-between relative overflow-hidden shadow-md">
           <div class="flex items-center justify-between gap-2">
-            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-white/10 text-neutral-200 backdrop-blur-sm">
-              <span class="w-1.5 h-1.5 rounded-full bg-[#FF5A36]"></span>
-              <span id="tasteProfileOwner">Knowledge Vault</span>
-            </span>
+            <button id="openFocusStatsTopBtn" type="button" class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/15 text-neutral-200 transition-colors">
+              <span id="pomoLiveDot" class="w-1.5 h-1.5 rounded-full bg-[#FF5A36]"></span>
+              <span id="pomoPhaseLabel">Deep Work</span>
+            </button>
             <div class="flex items-center gap-1.5">
-              <span id="heroDuePill" class="hidden text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#FF5A36]/20 text-[#FF8A6E]">0 due</span>
-              <button id="clearAllBtn" type="button" class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 text-neutral-300 transition-colors">
-                Clear all
+              <button id="openFocusStatsPillBtn" type="button" class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 text-neutral-200 transition-colors flex items-center gap-1">
+                <span id="heroStreakLabel">0d streak</span><span>→</span>
+              </button>
+              <button id="clearAllBtn" type="button" class="text-[10px] font-semibold px-2 py-1 rounded-full bg-white/5 hover:bg-white/15 text-neutral-400 transition-colors" title="Clear all vault items">Clear</button>
+            </div>
+          </div>
+          <span id="tasteProfileOwner" class="hidden"></span>
+
+          <!-- Rolling Odometer Digital Clock (46087.jpg inspired) + Precision Ticks -->
+          <div id="pomoDialTapArea" class="mt-4 cursor-pointer group select-none" title="Tap to open Focus Habit Tracker & Heatmap">
+            <div class="flex items-center justify-between gap-3">
+              <div id="pomoDisplay" class="flex items-start gap-2 text-white font-semibold tracking-tight tabular-nums">
+                <div class="flex flex-col items-center">
+                  <div class="text-[46px] sm:text-[52px] flex items-center">
+                    <span class="digit-drum-wrap"><span id="pomoD_m1" class="digit-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                    <span class="digit-drum-wrap"><span id="pomoD_m2" class="digit-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                  </div>
+                  <span class="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400 mt-0.5">Minutes</span>
+                </div>
+                <span class="text-[38px] sm:text-[42px] leading-[1.15] text-white/40 pt-0.5">:</span>
+                <div class="flex flex-col items-center">
+                  <div class="text-[46px] sm:text-[52px] flex items-center">
+                    <span class="digit-drum-wrap"><span id="pomoD_s1" class="digit-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                    <span class="digit-drum-wrap"><span id="pomoD_s2" class="digit-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                  </div>
+                  <span class="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400 mt-0.5">Seconds</span>
+                </div>
+              </div>
+              <div class="text-right self-end pb-1">
+                <div id="pomoTodaySummary" class="text-[11px] font-semibold text-neutral-300 tabular-nums">0m today</div>
+                <div class="text-[10px] text-neutral-400 mt-0.5">Tap for heatmap</div>
+              </div>
+            </div>
+            <!-- 36 Precision Chronometer Ticks -->
+            <div id="pomoTickTrack" class="mt-3.5 flex items-end justify-between gap-[3px] h-4" aria-hidden="true"></div>
+          </div>
+
+          <!-- Preset + Custom Duration Pills & High-Contrast Controls -->
+          <div class="mt-4 space-y-2.5">
+            <div class="flex items-center justify-between gap-1.5 flex-wrap">
+              <div class="flex items-center gap-1">
+                <button type="button" data-pomo-min="25" class="pomo-preset-btn px-2.5 py-1 rounded-full text-[11px] font-semibold bg-white/10 text-neutral-300 hover:bg-white/20">25m</button>
+                <button type="button" data-pomo-min="40" class="pomo-preset-btn prog-pill-white px-2.5 py-1 rounded-full text-[11px] font-bold bg-white text-[#121210]">40m</button>
+                <button type="button" data-pomo-min="60" class="pomo-preset-btn px-2.5 py-1 rounded-full text-[11px] font-semibold bg-white/10 text-neutral-300 hover:bg-white/20">60m</button>
+                <button type="button" id="pomoCustomBtn" class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-white/10 text-neutral-300 hover:bg-white/20">Custom</button>
+              </div>
+              <div id="pomoCustomWrap" class="hidden flex items-center gap-1.5">
+                <input id="pomoCustomInput" type="number" min="1" max="180" value="40" class="w-14 px-2 py-1 rounded-lg bg-white/15 border border-white/25 text-white text-xs font-mono text-center focus:outline-none" />
+                <button type="button" id="pomoCustomApplyBtn" class="prog-pill-white px-2.5 py-1 rounded-lg bg-white text-[#121210] text-[11px] font-bold">Set</button>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button id="pomoStartPauseBtn" type="button" class="prog-pill-white flex-1 py-2.5 px-4 rounded-full bg-white hover:bg-neutral-200 text-[#121210] text-xs font-bold flex items-center justify-center gap-1.5 transition-transform active:scale-95">
+                <span>▶</span><span>Start Focus</span>
+              </button>
+              <button id="pomoLogEarlyBtn" type="button" class="hidden px-3.5 py-2.5 rounded-full bg-white/15 hover:bg-white/25 text-white text-xs font-semibold transition-colors" title="Finish & log elapsed minutes">Log</button>
+              <button id="pomoResetBtn" type="button" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-neutral-200 flex items-center justify-center transition-colors" title="Reset timer" aria-label="Reset timer">
+                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
               </button>
             </div>
-          </div>
 
-          <div class="mt-3.5">
-            <h1 id="heroGreetingTitle" class="font-editorial text-[28px] sm:text-[34px] font-medium leading-tight tracking-tight text-white">Learn, build &amp; unwind.</h1>
-            <p class="text-xs text-neutral-400 mt-1">Turn Reels &amp; links into Obsidian notes, project specs, and fun picks.</p>
-          </div>
-
-          <div class="mt-5 space-y-2">
-            <div class="flex items-baseline justify-between">
-              <div class="flex items-baseline gap-2">
-                <span id="completionPct" class="font-editorial text-3xl sm:text-4xl font-normal text-white leading-none tabular-nums">0%</span>
-                <span class="text-xs text-neutral-400">Reviewed</span>
+            <!-- Compact Vault Progress Micro-Footer -->
+            <div class="flex items-center justify-between pt-2 border-t border-white/10 text-[10.5px]">
+              <button id="showUncompletedLink" type="button" class="font-semibold text-neutral-200 hover:underline">Show unreviewed (0) →</button>
+              <div class="flex items-center gap-2 text-neutral-400 tabular-nums">
+                <span id="completionPct" class="font-semibold text-white">0%</span>
+                <span id="completionLabel" class="hidden">0 of 0 reviewed</span>
+                <span id="heroDuePill" class="hidden">0 due</span>
+                <span>•</span>
+                <span id="libraryMetaStatus">Synced locally</span>
               </div>
-              <span id="completionLabel" class="text-[11px] text-neutral-400 tabular-nums">0 of 0 reviewed</span>
             </div>
-            <div class="h-1.5 rounded-full bg-white/15 overflow-hidden">
-              <div id="completionBar" class="h-full bg-[#FF5A36] rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
-            </div>
-            <div class="flex items-center justify-between pt-1 text-[11px]">
-              <button id="showUncompletedLink" type="button" class="font-semibold text-[#FF7A5C] hover:underline">Show unreviewed (0) →</button>
-              <span id="libraryMetaStatus" class="text-neutral-400">Synced locally</span>
-            </div>
+            <div id="completionBar" class="hidden"></div>
           </div>
         </div>
 
@@ -373,6 +453,27 @@
         </div>
       </div>
 
+      <!-- Course Selector + Quiz Mode Bar -->
+      <div id="studyCourseBar" class="bento-card rounded-2xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+        <div class="flex items-center gap-2 flex-wrap flex-1">
+          <select id="studyCourseSelect" aria-label="Select course to study" class="editorial-input px-3 py-2 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-xs font-semibold text-[#1C1B19] flex-1 min-w-[180px]">
+            <option value="all">All Vault Notes &amp; Flashcards</option>
+          </select>
+          <select id="studyScopeSelect" aria-label="Quiz scope" class="editorial-input px-3 py-2 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-xs font-semibold text-[#1C1B19]">
+            <option value="completed">Completed Lessons</option>
+            <option value="all">Entire Course</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <button id="genCourseFlashcardsBtn" type="button" class="px-3 py-2 rounded-xl bg-[#F4F3F1] border border-[#E8E6E0] hover:border-[#1C1B19] text-[11px] font-semibold text-[#1C1B19]">+ Flashcards</button>
+          <button id="genCourseMcqBtn" type="button" class="px-3 py-2 rounded-xl bg-[#1C1B19] text-white text-[11px] font-semibold">5-Q MCQ Quiz</button>
+          <button id="genCourseOralBtn" type="button" class="px-3 py-2 rounded-xl bg-[#FF5A36] hover:bg-[#EB4D2A] text-white text-[11px] font-bold">Explain It Back</button>
+        </div>
+      </div>
+
+      <!-- Interactive Course Quiz / Oral Exam Arena (MCQ or Explain-It-Back) -->
+      <div id="courseQuizArena" class="hidden bento-card rounded-3xl p-5 sm:p-6 space-y-4"></div>
+
       <!-- Study & Build Mode Panel -->
       <div id="decideStudyPanel" class="grid grid-cols-1 lg:grid-cols-12 gap-5">
         <div id="decideFeaturedCard" class="lg:col-span-7 bento-card rounded-3xl overflow-hidden"></div>
@@ -459,6 +560,120 @@
 
       <div id="watchGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
     </section>
+
+    <!-- ==================== VIEW 5: CUSTOM COURSE MAKER ==================== -->
+    <section id="view-courses" class="view-section hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div>
+          <h2 class="font-editorial text-3xl font-medium tracking-tight text-[#1C1B19]">Custom Courses</h2>
+          <p class="text-sm text-[#6B6A66] mt-1">Build chronological video + article syllabi with AI or paste your own step-by-step curriculum.</p>
+        </div>
+        <div class="inline-flex bg-[#EFEEEB] p-1 rounded-full self-start sm:self-auto">
+          <button type="button" data-course-subtab="list" class="course-subtab-btn px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#1C1B19] text-white">My Courses</button>
+          <button type="button" data-course-subtab="ai" class="course-subtab-btn px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#6B6A66]">AI Maker</button>
+          <button type="button" data-course-subtab="manual" class="course-subtab-btn px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#6B6A66]">Manual</button>
+        </div>
+      </div>
+
+      <!-- SUBTAB 1: MY COURSES GRID -->
+      <div id="coursesListPanel" class="space-y-5">
+        <div id="coursesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+      </div>
+
+      <!-- SUBTAB 2: AI COURSE MAKER -->
+      <div id="coursesAiPanel" class="hidden space-y-5">
+        <form id="aiCourseForm" class="bento-card rounded-3xl p-5 sm:p-6 space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+            <div class="sm:col-span-6">
+              <label for="aiCourseTopic" class="block text-xs font-semibold text-[#1C1B19] mb-1">What do you want to learn? *</label>
+              <input id="aiCourseTopic" type="text" required placeholder="e.g. Computational Neuroscience, PyTorch Medical ML..." class="editorial-input w-full px-3.5 py-2.5 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm" />
+            </div>
+            <div class="sm:col-span-3">
+              <label for="aiCourseLevel" class="block text-xs font-semibold text-[#1C1B19] mb-1">Level</label>
+              <select id="aiCourseLevel" class="editorial-input w-full px-3 py-2.5 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm">
+                <option value="Beginner">Beginner</option>
+                <option value="Intermediate" selected>Intermediate</option>
+                <option value="Advanced">Advanced</option>
+              </select>
+            </div>
+            <div class="sm:col-span-3">
+              <label for="aiCourseLength" class="block text-xs font-semibold text-[#1C1B19] mb-1">Course Depth</label>
+              <select id="aiCourseLength" class="editorial-input w-full px-3 py-2.5 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm">
+                <option value="5">5-Step Crash Course</option>
+                <option value="8" selected>8-Step Standard</option>
+                <option value="10">10-Step Deep Dive</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label for="aiCourseStyle" class="block text-xs font-semibold text-[#1C1B19]">How should this course be tailored?</label>
+            <textarea id="aiCourseStyle" rows="2" placeholder="e.g. Start with intuition and biology, then move to Hodgkin-Huxley math and Python simulations for internship prep..." class="editorial-input w-full px-3.5 py-2 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm"></textarea>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" data-style-chip="Intuition-first & visual explanations before heavy math" class="px-2.5 py-1 rounded-full bg-[#F4F3F1] border border-[#E8E6E0] hover:border-[#1C1B19] text-[11px] font-semibold text-[#1C1B19]">+ Intuition-first</button>
+              <button type="button" data-style-chip="Math-rigorous with equations and derivations" class="px-2.5 py-1 rounded-full bg-[#F4F3F1] border border-[#E8E6E0] hover:border-[#1C1B19] text-[11px] font-semibold text-[#1C1B19]">+ Math-rigorous</button>
+              <button type="button" data-style-chip="Hands-on Python coding & implementations" class="px-2.5 py-1 rounded-full bg-[#F4F3F1] border border-[#E8E6E0] hover:border-[#1C1B19] text-[11px] font-semibold text-[#1C1B19]">+ Hands-on Python</button>
+              <button type="button" data-style-chip="Internship & portfolio project focused" class="px-2.5 py-1 rounded-full bg-[#F4F3F1] border border-[#E8E6E0] hover:border-[#1C1B19] text-[11px] font-semibold text-[#1C1B19]">+ Internship-focused</button>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between gap-2 pt-1">
+            <span id="aiCourseStatusText" class="text-xs text-[#6B6A66]">Fetches real YouTube videos + relevant articles + prerequisites.</span>
+            <button id="generateCourseBtn" type="submit" class="px-5 py-2.5 rounded-xl bg-[#FF5A36] hover:bg-[#EB4D2A] text-white text-xs font-bold flex items-center gap-1.5 shrink-0">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Build Curriculum
+            </button>
+          </div>
+        </form>
+
+        <!-- Preview & Approve Draft -->
+        <div id="aiCourseDraftBox" class="hidden bento-card rounded-3xl p-5 sm:p-6 space-y-5"></div>
+      </div>
+
+      <!-- SUBTAB 3: MANUAL COURSE MAKER -->
+      <div id="coursesManualPanel" class="hidden bento-card rounded-3xl p-5 sm:p-6 space-y-5">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="sm:col-span-2">
+            <label for="manualCourseTitle" class="block text-xs font-semibold text-[#1C1B19] mb-1">Course Title *</label>
+            <input id="manualCourseTitle" type="text" placeholder="e.g. My Custom PyTorch Track" class="editorial-input w-full px-3.5 py-2 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm" />
+          </div>
+          <div>
+            <label for="manualCourseLevel" class="block text-xs font-semibold text-[#1C1B19] mb-1">Level</label>
+            <select id="manualCourseLevel" class="editorial-input w-full px-3 py-2 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm">
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate" selected>Intermediate</option>
+              <option value="Advanced">Advanced</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label for="manualCourseGuide" class="block text-xs font-semibold text-[#1C1B19] mb-1">Course Overview / Approach (optional)</label>
+          <textarea id="manualCourseGuide" rows="2" placeholder="Why you're taking this course and how you plan to approach it..." class="editorial-input w-full px-3.5 py-2 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm"></textarea>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] space-y-3">
+          <div class="text-xs font-bold text-[#1C1B19]">Add Lesson Step (Chronological)</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <input id="manualStepUrl" type="text" placeholder="YouTube video or main link *" class="editorial-input px-3 py-2 rounded-xl bg-white border border-[#E8E6E0] text-xs" />
+            <input id="manualStepTitle" type="text" placeholder="Lesson title (auto-filled for YouTube)" class="editorial-input px-3 py-2 rounded-xl bg-white border border-[#E8E6E0] text-xs" />
+            <input id="manualStepPrereq" type="text" placeholder="Prerequisites (e.g. Basic Linear Algebra)" class="editorial-input px-3 py-2 rounded-xl bg-white border border-[#E8E6E0] text-xs" />
+            <input id="manualStepArticle" type="text" placeholder="Relevant article URL (optional)" class="editorial-input px-3 py-2 rounded-xl bg-white border border-[#E8E6E0] text-xs" />
+          </div>
+          <button id="manualAddStepBtn" type="button" class="px-4 py-2 rounded-xl bg-[#1C1B19] hover:bg-[#31302D] text-white text-xs font-semibold inline-flex items-center gap-1.5">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Step
+          </button>
+        </div>
+
+        <div id="manualStepsPreview" class="space-y-2"></div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t border-[#E8E6E0]">
+          <button id="manualResetBtn" type="button" class="px-4 py-2 rounded-xl bg-[#EFEEEB] text-xs font-semibold text-[#1C1B19]">Clear</button>
+          <button id="manualSaveCourseBtn" type="button" class="px-5 py-2 rounded-xl bg-[#FF5A36] hover:bg-[#EB4D2A] text-white text-xs font-bold">Save Custom Course</button>
+        </div>
+      </div>
+
+      <!-- COURSE DETAIL VIEW (GUIDE + CHRONOLOGICAL LESSONS) -->
+      <div id="courseDetailPanel" class="hidden space-y-5"></div>
+    </section>
   </main>
 
   <footer class="max-w-6xl w-full mx-auto px-4 sm:px-6 mt-12 pt-6 border-t border-[#E8E6E0] flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-[#6B6A66]">
@@ -466,29 +681,30 @@
     <span>Press <kbd class="px-1.5 py-0.5 rounded bg-[#EFEEEB] text-[#1C1B19] font-semibold">⌘K</kbd> to search</span>
   </footer>
 
-  <!-- Floating Liquid-Glass Mobile Bottom Dock -->
-  <div id="mobileLiquidDock" class="md:hidden fixed bottom-3.5 inset-x-3 z-30 flex items-center justify-center gap-2.5 pointer-events-none">
-    <nav class="pointer-events-auto liquid-glass rounded-full p-1.5 flex items-center gap-1 flex-1 max-w-[310px] justify-between" aria-label="Mobile navigation">
-      <button data-view="home" type="button" class="mobile-nav-tab flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 px-2 rounded-full text-[10px] font-semibold text-[#6B6A66]">
-        <i data-lucide="layout-grid" class="w-[18px] h-[18px]"></i>
+  <!-- Floating Liquid-Glass Mobile Bottom Dock (5 Balanced Tabs) -->
+  <div id="mobileLiquidDock" class="md:hidden fixed bottom-3.5 inset-x-3 z-30 flex items-center justify-center pointer-events-none">
+    <nav class="pointer-events-auto liquid-glass rounded-full p-1.5 flex items-center gap-0.5 w-full max-w-[390px] justify-between" aria-label="Mobile navigation">
+      <button data-view="home" type="button" class="mobile-nav-tab flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-full text-[10px] font-semibold text-[#6B6A66]">
+        <i data-lucide="layout-grid" class="w-[17px] h-[17px]"></i>
         <span>Home</span>
       </button>
-      <button data-view="watch" type="button" class="mobile-nav-tab flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 px-2 rounded-full text-[10px] font-semibold text-[#6B6A66]">
-        <i data-lucide="play-square" class="w-[18px] h-[18px]"></i>
+      <button data-view="watch" type="button" class="mobile-nav-tab flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-full text-[10px] font-semibold text-[#6B6A66]">
+        <i data-lucide="play-square" class="w-[17px] h-[17px]"></i>
         <span>Watch</span>
       </button>
-      <button data-view="collections" type="button" class="mobile-nav-tab flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 px-2 rounded-full text-[10px] font-semibold text-[#6B6A66]">
-        <i data-lucide="folder-heart" class="w-[18px] h-[18px]"></i>
+      <button data-view="courses" type="button" class="mobile-nav-tab flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-full text-[10px] font-semibold text-[#6B6A66]">
+        <i data-lucide="graduation-cap" class="w-[17px] h-[17px]"></i>
+        <span>Courses</span>
+      </button>
+      <button data-view="collections" type="button" class="mobile-nav-tab flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-full text-[10px] font-semibold text-[#6B6A66]">
+        <i data-lucide="folder-heart" class="w-[17px] h-[17px]"></i>
         <span>Vault</span>
       </button>
-      <button data-view="decide" type="button" class="mobile-nav-tab flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 px-2 rounded-full text-[10px] font-semibold text-[#6B6A66]">
-        <i data-lucide="sparkles" class="w-[18px] h-[18px]"></i>
+      <button data-view="decide" type="button" class="mobile-nav-tab flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-full text-[10px] font-semibold text-[#6B6A66]">
+        <i data-lucide="sparkles" class="w-[17px] h-[17px]"></i>
         <span>Study</span>
       </button>
     </nav>
-    <button id="mobileFloatingSearchBtn" type="button" class="pointer-events-auto liquid-glass w-[54px] h-[54px] rounded-full flex items-center justify-center text-[#1C1B19] active:scale-90 transition-transform shrink-0" aria-label="Search vault">
-      <i data-lucide="search" class="w-5 h-5"></i>
-    </button>
   </div>
 
   <!-- ==================== MODAL: ADD TO ALETHEIA WITH AI ==================== -->
@@ -900,6 +1116,86 @@
     </div>
   </div>
 
+  <!-- ==================== MODAL: FOCUS HEATMAP & HABIT TRACKER ==================== -->
+  <div id="focusStatsModal" class="hidden fixed inset-0 z-50 bg-black/55 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl max-w-md w-full max-h-[92vh] overflow-y-auto p-5 sm:p-6 space-y-5 shadow-2xl border border-[#E8E6E0]">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i data-lucide="flame" class="w-4 h-4 text-[#FF5A36]"></i>
+          <h3 class="font-editorial text-2xl font-medium text-[#1C1B19]">Focus Ritual</h3>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button id="logManualFocusBtn" type="button" class="px-3 py-1.5 rounded-full bg-[#F4F3F1] border border-[#E8E6E0] text-[11px] font-semibold text-[#1C1B19] hover:border-[#1C1B19]">+ Log Session</button>
+          <button id="closeFocusStatsBtn" type="button" class="p-1.5 rounded-full hover:bg-[#EFEEEB] text-[#6B6A66]" aria-label="Close focus stats">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- M-S 16-Week Intensity Heatmap -->
+      <div class="rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] p-4 space-y-3">
+        <div class="flex items-center justify-between text-[10px] font-semibold text-[#6B6A66]">
+          <span id="heatmapDateRange">Last 16 weeks</span>
+          <div class="flex items-center gap-1">
+            <span>Less</span>
+            <span class="hm-cell hm-0 inline-block"></span>
+            <span class="hm-cell hm-1 inline-block"></span>
+            <span class="hm-cell hm-2 inline-block"></span>
+            <span class="hm-cell hm-3 inline-block"></span>
+            <span class="hm-cell hm-4 inline-block"></span>
+            <span>More</span>
+          </div>
+        </div>
+        <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+          <div class="flex flex-col justify-between text-[9px] font-bold text-[#6B6A66] py-0.5 select-none">
+            <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+          </div>
+          <div id="focusHeatmapGrid" class="flex gap-[3px]"></div>
+        </div>
+        <div id="heatmapHoverInfo" class="text-[11px] text-[#6B6A66] text-center">Tap any square to inspect daily focus minutes</div>
+      </div>
+
+      <!-- 2x2 Tactile Stat Cards (Streak, Total Focus, Avg Log Time, Daily Goal) -->
+      <div class="grid grid-cols-2 gap-3">
+        <div class="rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] p-4 flex flex-col justify-between min-h-[112px]">
+          <div class="flex items-center gap-1.5 text-[11px] font-semibold text-[#6B6A66]"><i data-lucide="flame" class="w-3.5 h-3.5 text-[#FF5A36]"></i> Streak</div>
+          <div id="statStreakVal" class="font-editorial text-4xl font-medium text-[#1C1B19] tabular-nums leading-none my-1">0</div>
+          <div id="statStreakSub" class="text-[11px] text-[#6B6A66]">Longest: 0 days</div>
+        </div>
+        <div class="rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] p-4 flex flex-col justify-between min-h-[112px]">
+          <div class="flex items-center gap-1.5 text-[11px] font-semibold text-[#6B6A66]"><i data-lucide="clock" class="w-3.5 h-3.5 text-[#FF5A36]"></i> Total Focus</div>
+          <div id="statTotalVal" class="font-editorial text-4xl font-medium text-[#1C1B19] tabular-nums leading-none my-1">0h</div>
+          <div id="statTotalSub" class="text-[11px] text-[#6B6A66]">0 sessions logged</div>
+        </div>
+        <div class="rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] p-4 flex flex-col justify-between min-h-[112px]">
+          <div class="flex items-center gap-1.5 text-[11px] font-semibold text-[#6B6A66]"><i data-lucide="sun-moon" class="w-3.5 h-3.5 text-[#FF5A36]"></i> Avg Focus Time</div>
+          <div id="statAvgTimeVal" class="font-editorial text-3xl font-medium text-[#1C1B19] tabular-nums leading-none my-1">--:--</div>
+          <div id="statAvgTimeSub" class="text-[11px] text-[#6B6A66]">Peak focus window</div>
+        </div>
+        <div class="rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] p-4 flex flex-col justify-between min-h-[112px]">
+          <div class="flex items-center justify-between text-[11px] font-semibold text-[#6B6A66]">
+            <span class="flex items-center gap-1"><i data-lucide="trophy" class="w-3.5 h-3.5 text-[#FF5A36]"></i> Daily Goal</span>
+            <button id="editDailyGoalBtn" type="button" class="text-[10px] underline hover:text-[#1C1B19]">Edit</button>
+          </div>
+          <div id="statGoalPctVal" class="font-editorial text-4xl font-medium text-[#1C1B19] tabular-nums leading-none my-1">0%</div>
+          <div class="space-y-1">
+            <div class="h-1.5 rounded-full bg-[#E8E6E0] overflow-hidden"><div id="statGoalBar" class="h-full bg-[#FF5A36] rounded-full transition-all" style="width:0%"></div></div>
+            <div id="statGoalSub" class="text-[10px] text-[#6B6A66] tabular-nums">0 / 80 min today</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Session Records -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-[#6B6A66]">Recent Records</h4>
+          <span id="statRecordsCount" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#F4F3F1] text-[#1C1B19] tabular-nums">0</span>
+        </div>
+        <div id="focusRecordsList" class="space-y-1.5 max-h-44 overflow-y-auto"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- Dynamic-Island Floating Top Toast -->
   <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 z-[90] hidden liquid-glass text-[#1C1B19] text-xs font-semibold px-4 py-2.5 rounded-full shadow-xl max-w-[90vw] text-center animate-pop">
     <span id="toastMsg"></span>
@@ -949,7 +1245,10 @@
           { id: 'col-fun', name: 'Watch & Unwind', emoji: '🎬', desc: 'Movies, reads, and weekend fun saves.' }
         ],
         items: [],
-        watchQueue: []
+        watchQueue: [],
+        courses: [],
+        focusSessions: [],
+        dailyGoalMin: 80
       };
     }
 
@@ -1018,6 +1317,9 @@
               collections: state.collections || [],
               items: safeItems,
               watchQueue: state.watchQueue || [],
+              courses: state.courses || [],
+              focusSessions: state.focusSessions || [],
+              dailyGoalMin: state.dailyGoalMin || 80,
               updatedAt: Date.now()
             }, { merge: true });
             updateCloudSyncBadge('☁️ Cloud synced', true);
@@ -1203,9 +1505,12 @@
       document.getElementById('navHomeCount').textContent = state.items.length;
       const wc = document.getElementById('navWatchCount');
       if (wc) wc.textContent = (state.watchQueue || []).filter(v => !v.watched).length;
+      const cc = document.getElementById('navCoursesCount');
+      if (cc) cc.textContent = (state.courses || []).length;
       if (view === 'collections') renderCollections();
       else if (view === 'decide') renderDecide();
       else if (view === 'watch') renderWatchQueue();
+      else if (view === 'courses') renderCoursesView();
       else renderHome();
       lucide.createIcons();
     }
@@ -1400,27 +1705,33 @@
     // ==================== COLLECTIONS ====================
     function renderCollections() {
       const grid = document.getElementById('collectionsGrid');
-      const cardsHtml = state.collections.map(col => {
+      const cardsHtml = state.collections.map((col, idx) => {
         const items = state.items.filter(i => (i.collections || []).includes(col.id));
         const done = items.filter(i => i.done).length;
         const pct = items.length ? Math.round((done / items.length) * 100) : 0;
         const isSelected = activeCollectionId === col.id;
+        const thumbs = items.map(i => i.image).filter(Boolean).slice(0, 3);
         return `
-          <div data-select-col="${col.id}" class="bento-card rounded-3xl p-5 cursor-pointer flex flex-col justify-between ${isSelected ? 'ring-2 ring-[#FF5A36]' : ''}">
-            <div>
-              <div class="flex items-center justify-between">
-                <span class="text-2xl">${col.emoji}</span>
-                <span class="text-[11px] font-semibold text-[#6B6A66]">${items.length} item${items.length === 1 ? '' : 's'}</span>
+          <div data-select-col="${col.id}" class="card-enter bento-card rounded-[26px] p-5 cursor-pointer flex flex-col justify-between group relative overflow-hidden ${isSelected ? 'ring-2 ring-[#FF5A36]' : ''}" style="animation-delay:${Math.min(idx * 35, 210)}ms">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between gap-2">
+                <div class="w-11 h-11 rounded-2xl bg-[#F4F3F1] border border-[#E8E6E0] flex items-center justify-center text-xl shadow-sm">${col.emoji}</div>
+                <div class="flex items-center gap-2">
+                  ${thumbs.length ? `<div class="flex -space-x-2">${thumbs.map(t => `<img src="${escapeHtml(t)}" alt="" class="w-7 h-7 rounded-full object-cover ring-2 ring-[var(--surface-card)]" />`).join('')}</div>` : ''}
+                  <span class="px-2.5 py-1 rounded-full bg-[#F4F3F1] border border-[#E8E6E0] text-[10.5px] font-bold text-[#1C1B19] tabular-nums">${items.length}</span>
+                </div>
               </div>
-              <h3 class="font-editorial text-xl font-medium text-[#1C1B19] mt-3">${escapeHtml(col.name)}</h3>
-              <p class="text-xs text-[#6B6A66] mt-1 line-clamp-2">${escapeHtml(col.desc || 'Curated collection.')}</p>
+              <div>
+                <h3 class="font-editorial text-[22px] font-medium text-[#1C1B19] leading-snug group-hover:translate-x-0.5 transition-transform">${escapeHtml(col.name)}</h3>
+                <p class="text-xs text-[#6B6A66] mt-1 line-clamp-2 leading-relaxed">${escapeHtml(col.desc || 'Curated vault collection.')}</p>
+              </div>
             </div>
-            <div class="mt-4 pt-3 border-t border-[#F4F3F1] space-y-1.5">
-              <div class="flex justify-between text-[10px] font-semibold text-[#6B6A66]">
-                <span>${done} of ${items.length} reviewed</span>
-                <span>${pct}%</span>
+            <div class="mt-5 pt-3 border-t border-[#F4F3F1] space-y-1.5">
+              <div class="flex justify-between text-[10.5px] font-semibold text-[#6B6A66] tabular-nums">
+                <span>${done} / ${items.length} reviewed</span>
+                <span class="text-[#1C1B19] font-bold">${pct}%</span>
               </div>
-              <div class="h-1 rounded-full bg-[#EFEEEB] overflow-hidden"><div class="h-full bg-[#FF5A36] rounded-full" style="width:${pct}%"></div></div>
+              <div class="h-1.5 rounded-full bg-[#EFEEEB] overflow-hidden"><div class="h-full bg-[#FF5A36] rounded-full transition-all duration-300" style="width:${pct}%"></div></div>
             </div>
           </div>
         `;
@@ -2420,10 +2731,13 @@ Context:
                 state = {
                   collections: Array.isArray(d.collections) && d.collections.length ? d.collections : getDefaultState().collections,
                   items: d.items.map(i => ({ ...i, category: normalizeCategory(i.category) })),
-                  watchQueue: Array.isArray(d.watchQueue) ? d.watchQueue : []
+                  watchQueue: Array.isArray(d.watchQueue) ? d.watchQueue : [],
+                  courses: Array.isArray(d.courses) ? d.courses : [],
+                  focusSessions: Array.isArray(d.focusSessions) ? d.focusSessions : [],
+                  dailyGoalMin: d.dailyGoalMin || 80
                 };
                 saveState(true); updateCloudSyncBadge('☁️ Cloud synced', true);
-                if (activeView === 'collections') renderCollections(); else if (activeView === 'decide') renderDecide(); else if (activeView === 'watch') renderWatchQueue(); else renderHome();
+                if (activeView === 'collections') renderCollections(); else if (activeView === 'decide') renderDecide(); else if (activeView === 'watch') renderWatchQueue(); else if (activeView === 'courses') renderCoursesView(); else renderHome();
                 return;
               }
               state = (localBefore && localBefore.items.length) ? localBefore : getDefaultState();
@@ -2563,29 +2877,82 @@ Context:
     }
     function renderQuickSearchResults(q) {
       const term = (q || '').trim().toLowerCase();
-      const matches = state.items.filter(i => !term || [i.title, i.notes, i.explanation, (i.tags || []).join(' '), (i.tools || []).join(' ')].join(' ').toLowerCase().includes(term)).slice(0, 12);
       const box = document.getElementById('quickSearchResults');
-      if (!matches.length) {
-        box.innerHTML = `<div class="p-6 text-center text-xs text-[#6B6A66]">${state.items.length ? 'No matching notes found.' : 'Your vault is empty — tap + Save to add your first note.'}</div>`;
+
+      const noteMatches = (state.items || []).filter(i => !term || [i.title, i.notes, i.explanation, (i.tags || []).join(' '), (i.tools || []).join(' ')].join(' ').toLowerCase().includes(term)).slice(0, 6);
+      const courseMatches = (state.courses || []).filter(c => !term || [c.title, c.level, c.guide?.whatItMeans, ...(c.lessons || []).map(l => l.title + ' ' + (l.prerequisites || ''))].join(' ').toLowerCase().includes(term)).slice(0, 5);
+      const watchMatches = (state.watchQueue || []).filter(v => !term || [v.title, v.channel, v.description].join(' ').toLowerCase().includes(term)).slice(0, 5);
+      const colMatches = (state.collections || []).filter(c => !term || [c.name, c.desc].join(' ').toLowerCase().includes(term)).slice(0, 4);
+
+      if (!noteMatches.length && !courseMatches.length && !watchMatches.length && !colMatches.length) {
+        box.innerHTML = `<div class="p-6 text-center text-xs text-[#6B6A66]">No matches found across Notes, Courses, Watch Queue, or Vault Collections.</div>`;
         return;
       }
-      box.innerHTML = matches.map(i => `
-        <button type="button" data-quick-open="${i.id}" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-[#FAF9F6] flex items-center justify-between gap-2 transition-colors">
+
+      const sectionHtml = (title, itemsHtml) => itemsHtml ? `
+        <div class="pt-2 first:pt-0">
+          <div class="px-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-[#6B6A66]">${title}</div>
+          <div class="space-y-1">${itemsHtml}</div>
+        </div>` : '';
+
+      const notesHtml = noteMatches.map(i => `
+        <button type="button" data-q-type="note" data-q-id="${i.id}" class="w-full text-left px-3 py-2 rounded-xl hover:bg-[#FAF9F6] flex items-center justify-between gap-2 transition-colors">
           <div class="min-w-0">
             <div class="text-xs font-semibold text-[#1C1B19] truncate">${escapeHtml(i.title)}</div>
-            <div class="text-[11px] text-[#6B6A66] truncate">${escapeHtml(i.source || '')} ${(i.tags || []).slice(0, 3).map(t => '#' + t.replace(/^#/, '')).join(' ')}</div>
+            <div class="text-[10.5px] text-[#6B6A66] truncate">${escapeHtml(i.source || 'Note')} ${(i.tags || []).slice(0, 3).map(t => '#' + t.replace(/^#/, '')).join(' ')}</div>
           </div>
-          <span class="text-[10px] font-semibold text-[#FF5A36] shrink-0">Open →</span>
-        </button>
-      `).join('');
+          <span class="text-[10px] font-semibold text-[#FF5A36] shrink-0">Note →</span>
+        </button>`).join('');
+
+      const coursesHtml = courseMatches.map(c => {
+        const tot = (c.lessons || []).length, dn = (c.lessons || []).filter(l => l.done).length;
+        return `
+        <button type="button" data-q-type="course" data-q-id="${c.id}" class="w-full text-left px-3 py-2 rounded-xl hover:bg-[#FAF9F6] flex items-center justify-between gap-2 transition-colors">
+          <div class="min-w-0">
+            <div class="text-xs font-semibold text-[#1C1B19] truncate">${escapeHtml(c.title)}</div>
+            <div class="text-[10.5px] text-[#6B6A66] truncate">${escapeHtml(c.level || 'Course')} • ${dn}/${tot} completed</div>
+          </div>
+          <span class="text-[10px] font-semibold text-[#FF5A36] shrink-0">Course →</span>
+        </button>`;
+      }).join('');
+
+      const watchHtml = watchMatches.map(v => `
+        <button type="button" data-q-type="watch" data-q-id="${v.id}" class="w-full text-left px-3 py-2 rounded-xl hover:bg-[#FAF9F6] flex items-center justify-between gap-2 transition-colors">
+          <div class="min-w-0">
+            <div class="text-xs font-semibold text-[#1C1B19] truncate">${escapeHtml(v.title)}</div>
+            <div class="text-[10.5px] text-[#6B6A66] truncate">${escapeHtml(v.channel || 'YouTube')} ${v.duration ? '• ' + escapeHtml(v.duration) : ''}</div>
+          </div>
+          <span class="text-[10px] font-semibold text-[#FF5A36] shrink-0">Watch →</span>
+        </button>`).join('');
+
+      const colsHtml = colMatches.map(c => `
+        <button type="button" data-q-type="col" data-q-id="${c.id}" class="w-full text-left px-3 py-2 rounded-xl hover:bg-[#FAF9F6] flex items-center justify-between gap-2 transition-colors">
+          <div class="min-w-0">
+            <div class="text-xs font-semibold text-[#1C1B19] truncate">${escapeHtml((c.emoji || '') + ' ' + c.name)}</div>
+            <div class="text-[10.5px] text-[#6B6A66] truncate">${escapeHtml(c.desc || '')}</div>
+          </div>
+          <span class="text-[10px] font-semibold text-[#FF5A36] shrink-0">Vault →</span>
+        </button>`).join('');
+
+      box.innerHTML =
+        sectionHtml(`Vault Notes (${noteMatches.length})`, notesHtml) +
+        sectionHtml(`Courses & Lessons (${courseMatches.length})`, coursesHtml) +
+        sectionHtml(`Watch Queue (${watchMatches.length})`, watchHtml) +
+        sectionHtml(`Collections (${colMatches.length})`, colsHtml);
     }
     document.getElementById('openQuickSearchBtn').addEventListener('click', openQuickSearchModal);
     document.getElementById('closeQuickSearchBtn').addEventListener('click', () => document.getElementById('quickSearchModal').classList.add('hidden'));
     document.getElementById('quickSearchModal').addEventListener('click', e => { if (e.target.id === 'quickSearchModal') document.getElementById('quickSearchModal').classList.add('hidden'); });
     document.getElementById('quickSearchInput').addEventListener('input', e => renderQuickSearchResults(e.target.value));
     document.getElementById('quickSearchResults').addEventListener('click', e => {
-      const btn = e.target.closest('[data-quick-open]');
-      if (btn) { document.getElementById('quickSearchModal').classList.add('hidden'); openDetailModal(btn.dataset.quickOpen); }
+      const btn = e.target.closest('[data-q-type]');
+      if (!btn) return;
+      document.getElementById('quickSearchModal').classList.add('hidden');
+      const t = btn.dataset.qType, id = btn.dataset.qId;
+      if (t === 'note') openDetailModal(id);
+      else if (t === 'course') { activeCourseId = id; activeCoursePage = 'lessons'; switchView('courses'); }
+      else if (t === 'watch') { switchView('watch'); }
+      else if (t === 'col') { activeCollectionId = id; switchView('collections'); }
     });
 
     document.getElementById('clearAllBtn').addEventListener('click', () => {
@@ -3285,6 +3652,526 @@ Video: ${text}`;
       }
     });
 
+    // ==================== CUSTOM COURSE MAKER (AI + MANUAL) ====================
+    let courseSubtab = 'list';
+    let activeCourseId = null;
+    let activeCoursePage = 'lessons'; // 'guide' | 'lessons'
+    let pendingAiCourseDraft = null;
+    let manualDraftSteps = [];
+
+    function setCourseSubtab(tab) {
+      courseSubtab = tab;
+      activeCourseId = null;
+      document.getElementById('courseDetailPanel').classList.add('hidden');
+      document.getElementById('coursesListPanel').classList.toggle('hidden', tab !== 'list');
+      document.getElementById('coursesAiPanel').classList.toggle('hidden', tab !== 'ai');
+      document.getElementById('coursesManualPanel').classList.toggle('hidden', tab !== 'manual');
+      document.querySelectorAll('.course-subtab-btn').forEach(b => {
+        if (b.dataset.courseSubtab === tab) { b.classList.add('bg-[#1C1B19]', 'text-white'); b.classList.remove('text-[#6B6A66]'); }
+        else { b.classList.remove('bg-[#1C1B19]', 'text-white'); b.classList.add('text-[#6B6A66]'); }
+      });
+      if (tab === 'list') renderCoursesGrid();
+      if (tab === 'manual') renderManualStepsPreview();
+      lucide.createIcons();
+    }
+
+    function renderCoursesView() {
+      if (!Array.isArray(state.courses)) state.courses = [];
+      const cc = document.getElementById('navCoursesCount');
+      if (cc) cc.textContent = state.courses.length;
+      if (activeCourseId) {
+        const exists = state.courses.find(c => c.id === activeCourseId);
+        if (exists) { renderCourseDetail(exists); return; }
+        activeCourseId = null;
+      }
+      setCourseSubtab(courseSubtab);
+    }
+
+    function renderCoursesGrid() {
+      const list = state.courses || [];
+      const grid = document.getElementById('coursesGrid');
+      if (!list.length) {
+        grid.innerHTML = `
+          <div class="col-span-full bento-card rounded-3xl p-10 text-center space-y-3">
+            <p class="font-editorial text-2xl font-medium text-[#1C1B19]">No custom courses yet</p>
+            <p class="text-xs text-[#6B6A66] max-w-md mx-auto">Use AI Maker to generate a chronological YouTube + article curriculum with prerequisites, or assemble your own step-by-step course manually.</p>
+            <div class="flex items-center justify-center gap-2 pt-1">
+              <button type="button" data-jump-course-tab="ai" class="px-4 py-2 rounded-xl bg-[#FF5A36] text-white text-xs font-bold">+ AI Course Maker</button>
+              <button type="button" data-jump-course-tab="manual" class="px-4 py-2 rounded-xl bg-[#EFEEEB] text-[#1C1B19] text-xs font-semibold">+ Manual Course</button>
+            </div>
+          </div>`;
+        lucide.createIcons();
+        return;
+      }
+      grid.innerHTML = list.map((c, idx) => {
+        const total = (c.lessons || []).length;
+        const done = (c.lessons || []).filter(l => l.done).length;
+        const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+        const firstThumb = (c.lessons || []).find(l => l.thumbnail)?.thumbnail || '';
+        return `
+          <article class="card-enter bento-card rounded-3xl overflow-hidden flex flex-col cursor-pointer group" style="animation-delay:${Math.min(idx * 40, 240)}ms" data-open-course="${c.id}">
+            <!-- Top Course Progress Bar Header -->
+            <div class="px-4 pt-4 pb-2.5 bg-[#FAF9F6] border-b border-[#E8E6E0] space-y-1.5">
+              <div class="flex items-center justify-between text-[11px] font-bold">
+                <span class="text-[#1C1B19] tabular-nums">${pct}% completed</span>
+                <span class="text-[#6B6A66] font-semibold tabular-nums">${done} / ${total} lessons</span>
+              </div>
+              <div class="h-1.5 rounded-full bg-[#E8E6E0] overflow-hidden">
+                <div class="h-full bg-[#FF5A36] rounded-full transition-all duration-300" style="width:${pct}%"></div>
+              </div>
+            </div>
+            ${firstThumb ? `<div class="h-32 overflow-hidden relative bg-[#1C1B19]"><img src="${escapeHtml(firstThumb)}" alt="${escapeHtml(c.title)}" class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-300" /></div>` : ''}
+            <div class="p-4 sm:p-5 flex-1 flex flex-col justify-between gap-3">
+              <div class="space-y-1.5">
+                <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-[#6B6A66]">
+                  <span class="px-2 py-0.5 rounded-full bg-[#F4F3F1] text-[#1C1B19]">${escapeHtml(c.level || 'Custom')}</span>
+                  <span>${c.isAi ? 'AI Syllabus' : 'Manual Track'}</span>
+                </div>
+                <h3 class="font-editorial text-xl font-medium text-[#1C1B19] leading-snug">${escapeHtml(c.title)}</h3>
+                ${c.guide?.whatItMeans ? `<p class="text-xs text-[#6B6A66] line-clamp-2 leading-relaxed">${escapeHtml(c.guide.whatItMeans)}</p>` : ''}
+              </div>
+              <div class="flex items-center justify-between pt-2 border-t border-[#F4F3F1] text-xs font-semibold text-[#1C1B19]">
+                <span class="text-[#6B6A66] text-[11px]">Guide + ${total} chronological steps</span>
+                <span class="group-hover:translate-x-0.5 transition-transform">Open →</span>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    async function searchRealYouTubeVideo(query) {
+      const ytApiKey = (DEFAULT_FIREBASE_CONFIG && DEFAULT_FIREBASE_CONFIG.apiKey) || getGeminiKey();
+      if (ytApiKey) {
+        try {
+          const r = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=1&q=${encodeURIComponent(query)}&key=${encodeURIComponent(ytApiKey)}`);
+          if (r.ok) {
+            const d = await r.json();
+            const item = d && d.items && d.items[0];
+            if (item && item.id && item.id.videoId) {
+              const vid = item.id.videoId;
+              const sn = item.snippet || {};
+              const th = sn.thumbnails || {};
+              return {
+                ytId: vid,
+                url: `https://www.youtube.com/watch?v=${vid}`,
+                videoTitle: sn.title || query,
+                channel: sn.channelTitle || 'YouTube',
+                thumbnail: (th.high || th.medium || th.default || {}).url || `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`
+              };
+            }
+          }
+        } catch (e) {}
+      }
+      return {
+        ytId: '',
+        url: `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`,
+        videoTitle: query,
+        channel: 'YouTube Search (enable YouTube Data API v3 for direct embeds)',
+        thumbnail: ''
+      };
+    }
+
+    function renderAiCourseDraft() {
+      const box = document.getElementById('aiCourseDraftBox');
+      if (!pendingAiCourseDraft) { box.classList.add('hidden'); return; }
+      const d = pendingAiCourseDraft;
+      box.classList.remove('hidden');
+      box.innerHTML = `
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#E8E6E0]">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-[#FF5A36]">Preview &amp; Approve Syllabus</span>
+            <h3 class="font-editorial text-2xl font-medium text-[#1C1B19] mt-0.5">${escapeHtml(d.title)}</h3>
+            <p class="text-xs text-[#6B6A66]">${escapeHtml(d.level)} • ${d.lessons.length} chronological steps with prerequisites &amp; articles</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" id="discardAiCourseBtn" class="px-3.5 py-2 rounded-xl bg-[#EFEEEB] text-xs font-semibold text-[#1C1B19]">Discard</button>
+            <button type="button" id="approveAiCourseBtn" class="px-4 py-2 rounded-xl bg-[#FF5A36] hover:bg-[#EB4D2A] text-white text-xs font-bold">✓ Approve &amp; Create Course</button>
+          </div>
+        </div>
+        <div class="p-4 rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] space-y-2 text-xs">
+          <div><strong class="text-[#1C1B19]">What this course means:</strong> <span class="text-[#6B6A66]">${escapeHtml(d.guide.whatItMeans || '')}</span></div>
+          <div><strong class="text-[#1C1B19]">How to approach it:</strong> <span class="text-[#6B6A66]">${escapeHtml(d.guide.howToApproach || '')}</span></div>
+        </div>
+        <div class="space-y-2.5">
+          ${d.lessons.map((l, idx) => `
+            <div class="p-3.5 rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-[#1C1B19] text-white text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5">${idx + 1}</span>
+              <div class="flex-1 min-w-0 space-y-1">
+                <div class="text-xs font-bold text-[#1C1B19]">${escapeHtml(l.title)}</div>
+                <div class="text-[11px] text-[#6B6A66] truncate">🎬 ${escapeHtml(l.videoTitle || l.youtubeQuery)} • ${escapeHtml(l.channel || '')}</div>
+                ${l.prerequisites ? `<div class="text-[11px] text-[#1C1B19]"><span class="font-semibold">Prerequisites:</span> <span class="text-[#6B6A66]">${escapeHtml(l.prerequisites)}</span></div>` : ''}
+                ${l.articleTitle ? `<div class="text-[11px] text-[#6B6A66] truncate">📄 Reading: ${escapeHtml(l.articleTitle)}</div>` : ''}
+              </div>
+              <button type="button" data-remove-draft-step="${idx}" class="p-1.5 rounded-lg hover:bg-red-50 text-[#6B6A66] hover:text-red-600 shrink-0" title="Remove step"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      lucide.createIcons();
+    }
+
+    function renderCourseDetail(course) {
+      document.getElementById('coursesListPanel').classList.add('hidden');
+      document.getElementById('coursesAiPanel').classList.add('hidden');
+      document.getElementById('coursesManualPanel').classList.add('hidden');
+      const panel = document.getElementById('courseDetailPanel');
+      panel.classList.remove('hidden');
+
+      const total = (course.lessons || []).length;
+      const done = (course.lessons || []).filter(l => l.done).length;
+      const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+      const guideHtml = `
+        <div class="space-y-4">
+          <div class="bento-card rounded-3xl p-5 sm:p-6 space-y-2">
+            <div class="text-[10px] font-bold uppercase tracking-widest text-[#FF5A36]">01 • The Big Picture</div>
+            <h4 class="font-editorial text-2xl font-medium text-[#1C1B19]">What This Course Actually Means</h4>
+            <p class="text-xs sm:text-sm text-[#6B6A66] leading-relaxed whitespace-pre-line">${escapeHtml(course.guide?.whatItMeans || 'A curated step-by-step learning track built in Aletheia.')}</p>
+          </div>
+          <div class="bento-card rounded-3xl p-5 sm:p-6 space-y-2">
+            <div class="text-[10px] font-bold uppercase tracking-widest text-[#FF5A36]">02 • Study Strategy</div>
+            <h4 class="font-editorial text-2xl font-medium text-[#1C1B19]">How You Should Approach It</h4>
+            <p class="text-xs sm:text-sm text-[#6B6A66] leading-relaxed whitespace-pre-line">${escapeHtml(course.guide?.howToApproach || 'Watch each video in order, review prerequisites before starting, and generate Obsidian notes for key lectures.')}</p>
+          </div>
+          <div class="bento-card rounded-3xl p-5 sm:p-6 space-y-2">
+            <div class="text-[10px] font-bold uppercase tracking-widest text-[#FF5A36]">03 • Curriculum Logic</div>
+            <h4 class="font-editorial text-2xl font-medium text-[#1C1B19]">Why These Videos &amp; Articles Are Here</h4>
+            <p class="text-xs sm:text-sm text-[#6B6A66] leading-relaxed whitespace-pre-line">${escapeHtml(course.guide?.whyThisOrder || 'Lessons are arranged chronologically so each concept unlocks the next.')}</p>
+          </div>
+        </div>
+      `;
+
+      const lessonsHtml = `
+        <div class="space-y-4">
+          ${(course.lessons || []).map((l, idx) => `
+            <article class="bento-card rounded-3xl p-4 sm:p-5 space-y-3.5 ${l.done ? 'opacity-80' : ''}">
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-start gap-3 min-w-0">
+                  <button type="button" data-course-toggle-lesson="${course.id}|${idx}" class="mt-0.5 w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-all active:scale-90 ${l.done ? 'bg-[#1E5E3A] text-white' : 'bg-[#F4F3F1] border border-[#D3D0C7] text-transparent hover:border-[#1C1B19]'}" title="Mark lesson completed">
+                    <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                  </button>
+                  <div class="min-w-0">
+                    <div class="text-[10px] font-bold uppercase tracking-wider text-[#6B6A66]">Step ${idx + 1} of ${total} ${l.channel ? '• ' + escapeHtml(l.channel) : ''}</div>
+                    <h4 class="font-editorial text-xl font-medium text-[#1C1B19] leading-snug ${l.done ? 'line-through text-[#6B6A66]' : ''}">${escapeHtml(l.title)}</h4>
+                    ${l.whyHere ? `<p class="text-xs text-[#6B6A66] mt-0.5">${escapeHtml(l.whyHere)}</p>` : ''}
+                  </div>
+                </div>
+              </div>
+
+              ${l.ytId ? `
+                <details class="rounded-2xl overflow-hidden border border-[#E8E6E0] bg-[#FAF9F6]">
+                  <summary class="flex items-center justify-between gap-2 p-2.5 cursor-pointer list-none">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                      ${l.thumbnail ? `<img src="${escapeHtml(l.thumbnail)}" alt="" class="w-20 h-12 rounded-lg object-cover shrink-0 bg-[#1C1B19]" />` : ''}
+                      <div class="min-w-0">
+                        <div class="text-xs font-semibold text-[#1C1B19] truncate">${escapeHtml(l.videoTitle || l.title)}</div>
+                        <div class="text-[11px] font-semibold text-[#FF5A36]">▶ Watch inline ↓</div>
+                      </div>
+                    </div>
+                  </summary>
+                  <div class="p-2.5 pt-0">
+                    <iframe src="https://www.youtube.com/embed/${escapeHtml(l.ytId)}" title="${escapeHtml(l.title)}" class="w-full aspect-video rounded-xl bg-black" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                  </div>
+                </details>
+              ` : (l.url ? `
+                <a href="${escapeHtml(l.url)}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between px-3.5 py-2.5 rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] hover:border-[#1C1B19] text-xs font-semibold text-[#1C1B19]">
+                  <span class="truncate">🎬 ${escapeHtml(l.videoTitle || l.url)}</span>
+                  <i data-lucide="external-link" class="w-3.5 h-3.5 shrink-0"></i>
+                </a>
+              ` : '')}
+
+              <!-- Prerequisites right under the video -->
+              ${l.prerequisites ? `
+                <div class="px-3.5 py-2.5 rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] text-xs">
+                  <span class="font-bold text-[#1C1B19] uppercase tracking-wider text-[10px] mr-1.5">Prerequisites:</span>
+                  <span class="text-[#6B6A66]">${escapeHtml(l.prerequisites)}</span>
+                </div>
+              ` : ''}
+
+              <!-- Relevant Article / Reading -->
+              ${(l.articleTitle || l.articleUrl) ? `
+                <a href="${escapeHtml(l.articleUrl || ('https://www.google.com/search?q=' + encodeURIComponent(l.articleTitle)))}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] hover:border-[#FF5A36] text-xs transition-colors">
+                  <div class="min-w-0">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-[#6B6A66] block">Relevant Reading</span>
+                    <span class="font-semibold text-[#1C1B19] truncate block">${escapeHtml(l.articleTitle || l.articleUrl)}</span>
+                  </div>
+                  <i data-lucide="book-open" class="w-4 h-4 text-[#FF5A36] shrink-0"></i>
+                </a>
+              ` : ''}
+
+              <div class="flex items-center justify-between gap-2 pt-1">
+                <a href="${escapeHtml(l.url || '#')}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-semibold text-[#6B6A66] hover:text-[#1C1B19] inline-flex items-center gap-1">Open Video <i data-lucide="external-link" class="w-3 h-3"></i></a>
+                <button type="button" data-course-lesson-note="${course.id}|${idx}" class="px-3 py-1.5 rounded-xl bg-[#F4F3F1] border border-[#E8E6E0] hover:border-[#1C1B19] text-[11px] font-semibold text-[#1C1B19]">Make Study Note</button>
+              </div>
+            </article>
+          `).join('')}
+        </div>
+      `;
+
+      panel.innerHTML = `
+        <div class="bento-card rounded-3xl p-5 sm:p-6 space-y-4">
+          <div class="flex items-center justify-between gap-2">
+            <button type="button" id="backToCoursesBtn" class="px-3 py-1.5 rounded-full bg-[#F4F3F1] text-xs font-semibold text-[#1C1B19] inline-flex items-center gap-1">← All Courses</button>
+            <button type="button" data-delete-course="${course.id}" class="text-xs font-semibold text-red-600 hover:underline">Delete Course</button>
+          </div>
+          <div>
+            <div class="text-[10px] font-bold uppercase tracking-widest text-[#6B6A66]">${escapeHtml(course.level || 'Custom')} ${course.style ? '• ' + escapeHtml(course.style.slice(0, 60)) : ''}</div>
+            <h3 class="font-editorial text-3xl font-medium text-[#1C1B19] mt-0.5">${escapeHtml(course.title)}</h3>
+          </div>
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between text-xs font-bold">
+              <span class="text-[#1C1B19] tabular-nums">${pct}% of this course completed</span>
+              <span class="text-[#6B6A66] font-semibold tabular-nums">${done} / ${total} steps</span>
+            </div>
+            <div class="h-2 rounded-full bg-[#E8E6E0] overflow-hidden">
+              <div class="h-full bg-[#FF5A36] rounded-full transition-all duration-300" style="width:${pct}%"></div>
+            </div>
+          </div>
+          <div class="inline-flex bg-[#EFEEEB] p-1 rounded-full">
+            <button type="button" data-course-page="lessons" class="px-4 py-1.5 rounded-full text-xs font-semibold ${activeCoursePage === 'lessons' ? 'bg-[#1C1B19] text-white' : 'text-[#6B6A66]'}">Lessons (${total})</button>
+            <button type="button" data-course-page="guide" class="px-4 py-1.5 rounded-full text-xs font-semibold ${activeCoursePage === 'guide' ? 'bg-[#1C1B19] text-white' : 'text-[#6B6A66]'}">Course Guide</button>
+          </div>
+        </div>
+        ${activeCoursePage === 'guide' ? guideHtml : lessonsHtml}
+      `;
+      lucide.createIcons();
+    }
+
+    function renderManualStepsPreview() {
+      const box = document.getElementById('manualStepsPreview');
+      if (!manualDraftSteps.length) {
+        box.innerHTML = `<p class="text-xs text-[#6B6A66] text-center py-4">No steps added yet — paste your Step 1 link above.</p>`;
+        return;
+      }
+      box.innerHTML = manualDraftSteps.map((s, idx) => `
+        <div class="p-3 rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] flex items-center justify-between gap-2.5">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <span class="w-6 h-6 rounded-full bg-[#1C1B19] text-white text-[11px] font-bold flex items-center justify-center shrink-0">${idx + 1}</span>
+            <div class="min-w-0">
+              <div class="text-xs font-semibold text-[#1C1B19] truncate">${escapeHtml(s.title)}</div>
+              <div class="text-[10px] text-[#6B6A66] truncate">${escapeHtml(s.prerequisites ? 'Prereq: ' + s.prerequisites : s.url)}</div>
+            </div>
+          </div>
+          <button type="button" data-del-manual-step="${idx}" class="p-1 text-[#6B6A66] hover:text-red-600"><i data-lucide="x" class="w-4 h-4"></i></button>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    // Course Maker Listeners
+    document.querySelectorAll('.course-subtab-btn').forEach(b => b.addEventListener('click', () => setCourseSubtab(b.dataset.courseSubtab)));
+    document.querySelectorAll('[data-style-chip]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const ta = document.getElementById('aiCourseStyle');
+        ta.value = ta.value.trim() ? (ta.value.trim() + '; ' + btn.dataset.styleChip) : btn.dataset.styleChip;
+      });
+    });
+
+    document.getElementById('aiCourseForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const topic = document.getElementById('aiCourseTopic').value.trim();
+      const level = document.getElementById('aiCourseLevel').value;
+      const count = parseInt(document.getElementById('aiCourseLength').value, 10) || 8;
+      const style = document.getElementById('aiCourseStyle').value.trim() || 'Clear, structured progression from fundamentals to applied mastery';
+      const apiKey = getGeminiKey();
+      if (!apiKey) { showToast('Connect your Gemini API key in AI Keys first.'); return; }
+      const btn = document.getElementById('generateCourseBtn');
+      const statusEl = document.getElementById('aiCourseStatusText');
+      btn.disabled = true; btn.textContent = 'Designing syllabus...';
+      statusEl.textContent = `Step 1/2: Building ${count}-step chronological syllabus...`;
+      try {
+        const prompt = `You are Aletheia, an academic curriculum designer. Create a ${count}-step chronological self-study course for: "${topic}" (Level: ${level}).
+User's custom tailoring instructions: "${style}"
+
+Return ONLY valid JSON:
+{
+  "title": "Course Title",
+  "guide": {
+    "whatItMeans": "Clear 2-3 sentence explanation of what this field/topic actually means and why it matters.",
+    "howToApproach": "Practical 3-4 sentence guide on how the student should study, practice, and pace this course given their style.",
+    "whyThisOrder": "Clear 2-3 sentence explanation of the chronological learning arc and why these videos and readings are sequenced this way."
+  },
+  "lessons": [
+    {
+      "title": "Step Title",
+      "whyHere": "1 sentence on why this step comes right here.",
+      "youtubeQuery": "Exact best YouTube search query to find a top lecture/tutorial for this step",
+      "prerequisites": "Concise prerequisites needed before watching this video (or 'None — start here')",
+      "articleTitle": "Title of a great complementary article, paper, or textbook chapter",
+      "articleUrl": "Real well-known URL (e.g. wikipedia.org, arxiv.org, mit.edu, pytorch.org, scholarpedia.org) or empty string"
+    }
+  ]
+}`;
+        const res = await runGeminiRequest(apiKey, [{ text: prompt }], { json: true, useSearch: false, maxTokens: 3200 });
+        const parsed = extractJsonObject(res.text);
+        const rawLessons = Array.isArray(parsed.lessons) ? parsed.lessons.slice(0, count) : [];
+        statusEl.textContent = `Step 2/2: Fetching real YouTube videos for ${rawLessons.length} lessons...`;
+        const lessons = [];
+        for (const rl of rawLessons) {
+          const vid = await searchRealYouTubeVideo(rl.youtubeQuery || `${topic} ${rl.title}`);
+          lessons.push({
+            title: rl.title || 'Lesson',
+            whyHere: rl.whyHere || '',
+            youtubeQuery: rl.youtubeQuery || '',
+            prerequisites: rl.prerequisites || '',
+            articleTitle: rl.articleTitle || '',
+            articleUrl: rl.articleUrl || '',
+            ytId: vid.ytId, url: vid.url, videoTitle: vid.videoTitle, channel: vid.channel, thumbnail: vid.thumbnail,
+            done: false
+          });
+        }
+        pendingAiCourseDraft = {
+          id: 'course-' + Date.now(),
+          title: parsed.title || topic,
+          level, style, isAi: true,
+          guide: parsed.guide || { whatItMeans: '', howToApproach: '', whyThisOrder: '' },
+          lessons, createdAt: Date.now()
+        };
+        statusEl.textContent = 'Curriculum ready! Review below and tap Approve.';
+        renderAiCourseDraft();
+      } catch (err) {
+        statusEl.textContent = 'Could not generate course: ' + (err && err.message ? err.message : 'Try again');
+        showToast('Course generation failed — check Gemini key.');
+      } finally {
+        btn.disabled = false; btn.innerHTML = '<i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Build Curriculum';
+        lucide.createIcons();
+      }
+    });
+
+    document.getElementById('manualAddStepBtn').addEventListener('click', async () => {
+      const url = document.getElementById('manualStepUrl').value.trim();
+      if (!url) { showToast('Paste a YouTube or article link first.'); return; }
+      const btn = document.getElementById('manualAddStepBtn');
+      btn.disabled = true; btn.textContent = 'Fetching...';
+      try {
+        let title = document.getElementById('manualStepTitle').value.trim();
+        let ytId = extractYouTubeId(url), channel = '', thumbnail = '', videoTitle = title;
+        if (ytId) {
+          const info = await fetchFreeYouTubeDetails(url);
+          if (info) {
+            if (!title) title = info.title;
+            videoTitle = info.title; channel = info.channel; thumbnail = info.thumbnail;
+          }
+        }
+        manualDraftSteps.push({
+          title: title || url.slice(0, 50),
+          whyHere: '', prerequisites: document.getElementById('manualStepPrereq').value.trim(),
+          articleTitle: document.getElementById('manualStepArticle').value.trim() ? 'Supplementary Reading' : '',
+          articleUrl: document.getElementById('manualStepArticle').value.trim(),
+          ytId, url, videoTitle: videoTitle || title, channel, thumbnail, done: false
+        });
+        document.getElementById('manualStepUrl').value = '';
+        document.getElementById('manualStepTitle').value = '';
+        document.getElementById('manualStepPrereq').value = '';
+        document.getElementById('manualStepArticle').value = '';
+        renderManualStepsPreview();
+      } finally {
+        btn.disabled = false; btn.innerHTML = '<i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Step';
+        lucide.createIcons();
+      }
+    });
+
+    document.getElementById('manualResetBtn').addEventListener('click', () => {
+      manualDraftSteps = [];
+      document.getElementById('manualCourseTitle').value = '';
+      document.getElementById('manualCourseGuide').value = '';
+      renderManualStepsPreview();
+    });
+
+    document.getElementById('manualSaveCourseBtn').addEventListener('click', () => {
+      const title = document.getElementById('manualCourseTitle').value.trim();
+      if (!title) { showToast('Enter a course title first.'); return; }
+      if (!manualDraftSteps.length) { showToast('Add at least 1 lesson step.'); return; }
+      const newCourse = {
+        id: 'course-' + Date.now(), title,
+        level: document.getElementById('manualCourseLevel').value,
+        style: 'Custom Manual Track', isAi: false,
+        guide: {
+          whatItMeans: document.getElementById('manualCourseGuide').value.trim() || `Custom self-study track for ${title}.`,
+          howToApproach: 'Work through each step chronologically and check off lessons as you finish them.',
+          whyThisOrder: 'Hand-picked sequence curated by you.'
+        },
+        lessons: manualDraftSteps.slice(), createdAt: Date.now()
+      };
+      if (!Array.isArray(state.courses)) state.courses = [];
+      state.courses.unshift(newCourse);
+      saveState();
+      manualDraftSteps = [];
+      document.getElementById('manualCourseTitle').value = '';
+      document.getElementById('manualCourseGuide').value = '';
+      activeCourseId = newCourse.id; activeCoursePage = 'lessons';
+      renderCoursesView();
+      showToast(`🎓 Saved course "${newCourse.title}"!`);
+    });
+
+    document.getElementById('view-courses').addEventListener('click', e => {
+      const jump = e.target.closest('[data-jump-course-tab]');
+      if (jump) { setCourseSubtab(jump.dataset.jumpCourseTab); return; }
+
+      const openC = e.target.closest('[data-open-course]');
+      if (openC) {
+        activeCourseId = openC.dataset.openCourse; activeCoursePage = 'lessons';
+        renderCoursesView(); return;
+      }
+      if (e.target.closest('#backToCoursesBtn')) { activeCourseId = null; setCourseSubtab('list'); return; }
+
+      const pageBtn = e.target.closest('[data-course-page]');
+      if (pageBtn) { activeCoursePage = pageBtn.dataset.coursePage; renderCoursesView(); return; }
+
+      const delC = e.target.closest('[data-delete-course]');
+      if (delC) {
+        state.courses = (state.courses || []).filter(c => c.id !== delC.dataset.deleteCourse);
+        saveState(); activeCourseId = null; setCourseSubtab('list'); showToast('Course deleted.'); return;
+      }
+
+      const togL = e.target.closest('[data-course-toggle-lesson]');
+      if (togL) {
+        const [cid, idxStr] = togL.dataset.courseToggleLesson.split('|');
+        const c = (state.courses || []).find(x => x.id === cid);
+        const l = c && c.lessons && c.lessons[Number(idxStr)];
+        if (l) { l.done = !l.done; triggerHaptic(10); saveState(); renderCourseDetail(c); }
+        return;
+      }
+
+      const noteL = e.target.closest('[data-course-lesson-note]');
+      if (noteL) {
+        const [cid, idxStr] = noteL.dataset.courseLessonNote.split('|');
+        const c = (state.courses || []).find(x => x.id === cid);
+        const l = c && c.lessons && c.lessons[Number(idxStr)];
+        if (l) {
+          openSaveModal();
+          document.getElementById('saveUrlInput').value = l.url || '';
+          document.getElementById('saveCaptionInput').value = `Course: ${c.title} — Step ${Number(idxStr) + 1}: ${l.title}\nPrerequisites: ${l.prerequisites || 'None'}`;
+          showToast('Loaded lesson into AI Extractor — tap Extract with AI!');
+        }
+        return;
+      }
+
+      const rmDraft = e.target.closest('[data-remove-draft-step]');
+      if (rmDraft && pendingAiCourseDraft) {
+        pendingAiCourseDraft.lessons.splice(Number(rmDraft.dataset.removeDraftStep), 1);
+        renderAiCourseDraft(); return;
+      }
+      if (e.target.closest('#discardAiCourseBtn')) { pendingAiCourseDraft = null; renderAiCourseDraft(); return; }
+      if (e.target.closest('#approveAiCourseBtn') && pendingAiCourseDraft) {
+        if (!Array.isArray(state.courses)) state.courses = [];
+        state.courses.unshift(pendingAiCourseDraft);
+        const cid = pendingAiCourseDraft.id;
+        pendingAiCourseDraft = null;
+        saveState();
+        renderAiCourseDraft();
+        activeCourseId = cid; activeCoursePage = 'guide';
+        renderCoursesView();
+        showToast('🎓 Course approved & added to your library!');
+        return;
+      }
+
+      const delM = e.target.closest('[data-del-manual-step]');
+      if (delM) { manualDraftSteps.splice(Number(delM.dataset.delManualStep), 1); renderManualStepsPreview(); }
+    });
+
     // Register Service Worker for true standalone Android/iOS PWA install
     if ('serviceWorker' in navigator && location.protocol !== 'file:') {
       navigator.serviceWorker.register('./sw.js').catch(() => {});
@@ -3486,9 +4373,6 @@ Video: ${text}`;
       applyTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark');
     });
 
-    const mobSearchBtn = document.getElementById('mobileFloatingSearchBtn');
-    if (mobSearchBtn) mobSearchBtn.addEventListener('click', () => { triggerHaptic(8); openQuickSearchModal(); });
-
     // Reading progress hairline on Note Drawer scroll
     const drawerPanel = document.getElementById('detailDrawerPanel');
     if (drawerPanel) {
@@ -3511,28 +4395,539 @@ Video: ${text}`;
       if (e.target.closest('.mobile-nav-tab, .nav-tab, [data-toggle-done], [data-srs-rate], #drillFlipBtn')) triggerHaptic(8);
     });
 
-    // Dynamic time-aware greeting + Due Today pill on Hero Card
-    function updateHeroGreetingAndDue() {
-      const hr = new Date().getHours();
-      const first = currentUser && currentUser.name ? currentUser.name.split(' ')[0] : '';
-      let greet = 'Learn, build & unwind.';
-      if (first) {
-        if (hr < 5) greet = `Late night grind, ${first}.`;
-        else if (hr < 12) greet = `Good morning, ${first}.`;
-        else if (hr < 17) greet = `Afternoon flow, ${first}.`;
-        else greet = `Good evening, ${first}.`;
-      }
-      const el = document.getElementById('heroGreetingTitle');
-      if (el) el.textContent = greet;
-      const due = getAllFlashcards().filter(c => c.isDue).length;
-      const pill = document.getElementById('heroDuePill');
-      if (pill) {
-        pill.textContent = `${due} due today`;
-        pill.classList.toggle('hidden', due === 0);
-      }
+
+
+    // ==================== ROLLING ODOMETER POMODORO & HABIT HEATMAP ====================
+    let pomoTotalSec = 40 * 60;
+    let pomoRemainSec = 40 * 60;
+    let pomoRunning = false;
+    let pomoEndAt = 0;
+    let pomoInterval = null;
+    let pomoLastNotifMin = -1;
+    const POMO_TICKS = 36;
+
+    function playPomoChime() {
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        const ctx = new AC();
+        const now = ctx.currentTime;
+        [523.25, 659.25, 783.99].forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + i * 0.14);
+          gain.gain.setValueAtTime(0.001, now + i * 0.14);
+          gain.gain.exponentialRampToValueAtTime(0.14, now + i * 0.14 + 0.03);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.14 + 0.65);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(now + i * 0.14); osc.stop(now + i * 0.14 + 0.7);
+        });
+      } catch (e) {}
     }
 
-    updateAiStatusUI(); initFirebaseIfConfigured(); updateAuthUI(); switchView('home'); updateHeroGreetingAndDue(); handleIncomingWebShare();
+    async function postPomoNotification(title, body, isComplete) {
+      if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+      const opts = {
+        body, tag: 'aletheia-pomo', icon: './icon-192.png', badge: './icon-192.png',
+        silent: !isComplete, renotify: !!isComplete
+      };
+      try {
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+          const reg = await navigator.serviceWorker.ready;
+          await reg.showNotification(title, opts);
+          return;
+        }
+      } catch (e) {}
+      try { new Notification(title, opts); } catch (e) {}
+    }
+
+    async function clearPomoNotification() {
+      pomoLastNotifMin = -1;
+      try {
+        if ('serviceWorker' in navigator) {
+          const reg = await navigator.serviceWorker.ready;
+          const list = await reg.getNotifications({ tag: 'aletheia-pomo' });
+          list.forEach(n => n.close());
+        }
+      } catch (e) {}
+    }
+
+    function updatePomoProgressNotification(force) {
+      if (!pomoRunning || typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+      const remMin = Math.ceil(pomoRemainSec / 60);
+      if (!force && remMin === pomoLastNotifMin) return;
+      pomoLastNotifMin = remMin;
+      const pct = pomoTotalSec > 0 ? Math.min(100, Math.round(((pomoTotalSec - pomoRemainSec) / pomoTotalSec) * 100)) : 0;
+      const filled = Math.round(pct / 10);
+      const bar = '▓'.repeat(filled) + '░'.repeat(10 - filled);
+      postPomoNotification(`Deep Work • ${remMin}m left`, `${bar} ${pct}%`, false);
+    }
+
+    function fmtPomo(sec) {
+      const s = Math.max(0, Math.floor(sec));
+      const m = Math.floor(s / 60), r = s % 60;
+      return `${String(m).padStart(2, '0')}:${String(r).padStart(2, '0')}`;
+    }
+
+    function getLocalDateKey(ts) {
+      const d = new Date(ts || Date.now());
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function getFocusMinutesByDay() {
+      const map = {};
+      (state.focusSessions || []).forEach(s => {
+        const k = s.date || getLocalDateKey(s.ts);
+        map[k] = (map[k] || 0) + (Number(s.minutes) || 0);
+      });
+      return map;
+    }
+
+    function computeFocusStreak(dayMap) {
+      let cur = 0, longest = 0, run = 0;
+      const today = new Date();
+      today.setHours(12, 0, 0, 0);
+      for (let i = 0; i < 365; i++) {
+        const d = new Date(today.getTime() - i * 86400000);
+        const k = getLocalDateKey(d.getTime());
+        if ((dayMap[k] || 0) > 0) {
+          if (i === cur) cur++;
+        } else if (i > 0) break;
+      }
+      // Compute longest across last 180 days
+      for (let i = 180; i >= 0; i--) {
+        const d = new Date(today.getTime() - i * 86400000);
+        if ((dayMap[getLocalDateKey(d.getTime())] || 0) > 0) { run++; if (run > longest) longest = run; }
+        else run = 0;
+      }
+      return { cur, longest: Math.max(longest, cur) };
+    }
+
+    function setDrumDigit(id, digit) {
+      const el = document.getElementById(id);
+      if (el) el.style.transform = `translateY(-${Number(digit) * 1.15}em)`;
+    }
+
+    function renderPomoUI() {
+      const track = document.getElementById('pomoTickTrack');
+      const btn = document.getElementById('pomoStartPauseBtn');
+      const logEarly = document.getElementById('pomoLogEarlyBtn');
+      const hdrPill = document.getElementById('headerPomoPill');
+      const hdrTime = document.getElementById('headerPomoTime');
+      const phase = document.getElementById('pomoPhaseLabel');
+      const todaySum = document.getElementById('pomoTodaySummary');
+      const streakLbl = document.getElementById('heroStreakLabel');
+
+      const s = Math.max(0, Math.floor(pomoRemainSec));
+      const mTotal = Math.floor(s / 60), rSec = s % 60;
+      const mClamped = Math.min(99, mTotal);
+      const mStr = String(mClamped).padStart(2, '0');
+      const sStr = String(rSec).padStart(2, '0');
+
+      setDrumDigit('pomoD_m1', mStr[0]);
+      setDrumDigit('pomoD_m2', mStr[1]);
+      setDrumDigit('pomoD_s1', sStr[0]);
+      setDrumDigit('pomoD_s2', sStr[1]);
+
+      const timeStr = `${String(mTotal).padStart(2, '0')}:${sStr}`;
+      if (hdrTime) hdrTime.textContent = timeStr;
+      if (hdrPill) { hdrPill.classList.toggle('hidden', !pomoRunning); hdrPill.classList.toggle('flex', pomoRunning); }
+      if (phase) phase.textContent = pomoRunning ? 'Focusing...' : (pomoRemainSec < pomoTotalSec ? 'Paused' : 'Deep Work');
+
+      const elapsedMin = Math.floor((pomoTotalSec - pomoRemainSec) / 60);
+      if (logEarly) logEarly.classList.toggle('hidden', elapsedMin < 1);
+
+      if (btn) {
+        btn.innerHTML = pomoRunning
+          ? '<span>⏸</span><span>Pause</span>'
+          : `<span>▶</span><span>${pomoRemainSec < pomoTotalSec ? 'Resume' : 'Start Focus'}</span>`;
+      }
+
+      const progress = pomoTotalSec > 0 ? (pomoTotalSec - pomoRemainSec) / pomoTotalSec : 0;
+      const litCount = Math.round(progress * POMO_TICKS);
+      if (track) {
+        let ticksHtml = '';
+        for (let i = 0; i < POMO_TICKS; i++) {
+          const isMajor = i % 6 === 0;
+          const isLit = i < litCount;
+          const hCls = isMajor ? 'h-4' : 'h-2.5';
+          const cCls = isLit ? 'bg-[#FF5A36]' : (isMajor ? 'bg-white/35' : 'bg-white/15');
+          ticksHtml += `<span class="pomo-tick flex-1 rounded-full ${hCls} ${cCls}"></span>`;
+        }
+        track.innerHTML = ticksHtml;
+      }
+
+      const dayMap = getFocusMinutesByDay();
+      const todayMins = dayMap[getLocalDateKey()] || 0;
+      const streak = computeFocusStreak(dayMap);
+      if (todaySum) todaySum.textContent = `${todayMins}m today`;
+      if (streakLbl) streakLbl.textContent = `${streak.cur}d streak`;
+    }
+
+    function logFocusMinutes(mins) {
+      const m = Math.max(1, Math.round(mins));
+      if (!Array.isArray(state.focusSessions)) state.focusSessions = [];
+      state.focusSessions.unshift({ id: 'fs-' + Date.now(), minutes: m, ts: Date.now(), date: getLocalDateKey() });
+      saveState();
+      renderPomoUI();
+      showToast(`🔥 Logged ${m} min of deep focus!`);
+      if (typeof confetti === 'function' && m >= 20) confetti({ particleCount: 45, spread: 60, origin: { y: 0.5 } });
+    }
+
+    function setPomoDuration(mins) {
+      const clamped = Math.max(1, Math.min(99, Math.round(Number(mins) || 40)));
+      if (pomoRunning) { clearInterval(pomoInterval); pomoRunning = false; }
+      pomoTotalSec = clamped * 60;
+      pomoRemainSec = clamped * 60;
+      document.querySelectorAll('.pomo-preset-btn').forEach(b => {
+        if (Number(b.dataset.pomoMin) === clamped) { b.classList.add('prog-pill-white', 'bg-white', 'text-[#121210]', 'font-bold'); b.classList.remove('bg-white/10', 'text-neutral-300'); }
+        else { b.classList.remove('prog-pill-white', 'bg-white', 'text-[#121210]', 'font-bold'); b.classList.add('bg-white/10', 'text-neutral-300'); }
+      });
+      renderPomoUI();
+    }
+
+    document.querySelectorAll('.pomo-preset-btn').forEach(b => b.addEventListener('click', () => { triggerHaptic(8); setPomoDuration(b.dataset.pomoMin); }));
+    document.getElementById('pomoCustomBtn').addEventListener('click', () => {
+      const w = document.getElementById('pomoCustomWrap');
+      w.classList.toggle('hidden');
+      if (!w.classList.contains('hidden')) document.getElementById('pomoCustomInput').focus();
+    });
+    function applyCustomPomo() {
+      setPomoDuration(document.getElementById('pomoCustomInput').value);
+      document.getElementById('pomoCustomWrap').classList.add('hidden');
+      showToast(`Timer set to ${Math.round(pomoTotalSec / 60)} min`);
+    }
+    document.getElementById('pomoCustomApplyBtn').addEventListener('click', applyCustomPomo);
+    document.getElementById('pomoCustomInput').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); applyCustomPomo(); } });
+    document.getElementById('pomoStartPauseBtn').addEventListener('click', async () => {
+      triggerHaptic(12);
+      if (pomoRunning) {
+        clearInterval(pomoInterval);
+        pomoRemainSec = Math.max(0, Math.ceil((pomoEndAt - Date.now()) / 1000));
+        pomoRunning = false;
+        clearPomoNotification();
+        renderPomoUI();
+        return;
+      }
+      if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+        try { await Notification.requestPermission(); } catch (e) {}
+      }
+      if (pomoRemainSec <= 0) pomoRemainSec = pomoTotalSec;
+      pomoRunning = true;
+      pomoEndAt = Date.now() + pomoRemainSec * 1000;
+      updatePomoProgressNotification(true);
+      pomoInterval = setInterval(() => {
+        const left = Math.max(0, Math.ceil((pomoEndAt - Date.now()) / 1000));
+        if (left !== pomoRemainSec) {
+          pomoRemainSec = left;
+          if (pomoRemainSec <= 0) {
+            clearInterval(pomoInterval); pomoRunning = false;
+            const completedMin = Math.round(pomoTotalSec / 60);
+            pomoRemainSec = pomoTotalSec;
+            playPomoChime();
+            try { if (navigator.vibrate) navigator.vibrate([80, 50, 120]); } catch (e) {}
+            postPomoNotification('Focus Session Complete!', `Logged ${completedMin} min of deep work in Aletheia.`, true);
+            logFocusMinutes(completedMin);
+            return;
+          }
+          renderPomoUI();
+          updatePomoProgressNotification(false);
+        }
+      }, 250);
+      renderPomoUI();
+    });
+    document.getElementById('pomoLogEarlyBtn').addEventListener('click', () => {
+      const elapsed = Math.floor((pomoTotalSec - pomoRemainSec) / 60);
+      if (pomoRunning) { clearInterval(pomoInterval); pomoRunning = false; }
+      clearPomoNotification();
+      pomoRemainSec = pomoTotalSec;
+      if (elapsed >= 1) logFocusMinutes(elapsed);
+    });
+    document.getElementById('pomoResetBtn').addEventListener('click', () => {
+      triggerHaptic(8);
+      if (pomoRunning) { clearInterval(pomoInterval); pomoRunning = false; }
+      clearPomoNotification();
+      pomoRemainSec = pomoTotalSec;
+      renderPomoUI();
+    });
+
+    function openFocusStatsModal() {
+      const dayMap = getFocusMinutesByDay();
+      const sessions = state.focusSessions || [];
+      const streak = computeFocusStreak(dayMap);
+      const totalMins = sessions.reduce((s, x) => s + (Number(x.minutes) || 0), 0);
+      const todayMins = dayMap[getLocalDateKey()] || 0;
+      const goalMin = state.dailyGoalMin || 80;
+      const goalPct = Math.min(100, Math.round((todayMins / Math.max(1, goalMin)) * 100));
+
+      document.getElementById('statStreakVal').textContent = streak.cur;
+      document.getElementById('statStreakSub').textContent = `Longest: ${streak.longest} day${streak.longest === 1 ? '' : 's'}`;
+      document.getElementById('statTotalVal').textContent = totalMins >= 60 ? `${(totalMins / 60).toFixed(1)}h` : `${totalMins}m`;
+      document.getElementById('statTotalSub').textContent = `${sessions.length} session${sessions.length === 1 ? '' : 's'} logged`;
+      document.getElementById('statGoalPctVal').textContent = `${goalPct}%`;
+      document.getElementById('statGoalBar').style.width = `${goalPct}%`;
+      document.getElementById('statGoalSub').textContent = `${todayMins} / ${goalMin} min today`;
+
+      // Average log time of day
+      if (sessions.length) {
+        const avgMinOfDay = Math.round(sessions.reduce((acc, s) => { const d = new Date(s.ts || Date.now()); return acc + d.getHours() * 60 + d.getMinutes(); }, 0) / sessions.length);
+        const hr24 = Math.floor(avgMinOfDay / 60), min = avgMinOfDay % 60;
+        const ampm = hr24 >= 12 ? 'PM' : 'AM';
+        const hr12 = hr24 % 12 || 12;
+        document.getElementById('statAvgTimeVal').textContent = `${hr12}:${String(min).padStart(2, '0')}`;
+        document.getElementById('statAvgTimeSub').textContent = `${ampm} peak window`;
+      } else {
+        document.getElementById('statAvgTimeVal').textContent = '--:--';
+        document.getElementById('statAvgTimeSub').textContent = 'Log a session first';
+      }
+
+      // Build 16-week (M-S) intensity heatmap
+      const grid = document.getElementById('focusHeatmapGrid');
+      const today = new Date(); today.setHours(12, 0, 0, 0);
+      const dayOfWeekMon0 = (today.getDay() + 6) % 7; // 0 = Mon .. 6 = Sun
+      const startDate = new Date(today.getTime() - (15 * 7 + dayOfWeekMon0) * 86400000);
+      const fmtShort = d => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      document.getElementById('heatmapDateRange').textContent = `${fmtShort(startDate)} — ${fmtShort(today)}`;
+
+      let colsHtml = '';
+      for (let w = 0; w < 16; w++) {
+        colsHtml += '<div class="flex flex-col gap-[3px]">';
+        for (let d = 0; d < 7; d++) {
+          const cellDate = new Date(startDate.getTime() + (w * 7 + d) * 86400000);
+          const isFuture = cellDate > today;
+          const k = getLocalDateKey(cellDate.getTime());
+          const mins = dayMap[k] || 0;
+          const lvl = mins <= 0 ? 0 : (mins < 40 ? 1 : (mins < 80 ? 2 : (mins < 120 ? 3 : 4)));
+          colsHtml += `<button type="button" data-hm-date="${k}" data-hm-mins="${mins}" class="hm-cell hm-${lvl} ${isFuture ? 'opacity-20 pointer-events-none' : ''}" title="${k}: ${mins} min"></button>`;
+        }
+        colsHtml += '</div>';
+      }
+      grid.innerHTML = colsHtml;
+
+      // Recent Records list
+      document.getElementById('statRecordsCount').textContent = sessions.length;
+      const recBox = document.getElementById('focusRecordsList');
+      recBox.innerHTML = sessions.length
+        ? sessions.slice(0, 15).map(s => {
+            const dt = new Date(s.ts || Date.now());
+            const dateStr = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            const timeStr = dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            return `<div class="flex items-center justify-between px-3.5 py-2 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-xs"><span class="font-semibold text-[#1C1B19]">${dateStr} • ${s.minutes} min</span><span class="text-[#6B6A66] tabular-nums">${timeStr}</span></div>`;
+          }).join('')
+        : `<p class="text-xs text-[#6B6A66] text-center py-4">Complete a Pomodoro or tap + Log Session to start your heatmap.</p>`;
+
+      document.getElementById('focusStatsModal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    ['pomoDialTapArea', 'openFocusStatsTopBtn', 'openFocusStatsPillBtn', 'headerPomoPill'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('click', () => { triggerHaptic(8); openFocusStatsModal(); });
+    });
+    document.getElementById('closeFocusStatsBtn').addEventListener('click', () => document.getElementById('focusStatsModal').classList.add('hidden'));
+    document.getElementById('focusStatsModal').addEventListener('click', e => { if (e.target.id === 'focusStatsModal') document.getElementById('focusStatsModal').classList.add('hidden'); });
+    document.getElementById('focusHeatmapGrid').addEventListener('click', e => {
+      const c = e.target.closest('[data-hm-date]');
+      if (c) document.getElementById('heatmapHoverInfo').textContent = `${c.dataset.hmDate} — ${c.dataset.hmMins} min focused`;
+    });
+    document.getElementById('logManualFocusBtn').addEventListener('click', () => {
+      const val = prompt('Minutes focused to log for today:', '40');
+      if (val && !isNaN(Number(val)) && Number(val) > 0) { logFocusMinutes(Number(val)); openFocusStatsModal(); }
+    });
+    document.getElementById('editDailyGoalBtn').addEventListener('click', () => {
+      const val = prompt('Set your daily focus goal (minutes):', String(state.dailyGoalMin || 80));
+      if (val && !isNaN(Number(val)) && Number(val) >= 10) { state.dailyGoalMin = Math.round(Number(val)); saveState(); openFocusStatsModal(); }
+    });
+
+    // ==================== COURSE-POWERED STUDY ARENA (MCQ + EXPLAIN-IT-BACK) ====================
+    let selectedStudyCourseId = 'all';
+
+    function populateStudyCourseDropdown() {
+      const sel = document.getElementById('studyCourseSelect');
+      if (!sel) return;
+      const courses = state.courses || [];
+      sel.innerHTML = `<option value="all">All Vault Notes &amp; Flashcards</option>` +
+        courses.map(c => `<option value="${c.id}" ${selectedStudyCourseId === c.id ? 'selected' : ''}>🎓 ${escapeHtml(c.title)}</option>`).join('');
+    }
+
+    function getStudyCourseContext() {
+      if (selectedStudyCourseId === 'all') return null;
+      const c = (state.courses || []).find(x => x.id === selectedStudyCourseId);
+      if (!c) return null;
+      const scope = document.getElementById('studyScopeSelect')?.value || 'completed';
+      let lessons = c.lessons || [];
+      if (scope === 'completed') {
+        const comp = lessons.filter(l => l.done);
+        if (comp.length) lessons = comp;
+      }
+      const lessonSummary = lessons.map((l, i) => `Step ${i + 1}: ${l.title} (Prerequisites: ${l.prerequisites || 'None'})${l.whyHere ? ' — ' + l.whyHere : ''}`).join('\n');
+      return { course: c, lessons, text: `Course: ${c.title} (${c.level})\nOverview: ${c.guide?.whatItMeans || ''}\nLessons:\n${lessonSummary}` };
+    }
+
+    const _origRenderDecide = renderDecide;
+    renderDecide = function() {
+      populateStudyCourseDropdown();
+      _origRenderDecide();
+      const ctx = getStudyCourseContext();
+      if (decideMode === 'study' && ctx) {
+        const c = ctx.course;
+        const tot = (c.lessons || []).length, dn = (c.lessons || []).filter(l => l.done).length;
+        const pct = tot > 0 ? Math.round((dn / tot) * 100) : 0;
+        const nextL = (c.lessons || []).find(l => !l.done) || (c.lessons || [])[0];
+        document.getElementById('decideFeaturedCard').innerHTML = `
+          <div class="p-6 flex flex-col justify-between h-full gap-4 animate-pop">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#F4F3F1] text-[#1C1B19]">Active Course • ${pct}%</span>
+                <span class="text-[11px] font-semibold text-[#6B6A66] tabular-nums">${dn}/${tot} lessons</span>
+              </div>
+              <h3 class="font-editorial text-2xl sm:text-3xl font-medium text-[#1C1B19] leading-tight">${escapeHtml(c.title)}</h3>
+              <div class="h-1.5 rounded-full bg-[#E8E6E0] overflow-hidden"><div class="h-full bg-[#FF5A36] rounded-full" style="width:${pct}%"></div></div>
+              ${nextL ? `<div class="p-3.5 rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] space-y-1"><div class="text-[10px] font-bold uppercase tracking-wider text-[#6B6A66]">Next Lesson Up</div><div class="text-xs font-bold text-[#1C1B19]">${escapeHtml(nextL.title)}</div>${nextL.prerequisites ? `<div class="text-[11px] text-[#6B6A66]">Prerequisites: ${escapeHtml(nextL.prerequisites)}</div>` : ''}</div>` : ''}
+            </div>
+            <div class="flex flex-wrap gap-2 pt-2">
+              <button type="button" id="studyResumeCourseBtn" class="flex-1 py-2.5 px-4 rounded-xl bg-[#1C1B19] text-white text-xs font-bold">Resume Course →</button>
+            </div>
+          </div>`;
+        const rb = document.getElementById('studyResumeCourseBtn');
+        if (rb) rb.addEventListener('click', () => { activeCourseId = c.id; activeCoursePage = 'lessons'; switchView('courses'); });
+      }
+      lucide.createIcons();
+    };
+
+    document.getElementById('studyCourseSelect').addEventListener('change', e => {
+      selectedStudyCourseId = e.target.value;
+      document.getElementById('courseQuizArena').classList.add('hidden');
+      renderDecide();
+    });
+
+    // Generate Course Flashcards & save into Vault SRS
+    document.getElementById('genCourseFlashcardsBtn').addEventListener('click', async () => {
+      const ctx = getStudyCourseContext();
+      if (!ctx) { showToast('Pick a Custom Course in the dropdown first!'); return; }
+      const apiKey = getGeminiKey();
+      if (!apiKey) { showToast('Connect your Gemini API key first.'); return; }
+      const btn = document.getElementById('genCourseFlashcardsBtn');
+      btn.disabled = true; btn.textContent = 'Generating...';
+      try {
+        const prompt = `Create 5 concise active-recall flashcards specifically testing the concepts and prerequisites of this course:
+${ctx.text}
+Return ONLY valid JSON: {"flashcards":[{"q":"Question?","a":"Concise clear answer."}]}`;
+        const res = await runGeminiRequest(apiKey, [{ text: prompt }], { json: true, useSearch: false, maxTokens: 1400 });
+        const parsed = extractJsonObject(res.text);
+        const cards = Array.isArray(parsed.flashcards) ? parsed.flashcards : [];
+        if (cards.length) {
+          let holder = state.items.find(i => i.courseDeckId === ctx.course.id);
+          if (!holder) {
+            holder = { id: 'item-cdeck-' + Date.now(), courseDeckId: ctx.course.id, title: ctx.course.title + ' (Flashcards)', category: 'study', difficulty: ctx.course.level || '', tags: ['CourseQuiz'], source: 'Course Deck', url: '', image: '', notes: `Active-recall deck for ${ctx.course.title}`, explanation: '', personalNote: '', tools: [], projectAngle: '', flashcards: [], collectionIds: [], done: false, aiAnalyzed: true, createdAt: Date.now() };
+            state.items.unshift(holder);
+          }
+          holder.flashcards = [...cards, ...(holder.flashcards || [])];
+          saveState();
+          drillIdx = 0; drillFlipped = false;
+          renderDecide();
+          showToast(`🧠 Added ${cards.length} spaced-repetition flashcards for ${ctx.course.title}!`);
+        }
+      } catch (err) { showToast('Could not generate flashcards.'); }
+      finally { btn.disabled = false; btn.textContent = '+ Flashcards'; }
+    });
+
+    // 5-Question MCQ Concept Check
+    document.getElementById('genCourseMcqBtn').addEventListener('click', async () => {
+      const ctx = getStudyCourseContext();
+      const apiKey = getGeminiKey();
+      if (!apiKey) { showToast('Connect your Gemini API key first.'); return; }
+      const sourceText = ctx ? ctx.text : state.items.slice(0, 6).map(i => `${i.title}: ${i.notes}`).join('\n');
+      if (!sourceText.trim()) { showToast('Create a Course or save a note first!'); return; }
+      const arena = document.getElementById('courseQuizArena');
+      arena.classList.remove('hidden');
+      arena.innerHTML = `<div class="text-xs text-[#6B6A66] py-6 text-center">Generating 5 concept-check MCQs...</div>`;
+      try {
+        const prompt = `Create 5 crisp multiple-choice questions to test real understanding of:
+${sourceText}
+Return ONLY valid JSON: {"questions":[{"q":"Question?","options":["A","B","C","D"],"answerIdx":0,"explain":"1-sentence explanation of why."}]}`;
+        const res = await runGeminiRequest(apiKey, [{ text: prompt }], { json: true, useSearch: false, maxTokens: 1800 });
+        const parsed = extractJsonObject(res.text);
+        const qs = Array.isArray(parsed.questions) ? parsed.questions : [];
+        arena.innerHTML = `
+          <div class="flex items-center justify-between pb-2 border-b border-[#E8E6E0]">
+            <h4 class="font-editorial text-xl font-medium text-[#1C1B19]">Concept Check (${qs.length} MCQs)</h4>
+            <button type="button" onclick="document.getElementById('courseQuizArena').classList.add('hidden')" class="text-xs text-[#6B6A66] hover:text-[#1C1B19]">Close</button>
+          </div>
+          <div class="space-y-4">
+            ${qs.map((q, qi) => `
+              <div class="p-4 rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] space-y-2.5" data-mcq-block="${qi}" data-mcq-ans="${q.answerIdx}">
+                <div class="text-xs font-bold text-[#1C1B19]">${qi + 1}. ${escapeHtml(q.q)}</div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                  ${(q.options || []).map((opt, oi) => `<button type="button" data-mcq-pick="${qi}|${oi}" class="text-left px-3 py-2 rounded-xl bg-white border border-[#E8E6E0] hover:border-[#1C1B19] text-xs text-[#1C1B19] transition-colors">${escapeHtml(opt)}</button>`).join('')}
+                </div>
+                <div id="mcqExp_${qi}" class="hidden text-[11px] text-[#6B6A66] pt-1">${escapeHtml(q.explain || '')}</div>
+              </div>
+            `).join('')}
+          </div>`;
+      } catch (err) { arena.innerHTML = `<div class="text-xs text-red-500">Failed to generate MCQ quiz.</div>`; }
+    });
+
+    // Explain It Back (Oral Exam / Interview Grader)
+    document.getElementById('genCourseOralBtn').addEventListener('click', async () => {
+      const ctx = getStudyCourseContext();
+      const apiKey = getGeminiKey();
+      if (!apiKey) { showToast('Connect your Gemini API key first.'); return; }
+      const sourceText = ctx ? ctx.text : state.items.slice(0, 6).map(i => `${i.title}: ${i.notes}`).join('\n');
+      if (!sourceText.trim()) { showToast('Create a Course or save a note first!'); return; }
+      const arena = document.getElementById('courseQuizArena');
+      arena.classList.remove('hidden');
+      arena.innerHTML = `<div class="text-xs text-[#6B6A66] py-6 text-center">Crafting an interview / oral-exam question...</div>`;
+      try {
+        const prompt = `Ask ONE deep, conceptual or practical interview-style question based on:
+${sourceText}
+Return ONLY valid JSON: {"question":"Your question here","keyPoints":"What a strong answer should cover"}`;
+        const res = await runGeminiRequest(apiKey, [{ text: prompt }], { json: true, useSearch: false, maxTokens: 500 });
+        const parsed = extractJsonObject(res.text);
+        arena.innerHTML = `
+          <div class="flex items-center justify-between pb-2 border-b border-[#E8E6E0]">
+            <h4 class="font-editorial text-xl font-medium text-[#1C1B19]">Explain It Back (Oral Exam)</h4>
+            <button type="button" onclick="document.getElementById('courseQuizArena').classList.add('hidden')" class="text-xs text-[#6B6A66] hover:text-[#1C1B19]">Close</button>
+          </div>
+          <p class="font-editorial text-lg text-[#1C1B19] leading-snug">${escapeHtml(parsed.question || '')}</p>
+          <textarea id="oralAnswerInput" rows="3" placeholder="Explain it in 2–4 sentences as if you were in an interview or oral exam..." class="editorial-input w-full px-3.5 py-2.5 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm"></textarea>
+          <button id="gradeOralBtn" type="button" class="px-4 py-2 rounded-xl bg-[#1C1B19] text-white text-xs font-bold">Grade My Explanation</button>
+          <div id="oralFeedbackBox" class="hidden p-4 rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] text-xs space-y-1.5"></div>`;
+        document.getElementById('gradeOralBtn').addEventListener('click', async () => {
+          const ans = document.getElementById('oralAnswerInput').value.trim();
+          if (!ans) return;
+          const fb = document.getElementById('oralFeedbackBox');
+          fb.classList.remove('hidden'); fb.innerHTML = 'Grading your answer...';
+          try {
+            const gp = `Question: ${parsed.question}
+Key concepts expected: ${parsed.keyPoints}
+Student's answer: ${ans}
+Give a concise score out of 10, what they nailed, and 1–2 specific things they missed or can sharpen (Markdown).`;
+            const gr = await runGeminiRequest(apiKey, [{ text: gp }], { json: false, useSearch: false, maxTokens: 600 });
+            fb.innerHTML = renderObsidianMarkdown(gr.text);
+          } catch (e) { fb.textContent = 'Could not grade answer.'; }
+        });
+      } catch (err) { arena.innerHTML = `<div class="text-xs text-red-500">Could not generate question.</div>`; }
+    });
+
+    document.getElementById('courseQuizArena').addEventListener('click', e => {
+      const pick = e.target.closest('[data-mcq-pick]');
+      if (!pick) return;
+      triggerHaptic(8);
+      const [qi, oi] = pick.dataset.mcqPick.split('|').map(Number);
+      const blk = pick.closest('[data-mcq-block]');
+      const correctIdx = Number(blk.dataset.mcqAns);
+      blk.querySelectorAll('[data-mcq-pick]').forEach((b, idx) => {
+        b.disabled = true;
+        if (idx === correctIdx) b.classList.add('border-emerald-500', 'bg-emerald-500/15', 'font-bold');
+        else if (idx === oi) b.classList.add('border-red-500', 'bg-red-500/15');
+      });
+      const exp = document.getElementById('mcqExp_' + qi);
+      if (exp) exp.classList.remove('hidden');
+    });
+
+    updateAiStatusUI(); initFirebaseIfConfigured(); updateAuthUI(); switchView('home'); renderPomoUI(); handleIncomingWebShare();
 
     // Smooth 0.45s launch splash dissolve
     setTimeout(() => {

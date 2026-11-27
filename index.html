@@ -185,74 +185,40 @@
     html.dark .hm-2 { background: rgba(245, 244, 240, 0.48); }
     html.dark .hm-3 { background: rgba(245, 244, 240, 0.74); }
     html.dark .hm-4 { background: #F5F4F0; }
-    /* Architectural Vertical Flowchart Canvas & Nodes */
-    .exp-canvas {
-      background-color: var(--surface);
-      background-image: radial-gradient(rgba(28, 27, 25, 0.12) 1px, transparent 1px);
-      background-size: 18px 18px;
-      border: 1px solid var(--border-soft);
+    /* Refined Left-Spine Curved-Elbow Vertical Flowchart Tree (Explainers & Courses) */
+    .exp-spine { position: relative; padding-left: 26px; }
+    .exp-spine::before {
+      content: ''; position: absolute; left: 10px; top: 0; bottom: 20px; width: 2px;
+      background: linear-gradient(to bottom, var(--coral), var(--border-soft));
+      border-radius: 2px; opacity: 0.75;
     }
-    html.dark .exp-canvas {
-      background-color: #10100F;
-      background-image: radial-gradient(rgba(255, 255, 255, 0.085) 1px, transparent 1px);
-      border-color: rgba(255, 255, 255, 0.08);
+    .exp-branch { position: relative; }
+    .exp-branch::before {
+      content: ''; position: absolute; left: -16px; top: 16px; width: 16px; height: 16px;
+      border-left: 2px solid var(--border-soft); border-bottom: 2px solid var(--border-soft);
+      border-bottom-left-radius: 12px;
     }
-    .exp-flow-connector {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      height: 28px; position: relative;
+    .exp-node-dot {
+      position: absolute; left: -21px; top: 27px; width: 11px; height: 11px; border-radius: 9999px;
+      background: var(--surface-card); border: 2.5px solid var(--coral); z-index: 2;
+      box-shadow: 0 0 0 3px var(--surface-card);
+      transition: transform 0.2s ease, background-color 0.2s ease;
     }
-    .exp-flow-connector::before {
-      content: ''; width: 1.5px; height: 18px;
-      background: linear-gradient(to bottom, var(--border-soft), var(--coral));
-      opacity: 0.7;
+    .exp-branch:has(details[open]) > .exp-node-dot { background: var(--coral); transform: scale(1.15); }
+    .exp-node-details {
+      background: var(--surface-low); border: 1px solid var(--border-soft);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
     }
-    .exp-flow-arrow {
-      width: 0; height: 0;
-      border-left: 4.5px solid transparent; border-right: 4.5px solid transparent;
-      border-top: 6px solid var(--coral); opacity: 0.85;
+    .exp-node-details[open] {
+      border-color: rgba(255, 90, 54, 0.42);
+      box-shadow: 0 8px 22px -8px rgba(28, 27, 25, 0.10);
     }
-    .exp-card-node {
-      background: var(--surface-card);
-      border: 1px solid var(--border-soft);
-      box-shadow: 0 4px 16px -4px rgba(28, 27, 25, 0.06);
-      transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.22s ease, box-shadow 0.22s ease;
-    }
-    html.dark .exp-card-node {
-      background: #171715;
-      border-color: rgba(255, 255, 255, 0.09);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 10px 24px -8px rgba(0, 0, 0, 0.55);
-    }
-    .exp-card-node[open] {
-      border-color: rgba(255, 90, 54, 0.45);
-      box-shadow: 0 10px 28px -8px rgba(28, 27, 25, 0.12);
-    }
-    html.dark .exp-card-node[open] {
+    html.dark .exp-node-details[open] {
       border-color: rgba(245, 244, 240, 0.28);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 14px 32px -8px rgba(0, 0, 0, 0.7);
-    }
-    .exp-step-badge {
-      background: var(--surface-low); color: var(--ink); border: 1px solid var(--border-soft);
-      transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-    }
-    .exp-card-node[open] > summary .exp-step-badge {
-      background: var(--coral); color: #FFFFFF; border-color: transparent;
-    }
-    html.dark .exp-card-node[open] > summary .exp-step-badge {
-      background: #F5F4F0; color: #121210;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 10px 26px -8px rgba(0, 0, 0, 0.65);
     }
     @keyframes expUnfold { 0% { opacity: 0; transform: translateY(-4px); } 100% { opacity: 1; transform: translateY(0); } }
-    .exp-card-node[open] > .exp-body { animation: expUnfold 0.24s cubic-bezier(0.22, 1, 0.36, 1); }
-    .exp-sub-spine { position: relative; padding-left: 20px; }
-    .exp-sub-spine::before {
-      content: ''; position: absolute; left: 7px; top: 0; bottom: 16px; width: 1.5px;
-      background: var(--border-soft);
-    }
-    .exp-sub-branch { position: relative; }
-    .exp-sub-branch::before {
-      content: ''; position: absolute; left: -13px; top: 13px; width: 13px; height: 11px;
-      border-left: 1.5px solid var(--border-soft); border-bottom: 1.5px solid var(--border-soft);
-      border-bottom-left-radius: 8px;
-    }
+    .exp-node-details[open] > .exp-body { animation: expUnfold 0.22s cubic-bezier(0.22, 1, 0.36, 1); }
     details[open] > summary .exp-chevron { transform: rotate(90deg); }
     .exp-chevron { transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1); }
   </style>
@@ -303,7 +269,10 @@
           <span class="w-1.5 h-1.5 rounded-full bg-[#FF5A36] animate-pulse"></span>
           <span id="headerPomoTime">40:00</span>
         </button>
-        <button id="themeToggleBtn" type="button" class="w-9 h-9 rounded-full bg-white border border-[#E8E6E0] hover:border-[#1C1B19] text-[#1C1B19] flex items-center justify-center transition-all active:scale-90" title="Toggle Dark / Light Mode" aria-label="Toggle theme">
+        <button id="openSettingsPageBtn" type="button" class="w-9 h-9 rounded-full bg-white border border-[#E8E6E0] hover:border-[#1C1B19] text-[#1C1B19] flex items-center justify-center transition-all active:scale-90" title="Settings & Free API Keys" aria-label="Open Settings">
+          <i data-lucide="settings" class="w-3.5 h-3.5"></i>
+        </button>
+        <button id="themeToggleBtn" type="button" class="hidden sm:flex w-9 h-9 rounded-full bg-white border border-[#E8E6E0] hover:border-[#1C1B19] text-[#1C1B19] items-center justify-center transition-all active:scale-90" title="Toggle Dark / Light Mode" aria-label="Toggle theme">
           <i id="themeToggleIcon" data-lucide="moon" class="w-3.5 h-3.5"></i>
         </button>
         <button id="openQuickSearchBtn" type="button" class="flex w-9 h-9 md:w-auto md:px-3 md:py-1.5 rounded-full bg-white border border-[#E8E6E0] hover:border-[#1C1B19] text-xs font-semibold text-[#1C1B19] items-center justify-center gap-1.5 transition-all active:scale-90" title="Quick Search (⌘K)" aria-label="Search vault">
@@ -341,7 +310,7 @@
               <button id="openFocusStatsPillBtn" type="button" class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 text-neutral-200 transition-colors flex items-center gap-1">
                 <span id="heroStreakLabel">0d streak</span><span>→</span>
               </button>
-              <button id="clearAllBtn" type="button" class="text-[10px] font-semibold px-2 py-1 rounded-full bg-white/5 hover:bg-white/15 text-neutral-400 transition-colors" title="Clear all vault items">Clear</button>
+              <span class="hidden"></span>
             </div>
           </div>
           <span id="tasteProfileOwner" class="hidden"></span>
@@ -654,14 +623,21 @@
       <!-- SUBTAB 2: VISUAL EXPLAINERS (VERTICAL CLICKABLE FLOWCHARTS) -->
       <div id="coursesExplainersPanel" class="hidden space-y-5">
         <form id="explainerGenForm" class="bento-card rounded-3xl p-4 sm:p-5 space-y-3">
-          <div class="flex flex-col sm:flex-row gap-2.5">
-            <input id="explainerTopicInput" type="text" required placeholder="Topic to map visually (e.g. Hodgkin-Huxley Model, Python Basics, Backpropagation...)" class="editorial-input flex-1 px-3.5 py-2.5 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm" />
-            <input id="explainerFocusInput" type="text" placeholder="Optional focus (e.g. beginner, code-heavy)" class="editorial-input sm:w-52 px-3.5 py-2.5 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm" />
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
+            <input id="explainerTopicInput" type="text" required placeholder="Topic to map visually (e.g. Hodgkin-Huxley Model, Python Basics, Backpropagation...)" class="sm:col-span-6 editorial-input px-3.5 py-2.5 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm" />
+            <select id="explainerDepthSelect" aria-label="Flowchart depth" class="sm:col-span-3 editorial-input px-3 py-2.5 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-xs font-semibold text-[#1C1B19]">
+              <option value="quick">Quick (6 branches)</option>
+              <option value="standard" selected>Standard (9–10 branches)</option>
+              <option value="deep">Deep Dive (13–15 branches)</option>
+            </select>
+            <input id="explainerFocusInput" type="text" placeholder="Style (e.g. code-heavy)" class="sm:col-span-3 editorial-input px-3.5 py-2.5 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm" />
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div id="explainerStatusLine" class="text-[11px] text-[#6B6A66]">Creates a brief overview + interactive vertical flowchart with in-branch Ask AI, code, tables &amp; Wikipedia diagrams.</div>
             <button id="explainerGenBtn" type="submit" class="px-5 py-2.5 rounded-xl bg-[#FF5A36] hover:bg-[#EB4D2A] text-white text-xs font-bold flex items-center justify-center gap-1.5 shrink-0">
               <i data-lucide="git-fork" class="w-3.5 h-3.5"></i> Build Flowchart
             </button>
           </div>
-          <div id="explainerStatusLine" class="text-[11px] text-[#6B6A66]">Creates a brief overview + interactive vertical clickable flowchart with code, tables, and Wikipedia diagrams (only where visuals help).</div>
         </form>
 
         <div id="explainersGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
@@ -761,6 +737,148 @@
 
       <!-- COURSE DETAIL VIEW (GUIDE + CHRONOLOGICAL LESSONS) -->
       <div id="courseDetailPanel" class="hidden space-y-5"></div>
+    </section>
+
+    <!-- ==================== VIEW 6: DEDICATED SETTINGS PAGE ==================== -->
+    <section id="view-settings" class="view-section hidden space-y-5 max-w-3xl mx-auto">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h2 class="font-editorial text-3xl font-medium tracking-tight text-[#1C1B19]">Settings</h2>
+          <p class="text-xs sm:text-sm text-[#6B6A66] mt-0.5">Appearance, free AI API keys &amp; fallbacks, focus defaults, and vault backup.</p>
+        </div>
+        <button id="settingsBackBtn" type="button" class="px-3.5 py-1.5 rounded-full bg-[#EFEEEB] text-xs font-semibold text-[#1C1B19]">← Back</button>
+      </div>
+
+      <!-- Missing Key Onboarding Banner (shown automatically when user tries to generate without an AI key) -->
+      <div id="settingsApiGuideBanner" class="hidden rounded-3xl p-4 sm:p-5 bg-[#FFF8F6] border border-[#F5DDD5] space-y-2">
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-xs font-bold text-[#B33D14]">✨ Connect 1 Free AI Key to Generate</span>
+          <button type="button" id="dismissApiGuideBtn" class="text-[11px] text-[#6B6A66] hover:text-[#1C1B19]">Dismiss</button>
+        </div>
+        <p class="text-xs text-[#1C1B19] leading-relaxed">Aletheia runs 100% in your browser with your own free key (no credit card needed). Grab a free <strong>Gemini</strong>, <strong>Groq</strong>, or <strong>OpenRouter</strong> key using the links below, paste it, and tap <strong>Save &amp; Continue</strong>!</p>
+      </div>
+
+      <!-- 1. Appearance -->
+      <div class="bento-card rounded-3xl p-5 space-y-3">
+        <div class="text-[10px] font-bold uppercase tracking-widest text-[#6B6A66]">Appearance</div>
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <div class="text-sm font-bold text-[#1C1B19]">Theme</div>
+            <div class="text-xs text-[#6B6A66]">Warm Paper Light Mode or Pure Monochrome Silver Dark Mode</div>
+          </div>
+          <div class="inline-flex bg-[#EFEEEB] p-1 rounded-full">
+            <button type="button" data-theme-pref="system" class="theme-pref-btn px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#6B6A66]">System</button>
+            <button type="button" data-theme-pref="light" class="theme-pref-btn px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#6B6A66]">Light</button>
+            <button type="button" data-theme-pref="dark" class="theme-pref-btn px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#6B6A66]">Dark</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Free AI & Scraping API Keys (with direct links & auto-fallbacks) -->
+      <form id="settingsKeysForm" class="bento-card rounded-3xl p-5 space-y-4">
+        <div class="flex items-center justify-between gap-2">
+          <div>
+            <div class="text-[10px] font-bold uppercase tracking-widest text-[#6B6A66]">AI Brain Cascade (Auto-Fallback)</div>
+            <div class="text-xs text-[#6B6A66] mt-0.5">Keys stay private in your browser. If Gemini hits a limit, Aletheia automatically falls back to Groq → OpenRouter.</div>
+          </div>
+          <button id="testAiKeysBtn" type="button" class="px-3 py-1.5 rounded-full bg-[#F4F3F1] border border-[#E8E6E0] hover:border-[#1C1B19] text-[11px] font-semibold text-[#1C1B19] shrink-0">Test AI</button>
+        </div>
+
+        <div class="space-y-3">
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label for="setGeminiKey" class="text-xs font-semibold text-[#1C1B19]">1. Gemini API Key (Primary — Best for PDFs &amp; YouTube)</label>
+              <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" class="text-[11px] font-semibold text-[#FF5A36] hover:underline">Get free key ↗</a>
+            </div>
+            <input id="setGeminiKey" type="password" placeholder="AIza... (Free, no card)" class="editorial-input w-full px-3.5 py-2 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm" />
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label for="setGroqKey" class="text-xs font-semibold text-[#1C1B19]">2. Groq API Key (Free Fallback #1 — 1,000 req/day, ultra-fast)</label>
+              <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" class="text-[11px] font-semibold text-[#FF5A36] hover:underline">Get free key ↗</a>
+            </div>
+            <input id="setGroqKey" type="password" placeholder="gsk_... (Free, no card — GPT-OSS 120B / 20B)" class="editorial-input w-full px-3.5 py-2 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm" />
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label for="setOpenRouterKey" class="text-xs font-semibold text-[#1C1B19]">3. OpenRouter API Key (Free Fallback #2 — 20+ free models)</label>
+              <a href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer" class="text-[11px] font-semibold text-[#FF5A36] hover:underline">Get free key ↗</a>
+            </div>
+            <input id="setOpenRouterKey" type="password" placeholder="sk-or-... (Free auto-router, no card)" class="editorial-input w-full px-3.5 py-2 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm" />
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-[#E8E6E0] space-y-3">
+          <div class="text-[10px] font-bold uppercase tracking-widest text-[#6B6A66]">Reels, Posts &amp; YouTube Extraction</div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label for="setSupadataKey" class="text-xs font-semibold text-[#1C1B19]">Supadata API Key (100 free credits/mo for IG Reels/Posts)</label>
+              <a href="https://supadata.ai/" target="_blank" rel="noopener noreferrer" class="text-[11px] font-semibold text-[#FF5A36] hover:underline">Get free key ↗</a>
+            </div>
+            <input id="setSupadataKey" type="password" placeholder="sd_..." class="editorial-input w-full px-3.5 py-2 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm" />
+            <label class="mt-1.5 inline-flex items-center gap-2 text-[11px] text-[#6B6A66] cursor-pointer">
+              <input id="setSupadataSaver" type="checkbox" checked class="coral-check w-3.5 h-3.5 rounded" />
+              <span>Credit-Saver Mode (skips extra metadata call on Reels)</span>
+            </label>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label for="setApifyKey" class="text-xs font-semibold text-[#1C1B19]">Apify API Token (Free Fallback — $5/mo, ~200 videos, no card)</label>
+              <a href="https://console.apify.com/account/integrations" target="_blank" rel="noopener noreferrer" class="text-[11px] font-semibold text-[#FF5A36] hover:underline">Get free token ↗</a>
+            </div>
+            <input id="setApifyKey" type="password" placeholder="apify_api_..." class="editorial-input w-full px-3.5 py-2 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm" />
+          </div>
+
+          <div class="flex items-center justify-between gap-2 p-3 rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] text-xs">
+            <span class="text-[#6B6A66]">Want instant YouTube embeds in Courses &amp; full descriptions in Watch?</span>
+            <a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" rel="noopener noreferrer" class="shrink-0 font-bold text-[#FF5A36] hover:underline">Enable YT API v3 ↗</a>
+          </div>
+        </div>
+
+        <div id="testAiResultBox" class="hidden p-3 rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] text-xs text-[#1C1B19]"></div>
+
+        <div class="flex items-center justify-between pt-2">
+          <button id="settingsRemoveAllKeysBtn" type="button" class="text-xs font-semibold text-red-600 hover:underline">Clear all keys</button>
+          <button id="settingsSaveKeysBtn" type="submit" class="px-5 py-2.5 rounded-xl bg-[#1C1B19] text-white text-xs font-bold">Save Keys</button>
+        </div>
+      </form>
+
+      <!-- 3. Focus & Learning Defaults -->
+      <div class="bento-card rounded-3xl p-5 space-y-3.5">
+        <div class="text-[10px] font-bold uppercase tracking-widest text-[#6B6A66]">Focus &amp; Learning Preferences</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="setDefaultPomo" class="block text-xs font-semibold text-[#1C1B19] mb-1">Default Pomodoro (minutes)</label>
+            <input id="setDefaultPomo" type="number" min="5" max="99" value="40" class="editorial-input w-full px-3 py-2 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm" />
+          </div>
+          <div>
+            <label for="setDailyGoal" class="block text-xs font-semibold text-[#1C1B19] mb-1">Daily Focus Goal (minutes)</label>
+            <input id="setDailyGoal" type="number" min="10" max="600" value="80" class="editorial-input w-full px-3 py-2 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-sm" />
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-4 pt-1 text-xs font-medium text-[#1C1B19]">
+          <label class="inline-flex items-center gap-2 cursor-pointer"><input id="setChimeToggle" type="checkbox" checked class="coral-check w-4 h-4 rounded" /> Completion Chime</label>
+          <label class="inline-flex items-center gap-2 cursor-pointer"><input id="setHapticsToggle" type="checkbox" checked class="coral-check w-4 h-4 rounded" /> Android Haptics</label>
+        </div>
+      </div>
+
+      <!-- 4. Account, Backup & Danger Zone -->
+      <div class="bento-card rounded-3xl p-5 space-y-3.5">
+        <div class="text-[10px] font-bold uppercase tracking-widest text-[#6B6A66]">Account, Backup &amp; Data</div>
+        <div class="flex flex-wrap gap-2">
+          <button id="settingsOpenAccountBtn" type="button" class="px-3.5 py-2 rounded-xl bg-[#F4F3F1] border border-[#E8E6E0] text-xs font-semibold text-[#1C1B19]">Account &amp; Firebase Sync</button>
+          <button id="settingsExportJsonBtn" type="button" class="px-3.5 py-2 rounded-xl bg-[#F4F3F1] border border-[#E8E6E0] text-xs font-semibold text-[#1C1B19]">Export Full Backup (.json)</button>
+          <button id="settingsExportMdBtn" type="button" class="px-3.5 py-2 rounded-xl bg-[#F4F3F1] border border-[#E8E6E0] text-xs font-semibold text-[#1C1B19]">Export Notes (.md)</button>
+        </div>
+        <div class="pt-3 border-t border-[#E8E6E0] flex items-center justify-between gap-2">
+          <span class="text-xs text-[#6B6A66]">Danger Zone — resets your local &amp; synced vault.</span>
+          <button id="clearAllBtn" type="button" class="px-3.5 py-1.5 rounded-xl bg-red-500/10 text-red-600 hover:bg-red-500/20 text-xs font-bold">Clear Vault</button>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -1307,6 +1425,9 @@
     const SUPADATA_KEY_STORAGE = 'albo_supadata_api_key_v1';
     const APIFY_KEY_STORAGE = 'aletheia_apify_api_key_v1';
     const SUPA_SAVER_STORAGE = 'aletheia_supa_saver_v1';
+    const GROQ_KEY_STORAGE = 'aletheia_groq_api_key_v1';
+    const OPENROUTER_KEY_STORAGE = 'aletheia_openrouter_api_key_v1';
+    const PREFS_STORAGE = 'aletheia_prefs_v1';
 
     // Restrained Monochrome + Terracotta Accent Categories
     const CATEGORIES = {
@@ -1367,18 +1488,54 @@
       return user ? ('albo_web_feed_' + user.email.toLowerCase()) : STORAGE_KEY;
     }
 
+    function sanitizeExplainersForFirestore(list) {
+      return (list || []).map(ex => ({
+        ...ex,
+        branches: (ex.branches || []).map(b => {
+          const copy = { ...b };
+          if (copy.table && typeof copy.table === 'object') {
+            copy.tableJson = JSON.stringify(copy.table);
+            delete copy.table;
+          }
+          return copy;
+        })
+      }));
+    }
+
+    function hydrateExplainersFromStorage(list) {
+      return (list || []).map(ex => ({
+        ...ex,
+        branches: (ex.branches || []).map(b => {
+          const copy = { ...b };
+          if (!copy.table && copy.tableJson) {
+            try { copy.table = JSON.parse(copy.tableJson); } catch (e) {}
+          }
+          return copy;
+        })
+      }));
+    }
+
     function loadState() {
+      const def = getDefaultState();
       try {
         const raw = localStorage.getItem(getActiveStorageKey());
         if (raw) {
           const parsed = JSON.parse(raw);
           if (parsed && Array.isArray(parsed.items)) {
-            parsed.items = parsed.items.map(i => ({ ...i, category: normalizeCategory(i.category) }));
-            return parsed;
+            return {
+              ...def,
+              ...parsed,
+              collections: Array.isArray(parsed.collections) && parsed.collections.length ? parsed.collections : def.collections,
+              items: parsed.items.map(i => ({ ...i, category: normalizeCategory(i.category) })),
+              watchQueue: Array.isArray(parsed.watchQueue) ? parsed.watchQueue : [],
+              courses: Array.isArray(parsed.courses) ? parsed.courses : [],
+              focusSessions: Array.isArray(parsed.focusSessions) ? parsed.focusSessions : [],
+              explainers: hydrateExplainersFromStorage(Array.isArray(parsed.explainers) ? parsed.explainers : [])
+            };
           }
         }
       } catch (e) {}
-      return getDefaultState();
+      return def;
     }
 
     function updateCloudSyncBadge(label, isCloud) {
@@ -1409,7 +1566,7 @@
               courses: state.courses || [],
               focusSessions: state.focusSessions || [],
               dailyGoalMin: state.dailyGoalMin || 80,
-              explainers: state.explainers || [],
+              explainers: sanitizeExplainersForFirestore(state.explainers || []),
               updatedAt: Date.now()
             }, { merge: true });
             updateCloudSyncBadge('☁️ Cloud synced', true);
@@ -1601,6 +1758,7 @@
       else if (view === 'decide') renderDecide();
       else if (view === 'watch') renderWatchQueue();
       else if (view === 'courses') renderCoursesView();
+      else if (view === 'settings') renderSettingsPage();
       else renderHome();
       lucide.createIcons();
     }
@@ -2278,9 +2436,14 @@
 
     // ==================== AI ENGINE ====================
     function getGeminiKey() { try { return localStorage.getItem(AI_KEY_STORAGE) || ''; } catch (e) { return ''; } }
+    function getGroqKey() { try { return localStorage.getItem(GROQ_KEY_STORAGE) || ''; } catch (e) { return ''; } }
+    function getOpenRouterKey() { try { return localStorage.getItem(OPENROUTER_KEY_STORAGE) || ''; } catch (e) { return ''; } }
+    function hasAnyAiKey() { return !!(getGeminiKey() || getGroqKey() || getOpenRouterKey()); }
     function getSupadataKey() { try { return localStorage.getItem(SUPADATA_KEY_STORAGE) || ''; } catch (e) { return ''; } }
     function getApifyKey() { try { return localStorage.getItem(APIFY_KEY_STORAGE) || ''; } catch (e) { return ''; } }
     function isSupadataSaverOn() { try { return localStorage.getItem(SUPA_SAVER_STORAGE) !== 'false'; } catch (e) { return true; } }
+    function getPrefs() { try { return { chime: true, haptics: true, defaultPomo: 40, ...JSON.parse(localStorage.getItem(PREFS_STORAGE) || '{}') }; } catch (e) { return { chime: true, haptics: true, defaultPomo: 40 }; } }
+    function savePrefs(p) { try { localStorage.setItem(PREFS_STORAGE, JSON.stringify({ ...getPrefs(), ...p })); } catch (e) {} }
     function setAiKeys(g, s, a, saver) {
       try {
         if (g) localStorage.setItem(AI_KEY_STORAGE, g); else localStorage.removeItem(AI_KEY_STORAGE);
@@ -2544,7 +2707,7 @@
         : [{ m: 'gemini-3.5-flash-lite', search: false }, { m: 'gemini-3.8-flash', search: false }, { m: 'gemini-3.6-flash', search: false }]);
 
       let lastErr = null;
-      for (const att of models) {
+      for (const att of (apiKey ? models : [])) {
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), options.timeoutMs || 26000);
         try {
@@ -2570,7 +2733,54 @@
           lastErr = err && err.name === 'AbortError' ? new Error(`${att.m} timed out`) : err;
         }
       }
-      throw lastErr || new Error('Gemini API request failed');
+
+      // Automatic Free LLM Fallbacks (Groq -> OpenRouter) for text/JSON requests!
+      const textPrompt = (parts || []).filter(p => p && p.text).map(p => p.text).join('\n\n').trim();
+      const hasBinaryPart = (parts || []).some(p => p && (p.inline_data || p.file_data));
+      if (textPrompt && !hasBinaryPart) {
+        const groqKey = getGroqKey();
+        if (groqKey) {
+          for (const gm of ['openai/gpt-oss-120b', 'openai/gpt-oss-20b']) {
+            try {
+              if (options.onModelStep) options.onModelStep(`Fallback: Groq (${gm})...`);
+              const gr = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + groqKey, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  model: gm, temperature: 0.25, max_tokens: options.maxTokens || 4096,
+                  messages: [{ role: 'user', content: textPrompt }],
+                  ...(options.json ? { response_format: { type: 'json_object' } } : {})
+                })
+              });
+              if (gr.ok) {
+                const gd = await gr.json();
+                const txt = gd?.choices?.[0]?.message?.content || '';
+                if (txt.trim()) return { text: txt.trim(), model: 'Groq ' + gm };
+              }
+            } catch (e) {}
+          }
+        }
+        const orKey = getOpenRouterKey();
+        if (orKey) {
+          try {
+            if (options.onModelStep) options.onModelStep('Fallback: OpenRouter (free)...');
+            const orRes = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+              method: 'POST',
+              headers: { 'Authorization': 'Bearer ' + orKey, 'Content-Type': 'application/json', 'HTTP-Referer': location.origin, 'X-Title': 'Aletheia Vault' },
+              body: JSON.stringify({
+                model: 'openrouter/free', temperature: 0.25, max_tokens: options.maxTokens || 4096,
+                messages: [{ role: 'user', content: textPrompt }]
+              })
+            });
+            if (orRes.ok) {
+              const od = await orRes.json();
+              const txt = od?.choices?.[0]?.message?.content || '';
+              if (txt.trim()) return { text: txt.trim(), model: 'OpenRouter Free' };
+            }
+          } catch (e) {}
+        }
+      }
+      throw lastErr || new Error('All connected AI providers failed');
     }
 
     async function callGeminiAnalyzer(apiKey, payload) {
@@ -2877,7 +3087,7 @@ Context:
                   courses: Array.isArray(d.courses) ? d.courses : [],
                   focusSessions: Array.isArray(d.focusSessions) ? d.focusSessions : [],
                   dailyGoalMin: d.dailyGoalMin || 80,
-                  explainers: Array.isArray(d.explainers) ? d.explainers : []
+                  explainers: hydrateExplainersFromStorage((Array.isArray(d.explainers) && d.explainers.length) ? d.explainers : (state.explainers || []))
                 };
                 saveState(true); updateCloudSyncBadge('☁️ Cloud synced', true);
                 if (activeView === 'collections') renderCollections(); else if (activeView === 'decide') renderDecide(); else if (activeView === 'watch') renderWatchQueue(); else if (activeView === 'courses') renderCoursesView(); else renderHome();
@@ -3922,11 +4132,30 @@ Video: ${text}`;
           }
         } catch (e) {}
       }
+      // Fallback: use Gemini Google Search grounding to find a real youtube.com/watch?v=... link!
+      const gKey = getGeminiKey();
+      if (gKey) {
+        try {
+          const sr = await runGeminiRequest(gKey, [{ text: `Find ONE real, public, high-quality YouTube video URL for learning: "${query}". Reply ONLY with the exact https://www.youtube.com/watch?v=XXXXXXXXXXX URL and nothing else.` }], { useSearch: true, json: false, maxTokens: 120, timeoutMs: 14000 });
+          const m = (sr.text || '').match(/(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/i);
+          if (m && m[1]) {
+            const vid = m[1];
+            const watchUrl = `https://www.youtube.com/watch?v=${vid}`;
+            const oe = await fetchPublicOembed(watchUrl);
+            return {
+              ytId: vid, url: watchUrl,
+              videoTitle: (oe && oe.title) || query,
+              channel: (oe && oe.author_name) || 'YouTube',
+              thumbnail: (oe && oe.thumbnail_url) || `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`
+            };
+          }
+        } catch (e) {}
+      }
       return {
         ytId: '',
         url: `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`,
         videoTitle: query,
-        channel: 'YouTube Search (enable YouTube Data API v3 for direct embeds)',
+        channel: 'YouTube Search (enable YT API v3 in Settings for instant embeds)',
         thumbnail: ''
       };
     }
@@ -4002,69 +4231,75 @@ Video: ${text}`;
       `;
 
       const lessonsHtml = `
-        <div class="space-y-4">
-          ${(course.lessons || []).map((l, idx) => `
-            <article class="bento-card rounded-3xl p-4 sm:p-5 space-y-3.5 ${l.done ? 'opacity-80' : ''}">
-              <div class="flex items-start justify-between gap-3">
-                <div class="flex items-start gap-3 min-w-0">
-                  <button type="button" data-course-toggle-lesson="${course.id}|${idx}" class="mt-0.5 w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-all active:scale-90 ${l.done ? 'bg-[#1E5E3A] text-white' : 'bg-[#F4F3F1] border border-[#D3D0C7] text-transparent hover:border-[#1C1B19]'}" title="Mark lesson completed">
-                    <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                  </button>
-                  <div class="min-w-0">
-                    <div class="text-[10px] font-bold uppercase tracking-wider text-[#6B6A66]">Step ${idx + 1} of ${total} ${l.channel ? '• ' + escapeHtml(l.channel) : ''}</div>
-                    <h4 class="font-editorial text-xl font-medium text-[#1C1B19] leading-snug ${l.done ? 'line-through text-[#6B6A66]' : ''}">${escapeHtml(l.title)}</h4>
-                    ${l.whyHere ? `<p class="text-xs text-[#6B6A66] mt-0.5">${escapeHtml(l.whyHere)}</p>` : ''}
-                  </div>
-                </div>
-              </div>
-
-              ${l.ytId ? `
-                <details class="rounded-2xl overflow-hidden border border-[#E8E6E0] bg-[#FAF9F6]">
-                  <summary class="flex items-center justify-between gap-2 p-2.5 cursor-pointer list-none">
+        <div class="bento-card rounded-3xl p-4 sm:p-6 space-y-4">
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#1C1B19] text-white text-xs font-bold">
+            <span class="w-2 h-2 rounded-full bg-[#FF5A36]"></span>
+            <span>Course Flowchart (${total} Steps)</span>
+          </div>
+          <div class="exp-spine space-y-3 pt-1">
+            ${(course.lessons || []).map((l, idx) => `
+              <div class="exp-branch">
+                <span class="exp-node-dot"></span>
+                <details class="exp-node-details rounded-2xl overflow-hidden ${l.done ? 'opacity-80' : ''}" ${idx === 0 || (!l.done && (course.lessons || []).findIndex(x => !x.done) === idx) ? 'open' : ''}>
+                  <summary class="flex items-center justify-between gap-2.5 px-4 py-3 cursor-pointer list-none select-none">
                     <div class="flex items-center gap-2.5 min-w-0">
-                      ${l.thumbnail ? `<img src="${escapeHtml(l.thumbnail)}" alt="" class="w-20 h-12 rounded-lg object-cover shrink-0 bg-[#1C1B19]" />` : ''}
+                      <button type="button" data-course-toggle-lesson="${course.id}|${idx}" class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-all active:scale-90 ${l.done ? 'bg-[#1E5E3A] text-white' : 'bg-white border border-[#D3D0C7] text-transparent hover:border-[#1C1B19]'}" title="Mark step done">
+                        <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                      </button>
                       <div class="min-w-0">
-                        <div class="text-xs font-semibold text-[#1C1B19] truncate">${escapeHtml(l.videoTitle || l.title)}</div>
-                        <div class="text-[11px] font-semibold text-[#FF5A36]">▶ Watch inline ↓</div>
+                        <div class="text-[10px] font-mono font-bold text-[#6B6A66]">STEP ${String(idx + 1).padStart(2, '0')} ${l.channel ? '• ' + escapeHtml(l.channel) : ''}</div>
+                        <div class="text-xs sm:text-sm font-bold text-[#1C1B19] truncate ${l.done ? 'line-through text-[#6B6A66]' : ''}">${escapeHtml(l.title)}</div>
                       </div>
                     </div>
+                    <i data-lucide="chevron-right" class="exp-chevron w-4 h-4 text-[#6B6A66] shrink-0"></i>
                   </summary>
-                  <div class="p-2.5 pt-0">
-                    <iframe src="https://www.youtube.com/embed/${escapeHtml(l.ytId)}" title="${escapeHtml(l.title)}" class="w-full aspect-video rounded-xl bg-black" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                  <div class="exp-body px-4 pb-4 pt-2.5 border-t border-[#E8E6E0]/70 bg-white space-y-3">
+                    ${l.whyHere ? `<p class="text-xs text-[#6B6A66] leading-relaxed">${escapeHtml(l.whyHere)}</p>` : ''}
+                    ${l.ytId ? `
+                      <details class="rounded-2xl overflow-hidden border border-[#E8E6E0] bg-[#FAF9F6]">
+                        <summary class="flex items-center justify-between gap-2 p-2.5 cursor-pointer list-none">
+                          <div class="flex items-center gap-2.5 min-w-0">
+                            ${l.thumbnail ? `<img src="${escapeHtml(l.thumbnail)}" alt="" class="w-20 h-12 rounded-lg object-cover shrink-0 bg-[#1C1B19]" />` : ''}
+                            <div class="min-w-0">
+                              <div class="text-xs font-semibold text-[#1C1B19] truncate">${escapeHtml(l.videoTitle || l.title)}</div>
+                              <div class="text-[11px] font-semibold text-[#FF5A36]">▶ Watch YouTube video inline ↓</div>
+                            </div>
+                          </div>
+                        </summary>
+                        <div class="p-2.5 pt-0">
+                          <iframe src="https://www.youtube.com/embed/${escapeHtml(l.ytId)}" title="${escapeHtml(l.title)}" class="w-full aspect-video rounded-xl bg-black" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                      </details>
+                    ` : (l.url ? `
+                      <a href="${escapeHtml(l.url)}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between px-3.5 py-2.5 rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] hover:border-[#1C1B19] text-xs font-semibold text-[#1C1B19]">
+                        <span class="truncate">🎬 ${escapeHtml(l.videoTitle || l.url)}</span>
+                        <i data-lucide="external-link" class="w-3.5 h-3.5 shrink-0"></i>
+                      </a>
+                    ` : '')}
+                    ${l.prerequisites ? `
+                      <div class="px-3.5 py-2 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-xs">
+                        <span class="font-bold text-[#1C1B19] uppercase tracking-wider text-[10px] mr-1.5">Prerequisites:</span>
+                        <span class="text-[#6B6A66]">${escapeHtml(l.prerequisites)}</span>
+                      </div>
+                    ` : ''}
+                    ${(l.articleTitle || l.articleUrl) ? `
+                      <a href="${escapeHtml(l.articleUrl || ('https://www.google.com/search?q=' + encodeURIComponent(l.articleTitle)))}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between gap-2 px-3.5 py-2 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] hover:border-[#FF5A36] text-xs transition-colors">
+                        <div class="min-w-0">
+                          <span class="text-[10px] font-bold uppercase tracking-wider text-[#6B6A66] block">Relevant Reading</span>
+                          <span class="font-semibold text-[#1C1B19] truncate block">${escapeHtml(l.articleTitle || l.articleUrl)}</span>
+                        </div>
+                        <i data-lucide="book-open" class="w-4 h-4 text-[#FF5A36] shrink-0"></i>
+                      </a>
+                    ` : ''}
+                    <div class="flex items-center justify-between gap-2 pt-1">
+                      <a href="${escapeHtml(l.url || '#')}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-semibold text-[#6B6A66] hover:text-[#1C1B19] inline-flex items-center gap-1">Open Video <i data-lucide="external-link" class="w-3 h-3"></i></a>
+                      <button type="button" data-course-lesson-note="${course.id}|${idx}" class="px-3 py-1.5 rounded-xl bg-[#F4F3F1] border border-[#E8E6E0] hover:border-[#1C1B19] text-[11px] font-semibold text-[#1C1B19]">Make Study Note</button>
+                    </div>
                   </div>
                 </details>
-              ` : (l.url ? `
-                <a href="${escapeHtml(l.url)}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between px-3.5 py-2.5 rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] hover:border-[#1C1B19] text-xs font-semibold text-[#1C1B19]">
-                  <span class="truncate">🎬 ${escapeHtml(l.videoTitle || l.url)}</span>
-                  <i data-lucide="external-link" class="w-3.5 h-3.5 shrink-0"></i>
-                </a>
-              ` : '')}
-
-              <!-- Prerequisites right under the video -->
-              ${l.prerequisites ? `
-                <div class="px-3.5 py-2.5 rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] text-xs">
-                  <span class="font-bold text-[#1C1B19] uppercase tracking-wider text-[10px] mr-1.5">Prerequisites:</span>
-                  <span class="text-[#6B6A66]">${escapeHtml(l.prerequisites)}</span>
-                </div>
-              ` : ''}
-
-              <!-- Relevant Article / Reading -->
-              ${(l.articleTitle || l.articleUrl) ? `
-                <a href="${escapeHtml(l.articleUrl || ('https://www.google.com/search?q=' + encodeURIComponent(l.articleTitle)))}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] hover:border-[#FF5A36] text-xs transition-colors">
-                  <div class="min-w-0">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-[#6B6A66] block">Relevant Reading</span>
-                    <span class="font-semibold text-[#1C1B19] truncate block">${escapeHtml(l.articleTitle || l.articleUrl)}</span>
-                  </div>
-                  <i data-lucide="book-open" class="w-4 h-4 text-[#FF5A36] shrink-0"></i>
-                </a>
-              ` : ''}
-
-              <div class="flex items-center justify-between gap-2 pt-1">
-                <a href="${escapeHtml(l.url || '#')}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-semibold text-[#6B6A66] hover:text-[#1C1B19] inline-flex items-center gap-1">Open Video <i data-lucide="external-link" class="w-3 h-3"></i></a>
-                <button type="button" data-course-lesson-note="${course.id}|${idx}" class="px-3 py-1.5 rounded-xl bg-[#F4F3F1] border border-[#E8E6E0] hover:border-[#1C1B19] text-[11px] font-semibold text-[#1C1B19]">Make Study Note</button>
               </div>
-            </article>
-          `).join('')}
+            `).join('')}
+          </div>
         </div>
       `;
 
@@ -4136,8 +4371,11 @@ Video: ${text}`;
       const level = document.getElementById('aiCourseLevel').value;
       const count = parseInt(document.getElementById('aiCourseLength').value, 10) || 8;
       const style = document.getElementById('aiCourseStyle').value.trim() || 'Clear, structured progression from fundamentals to applied mastery';
+      if (!hasAnyAiKey()) {
+        openSettingsForApiOnboarding(() => document.getElementById('aiCourseForm').requestSubmit());
+        return;
+      }
       const apiKey = getGeminiKey();
-      if (!apiKey) { showToast('Connect your Gemini API key in AI Keys first.'); return; }
       const btn = document.getElementById('generateCourseBtn');
       const statusEl = document.getElementById('aiCourseStatusText');
       btn.disabled = true; btn.textContent = 'Designing syllabus...';
@@ -4475,83 +4713,81 @@ Return ONLY valid JSON:
           </div>
         </div>
 
-        <!-- Architectural Dot-Grid Vertical Flowchart Canvas -->
-        <div class="exp-canvas rounded-[28px] p-4 sm:p-7">
-          <div id="explainerTreeRoot" class="max-w-2xl mx-auto flex flex-col items-stretch">
-            <!-- Centered Editorial Start / Root Node -->
-            <div class="flex justify-center">
-              <div class="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-[#1C1B19] text-white shadow-md">
-                <span class="w-2 h-2 rounded-full bg-[#FF5A36]"></span>
-                <span class="font-editorial text-lg sm:text-xl font-medium tracking-tight">${escapeHtml(ex.title)}</span>
-              </div>
-            </div>
+        <!-- Refined Left-Spine Vertical Clickable Flowchart Tree -->
+        <div class="bento-card rounded-3xl p-4 sm:p-6 space-y-4">
+          <div class="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-[#1C1B19] text-white shadow-sm">
+            <span class="w-2 h-2 rounded-full bg-[#FF5A36]"></span>
+            <span class="font-editorial text-lg font-medium">${escapeHtml(ex.title)}</span>
+          </div>
 
+          <div id="explainerTreeRoot" class="exp-spine space-y-3 pt-1">
             ${branches.map((b, idx) => `
-              <!-- Directional Flow Connector -->
-              <div class="exp-flow-connector" aria-hidden="true"><span class="exp-flow-arrow"></span></div>
-
-              <details class="exp-node-details exp-card-node rounded-[22px] overflow-hidden" ${idx === 0 ? 'open' : ''}>
-                <summary class="flex items-center justify-between gap-3 px-4 py-3.5 cursor-pointer list-none select-none active:scale-[0.99] transition-transform">
-                  <div class="flex items-center gap-3 min-w-0">
-                    <span class="exp-step-badge w-7 h-7 rounded-full text-[11px] font-mono font-bold flex items-center justify-center shrink-0">${String(idx + 1).padStart(2, '0')}</span>
-                    <div class="min-w-0">
-                      <span class="block text-sm font-bold text-[#1C1B19] leading-snug truncate">${escapeHtml(b.title)}</span>
-                      ${(Array.isArray(b.subBranches) && b.subBranches.length) ? `<span class="block text-[10.5px] text-[#6B6A66]">${b.subBranches.length} sub-branch${b.subBranches.length > 1 ? 'es' : ''} • tap to unpack</span>` : ''}
+              <div class="exp-branch">
+                <span class="exp-node-dot"></span>
+                <details class="exp-node-details rounded-2xl overflow-hidden" ${idx === 0 ? 'open' : ''}>
+                  <summary class="flex items-center justify-between gap-2.5 px-4 py-3 cursor-pointer list-none select-none">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                      <span class="text-[11px] font-mono font-bold text-[#FF5A36] shrink-0">${String(idx + 1).padStart(2, '0')}</span>
+                      <span class="text-xs sm:text-sm font-bold text-[#1C1B19] truncate">${escapeHtml(b.title)}</span>
                     </div>
-                  </div>
-                  <div class="flex items-center gap-1.5 shrink-0">
-                    ${b.imageUrl ? `<span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#F4F3F1] border border-[#E8E6E0] text-[#1C1B19]">Diagram</span>` : ''}
-                    ${b.code ? `<span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-[#F4F3F1] border border-[#E8E6E0] text-[#1C1B19]">&lt;/&gt;</span>` : ''}
-                    ${b.table ? `<span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#F4F3F1] border border-[#E8E6E0] text-[#1C1B19]">Table</span>` : ''}
-                    <i data-lucide="chevron-right" class="exp-chevron w-4 h-4 text-[#6B6A66]"></i>
-                  </div>
-                </summary>
-
-                <div class="exp-body px-4 sm:px-5 pb-4 pt-3 space-y-3 border-t border-[#E8E6E0]/70">
-                  ${b.summary ? `<div class="obsidian-note text-xs sm:text-[13px] text-[#2B2B28] leading-relaxed">${renderObsidianMarkdown(b.summary)}</div>` : ''}
-                  ${b.imageUrl ? `
-                    <figure class="my-2 rounded-2xl overflow-hidden border border-[#E8E6E0] shadow-sm">
-                      <div class="prog-pill-white bg-white p-3 flex items-center justify-center">
-                        <img src="${escapeHtml(b.imageUrl)}" alt="${escapeHtml(b.imageCaption || b.title)}" class="w-full max-h-64 object-contain" loading="lazy" />
-                      </div>
-                      <figcaption class="px-3.5 py-2 flex items-center justify-between text-[10.5px] text-[#6B6A66] bg-[#FAF9F6] border-t border-[#E8E6E0]">
-                        <span class="truncate font-medium">${escapeHtml(b.imageCaption || b.title)}</span>
-                        ${b.imageSourceUrl ? `<a href="${escapeHtml(b.imageSourceUrl)}" target="_blank" rel="noopener noreferrer" class="underline shrink-0 ml-2 font-semibold text-[#1C1B19]">Wikipedia ↗</a>` : ''}
-                      </figcaption>
-                    </figure>
-                  ` : ''}
-                  ${renderBranchTableHtml(b.table)}
-                  ${renderBranchCodeHtml(b.code, b.codeLang)}
-                  ${(Array.isArray(b.subBranches) && b.subBranches.length) ? `
-                    <div class="exp-sub-spine space-y-2 pt-1.5">
-                      ${b.subBranches.map(sub => `
-                        <div class="exp-sub-branch">
-                          <details class="exp-node-details rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] overflow-hidden">
-                            <summary class="flex items-center justify-between gap-2 px-3.5 py-2.5 cursor-pointer list-none text-xs font-semibold text-[#1C1B19]">
-                              <span class="flex items-center gap-2 min-w-0">
-                                <span class="w-1.5 h-1.5 rounded-full bg-[#FF5A36] shrink-0"></span>
-                                <span class="truncate">${escapeHtml(sub.title || '')}</span>
-                              </span>
-                              <i data-lucide="chevron-right" class="exp-chevron w-3.5 h-3.5 text-[#6B6A66] shrink-0"></i>
-                            </summary>
-                            <div class="exp-body px-3.5 pb-3 pt-2 border-t border-[#E8E6E0]/60 bg-white space-y-2">
-                              ${sub.detail ? `<div class="obsidian-note text-xs text-[#6B6A66] leading-relaxed">${renderObsidianMarkdown(sub.detail)}</div>` : ''}
-                              ${renderBranchCodeHtml(sub.code, sub.codeLang)}
-                            </div>
-                          </details>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                      ${b.imageUrl ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-white border border-[#E8E6E0] text-[#6B6A66]">Diagram</span>` : ''}
+                      ${b.code ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-white border border-[#E8E6E0] text-[#6B6A66] font-mono">&lt;/&gt;</span>` : ''}
+                      <i data-lucide="chevron-right" class="exp-chevron w-4 h-4 text-[#6B6A66]"></i>
+                    </div>
+                  </summary>
+                  <div class="exp-body px-4 pb-4 pt-2.5 space-y-3 border-t border-[#E8E6E0]/70 bg-white">
+                    ${b.summary ? `<div class="obsidian-note text-xs sm:text-[13px] text-[#2B2B28] leading-relaxed">${renderObsidianMarkdown(b.summary)}</div>` : ''}
+                    ${b.imageUrl ? `
+                      <figure class="my-2 rounded-2xl overflow-hidden border border-[#E8E6E0]">
+                        <div class="prog-pill-white bg-white p-2.5 flex items-center justify-center">
+                          <img src="${escapeHtml(b.imageUrl)}" alt="${escapeHtml(b.imageCaption || b.title)}" class="w-full max-h-60 object-contain" loading="lazy" />
                         </div>
-                      `).join('')}
-                    </div>
-                  ` : ''}
-                </div>
-              </details>
-            `).join('')}
+                        <figcaption class="px-3 py-1.5 flex items-center justify-between text-[10.5px] text-[#6B6A66] bg-[#FAF9F6] border-t border-[#E8E6E0]">
+                          <span class="truncate">${escapeHtml(b.imageCaption || b.title)}</span>
+                          ${b.imageSourceUrl ? `<a href="${escapeHtml(b.imageSourceUrl)}" target="_blank" rel="noopener noreferrer" class="underline shrink-0 ml-2 hover:text-[#1C1B19]">Wikipedia ↗</a>` : ''}
+                        </figcaption>
+                      </figure>
+                    ` : ''}
+                    ${renderBranchTableHtml(b.table)}
+                    ${renderBranchCodeHtml(b.code, b.codeLang)}
+                    ${(Array.isArray(b.subBranches) && b.subBranches.length) ? `
+                      <div class="exp-spine space-y-2 pt-1">
+                        ${b.subBranches.map(sub => `
+                          <div class="exp-branch">
+                            <span class="exp-node-dot"></span>
+                            <details class="exp-node-details rounded-xl overflow-hidden">
+                              <summary class="flex items-center justify-between gap-2 px-3 py-2 cursor-pointer list-none text-xs font-semibold text-[#1C1B19]">
+                                <span class="truncate">${escapeHtml(sub.title || '')}</span>
+                                <i data-lucide="chevron-right" class="exp-chevron w-3.5 h-3.5 text-[#6B6A66] shrink-0"></i>
+                              </summary>
+                              <div class="exp-body px-3 pb-3 pt-1.5 border-t border-[#E8E6E0]/60 bg-white space-y-2">
+                                ${sub.detail ? `<div class="obsidian-note text-xs text-[#6B6A66] leading-relaxed">${renderObsidianMarkdown(sub.detail)}</div>` : ''}
+                                ${renderBranchCodeHtml(sub.code, sub.codeLang)}
+                              </div>
+                            </details>
+                          </div>
+                        `).join('')}
+                      </div>
+                    ` : ''}
 
-            <!-- Terminal Finish Node -->
-            <div class="exp-flow-connector" aria-hidden="true"><span class="exp-flow-arrow"></span></div>
-            <div class="flex justify-center">
-              <span class="px-4 py-1.5 rounded-full bg-[#F4F3F1] border border-[#E8E6E0] text-[11px] font-semibold text-[#6B6A66]">✓ End of Flowchart (${branches.length} steps)</span>
-            </div>
+                    <!-- Inline Ask AI inside every branch -->
+                    <div class="pt-2 border-t border-[#F4F3F1] space-y-2">
+                      <button type="button" data-toggle-branch-ai="${idx}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F4F3F1] hover:bg-[#1C1B19] hover:text-white text-[11px] font-semibold text-[#1C1B19] transition-colors">
+                        <i data-lucide="sparkles" class="w-3 h-3 text-[#FF5A36]"></i> Ask AI about this branch
+                      </button>
+                      <div id="branchAiBox_${idx}" class="hidden space-y-2">
+                        <div class="flex gap-1.5">
+                          <input id="branchAiInput_${idx}" type="text" placeholder="e.g. Explain simpler, give a Python example, or connect to ML..." class="editorial-input flex-1 px-3 py-1.5 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-xs" />
+                          <button type="button" data-run-branch-ai="${ex.id}|${idx}" class="px-3.5 py-1.5 rounded-xl bg-[#1C1B19] text-white text-xs font-bold shrink-0">Ask</button>
+                        </div>
+                        <div id="branchAiAns_${idx}" class="hidden p-3 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-xs obsidian-note"></div>
+                      </div>
+                    </div>
+                  </div>
+                </details>
+              </div>
+            `).join('')}
           </div>
         </div>
       `;
@@ -4559,8 +4795,13 @@ Return ONLY valid JSON:
     }
 
     async function generateVisualExplainer(topic, focus, linkedCourse) {
+      if (!hasAnyAiKey()) {
+        openSettingsForApiOnboarding(() => generateVisualExplainer(topic, focus, linkedCourse));
+        return;
+      }
       const apiKey = getGeminiKey();
-      if (!apiKey) { showToast('Connect your Gemini API key first.'); return; }
+      const depthVal = document.getElementById('explainerDepthSelect')?.value || 'standard';
+      const branchRange = depthVal === 'quick' ? '5 to 6' : (depthVal === 'deep' ? '12 to 15' : '9 to 10');
       const btn = document.getElementById('explainerGenBtn');
       const statusEl = document.getElementById('explainerStatusLine');
       btn.disabled = true; btn.textContent = 'Mapping flowchart...';
@@ -4571,7 +4812,7 @@ Return ONLY valid JSON:
 Focus/Style: "${focus || 'Clear, progressive, student-friendly'}"${courseCtx}
 
 RULES:
-- Create 6 to 8 chronological/logical main branches (top to bottom).
+- Create ${branchRange} detailed, chronological/logical main branches (top to bottom).
 - Each branch can have 1-3 clickable subBranches for deeper details/examples.
 - Include concise Markdown explanations (LaTeX $...$ allowed for math), a short "code" snippet ONLY when code actually helps, and a compact "table" ONLY when comparing items/types.
 - IMPORTANT FOR IMAGES: Set "wikiTopic" to an exact English Wikipedia article title ONLY on branches where a real scientific diagram, graph, anatomy figure, or visual illustration genuinely clarifies the concept (typically 1-3 branches max). For pure syntax, code, or abstract steps that do NOT need a picture, set "wikiTopic": "".
@@ -4862,7 +5103,7 @@ Return ONLY valid JSON:
 
     // ==================== THEME, HAPTICS, GREETING & POLISH ====================
     const THEME_STORAGE = 'aletheia_theme_v1';
-    function triggerHaptic(ms) { try { if (navigator.vibrate) navigator.vibrate(ms || 8); } catch (e) {} }
+    function triggerHaptic(ms) { try { if (getPrefs().haptics !== false && navigator.vibrate) navigator.vibrate(ms || 8); } catch (e) {} }
 
     function applyTheme(mode) {
       const isDark = mode === 'dark';
@@ -4916,6 +5157,7 @@ Return ONLY valid JSON:
     const POMO_TICKS = 36;
 
     function playPomoChime() {
+      if (getPrefs().chime === false) return;
       try {
         const AC = window.AudioContext || window.webkitAudioContext;
         if (!AC) return;
@@ -5436,6 +5678,179 @@ Give a concise score out of 10, what they nailed, and 1–2 specific things they
       if (exp) exp.classList.remove('hidden');
     });
 
+    // ==================== DEDICATED SETTINGS PAGE + API ONBOARDING + IN-BRANCH AI ====================
+    let lastNonSettingsView = 'home';
+    let pendingRetryAfterKeySave = null;
+
+    function openSettingsForApiOnboarding(retryFn) {
+      pendingRetryAfterKeySave = typeof retryFn === 'function' ? retryFn : null;
+      lastNonSettingsView = activeView !== 'settings' ? activeView : lastNonSettingsView;
+      switchView('settings');
+      document.getElementById('settingsApiGuideBanner').classList.remove('hidden');
+      const saveBtn = document.getElementById('settingsSaveKeysBtn');
+      if (saveBtn) saveBtn.textContent = pendingRetryAfterKeySave ? 'Save & Generate Now' : 'Save Keys';
+      showToast('Connect any free AI key (Gemini, Groq, or OpenRouter) to continue!');
+    }
+
+    function renderSettingsPage() {
+      document.getElementById('setGeminiKey').value = getGeminiKey();
+      document.getElementById('setGroqKey').value = getGroqKey();
+      document.getElementById('setOpenRouterKey').value = getOpenRouterKey();
+      document.getElementById('setSupadataKey').value = getSupadataKey();
+      document.getElementById('setSupadataSaver').checked = isSupadataSaverOn();
+      document.getElementById('setApifyKey').value = getApifyKey();
+
+      const prefs = getPrefs();
+      document.getElementById('setDefaultPomo').value = prefs.defaultPomo || 40;
+      document.getElementById('setDailyGoal').value = state.dailyGoalMin || 80;
+      document.getElementById('setChimeToggle').checked = prefs.chime !== false;
+      document.getElementById('setHapticsToggle').checked = prefs.haptics !== false;
+
+      const themePref = (() => { try { return localStorage.getItem(THEME_STORAGE) || 'system'; } catch (e) { return 'system'; } })();
+      document.querySelectorAll('.theme-pref-btn').forEach(b => {
+        if (b.dataset.themePref === themePref) { b.classList.add('bg-[#1C1B19]', 'text-white'); b.classList.remove('text-[#6B6A66]'); }
+        else { b.classList.remove('bg-[#1C1B19]', 'text-white'); b.classList.add('text-[#6B6A66]'); }
+      });
+      lucide.createIcons();
+    }
+
+    document.getElementById('openSettingsPageBtn').addEventListener('click', () => {
+      triggerHaptic(8);
+      if (activeView === 'settings') { switchView(lastNonSettingsView); return; }
+      lastNonSettingsView = activeView;
+      document.getElementById('settingsApiGuideBanner').classList.add('hidden');
+      pendingRetryAfterKeySave = null;
+      document.getElementById('settingsSaveKeysBtn').textContent = 'Save Keys';
+      switchView('settings');
+    });
+    document.getElementById('settingsBackBtn').addEventListener('click', () => switchView(lastNonSettingsView || 'home'));
+    document.getElementById('dismissApiGuideBtn').addEventListener('click', () => document.getElementById('settingsApiGuideBanner').classList.add('hidden'));
+
+    document.querySelectorAll('.theme-pref-btn').forEach(b => {
+      b.addEventListener('click', () => {
+        triggerHaptic(8);
+        const pref = b.dataset.themePref;
+        if (pref === 'system') {
+          try { localStorage.removeItem(THEME_STORAGE); } catch (e) {}
+          const sysDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.classList.toggle('dark', sysDark);
+          const meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', sysDark ? '#0E0E0D' : '#FAF9F6');
+        } else {
+          applyTheme(pref);
+        }
+        renderSettingsPage();
+      });
+    });
+
+    document.getElementById('settingsKeysForm').addEventListener('submit', e => {
+      e.preventDefault();
+      setAiKeys(
+        document.getElementById('setGeminiKey').value.trim(),
+        document.getElementById('setSupadataKey').value.trim(),
+        document.getElementById('setApifyKey').value.trim(),
+        document.getElementById('setSupadataSaver').checked
+      );
+      try {
+        const gq = document.getElementById('setGroqKey').value.trim();
+        const or = document.getElementById('setOpenRouterKey').value.trim();
+        if (gq) localStorage.setItem(GROQ_KEY_STORAGE, gq); else localStorage.removeItem(GROQ_KEY_STORAGE);
+        if (or) localStorage.setItem(OPENROUTER_KEY_STORAGE, or); else localStorage.removeItem(OPENROUTER_KEY_STORAGE);
+      } catch (err) {}
+      updateAiStatusUI();
+      showToast('✓ All API keys saved locally!');
+      if (pendingRetryAfterKeySave && hasAnyAiKey()) {
+        const fn = pendingRetryAfterKeySave;
+        pendingRetryAfterKeySave = null;
+        document.getElementById('settingsApiGuideBanner').classList.add('hidden');
+        document.getElementById('settingsSaveKeysBtn').textContent = 'Save Keys';
+        switchView(lastNonSettingsView || 'courses');
+        setTimeout(() => fn(), 180);
+      }
+    });
+
+    document.getElementById('settingsRemoveAllKeysBtn').addEventListener('click', () => {
+      setAiKeys('', '', '', true);
+      try { localStorage.removeItem(GROQ_KEY_STORAGE); localStorage.removeItem(OPENROUTER_KEY_STORAGE); } catch (e) {}
+      renderSettingsPage(); showToast('All API keys cleared.');
+    });
+
+    document.getElementById('testAiKeysBtn').addEventListener('click', async () => {
+      const box = document.getElementById('testAiResultBox');
+      box.classList.remove('hidden');
+      box.textContent = 'Testing connected AI cascade...';
+      if (!hasAnyAiKey()) { box.textContent = 'No AI key entered yet — paste a free Gemini, Groq, or OpenRouter key first.'; return; }
+      try {
+        const r = await runGeminiRequest(getGeminiKey(), [{ text: 'Reply with ONLY the word READY.' }], { json: false, useSearch: false, maxTokens: 20, timeoutMs: 14000 });
+        box.innerHTML = `<span class="font-bold text-emerald-600">✓ Connected!</span> Responded via <strong>${escapeHtml(r.model)}</strong>.`;
+      } catch (err) {
+        box.innerHTML = `<span class="font-bold text-red-600">✗ Error:</span> ${escapeHtml(err && err.message ? err.message : 'Check key')}`;
+      }
+    });
+
+    document.getElementById('setDefaultPomo').addEventListener('change', e => {
+      const v = Math.max(5, Math.min(99, Math.round(Number(e.target.value) || 40)));
+      savePrefs({ defaultPomo: v }); setPomoDuration(v); showToast(`Default Pomodoro set to ${v}m`);
+    });
+    document.getElementById('setDailyGoal').addEventListener('change', e => {
+      const v = Math.max(10, Math.min(600, Math.round(Number(e.target.value) || 80)));
+      state.dailyGoalMin = v; saveState(); showToast(`Daily focus goal set to ${v}m`);
+    });
+    document.getElementById('setChimeToggle').addEventListener('change', e => savePrefs({ chime: e.target.checked }));
+    document.getElementById('setHapticsToggle').addEventListener('change', e => savePrefs({ haptics: e.target.checked }));
+    document.getElementById('settingsOpenAccountBtn').addEventListener('click', () => document.getElementById('openAuthBtn').click());
+    document.getElementById('settingsExportJsonBtn').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+      a.download = `aletheia-full-backup-${getLocalDateKey()}.json`; a.click();
+      showToast('Full vault backup exported (.json)!');
+    });
+    document.getElementById('settingsExportMdBtn').addEventListener('click', () => {
+      if (!state.items.length) { showToast('No notes to export yet.'); return; }
+      const md = state.items.map(i => buildObsidianFrontmatterMarkdown(i)).join('\n\n---\n\n');
+      const blob = new Blob([md], { type: 'text/markdown' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+      a.download = `aletheia-notes-${getLocalDateKey()}.md`; a.click();
+      showToast(`Exported ${state.items.length} notes as Markdown!`);
+    });
+
+    // In-Branch Ask AI inside Explainers
+    document.getElementById('view-courses').addEventListener('click', async e => {
+      const togAi = e.target.closest('[data-toggle-branch-ai]');
+      if (togAi) {
+        const box = document.getElementById('branchAiBox_' + togAi.dataset.toggleBranchAi);
+        if (box) { box.classList.toggle('hidden'); if (!box.classList.contains('hidden')) document.getElementById('branchAiInput_' + togAi.dataset.toggleBranchAi)?.focus(); }
+        return;
+      }
+      const runAi = e.target.closest('[data-run-branch-ai]');
+      if (runAi) {
+        const [exId, idxStr] = runAi.dataset.runBranchAi.split('|');
+        const idx = Number(idxStr);
+        const inp = document.getElementById('branchAiInput_' + idx);
+        const ans = document.getElementById('branchAiAns_' + idx);
+        const q = (inp?.value || '').trim();
+        if (!q) { showToast('Type a question about this branch first.'); return; }
+        if (!hasAnyAiKey()) { openSettingsForApiOnboarding(null); return; }
+        const ex = (state.explainers || []).find(x => x.id === exId);
+        const br = ex && ex.branches && ex.branches[idx];
+        if (!br) return;
+        runAi.disabled = true; runAi.textContent = '...';
+        ans.classList.remove('hidden'); ans.innerHTML = '<span class="text-[#6B6A66]">Thinking...</span>';
+        try {
+          const prompt = `Topic: "${ex.title}"\nBranch: "${br.title}"\nBranch Content: ${br.summary || ''}\nCode: ${br.code || 'None'}\n\nUser Question: ${q}\nAnswer concisely and clearly in Markdown (use LaTeX $...$ or fenced code blocks if helpful).`;
+          const res = await runGeminiRequest(getGeminiKey(), [{ text: prompt }], { json: false, useSearch: false, maxTokens: 900, timeoutMs: 22000 });
+          ans.innerHTML = renderObsidianMarkdown(res.text);
+        } catch (err) {
+          ans.textContent = 'Could not answer: ' + (err && err.message ? err.message : 'Check API key');
+        } finally {
+          runAi.disabled = false; runAi.textContent = 'Ask';
+        }
+      }
+    });
+
+    // Apply saved default Pomodoro duration on boot
+    const _initPomoMin = getPrefs().defaultPomo || 40;
+    pomoTotalSec = _initPomoMin * 60; pomoRemainSec = _initPomoMin * 60;
     updateAiStatusUI(); initFirebaseIfConfigured(); updateAuthUI(); switchView('home'); renderPomoUI(); handleIncomingWebShare();
 
     // Smooth 0.45s launch splash dissolve

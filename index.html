@@ -141,25 +141,30 @@
     html.dark .obsidian-note pre { background-color: #0B0B0A !important; border-color: rgba(255,255,255,0.12) !important; }
     html.dark .obsidian-note .bg-white { background-color: #121210 !important; }
 
-    /* Pure Monochrome Silver / Platinum accents in Dark Mode (zero orange/AI glow) */
-    html.dark { --coral: #F5F4F0; --coral-hover: #E0DED6; }
+    /* Dynamic Accent Color System (Separate Light & Dark Schemes) */
+    :root { --coral-rgb: 255, 90, 54; --coral-ink: #FFFFFF; }
+    html.dark { --coral: #F5F4F0; --coral-hover: #E0DED6; --coral-rgb: 245, 244, 240; --coral-ink: #121210; }
+    .bg-\[\#FF5A36\] { background-color: var(--coral) !important; color: var(--coral-ink) !important; }
+    .bg-\[\#FF5A36\] svg { color: var(--coral-ink) !important; }
+    .hover\:bg-\[\#EB4D2A\]:hover { background-color: var(--coral) !important; filter: brightness(0.92); color: var(--coral-ink) !important; }
+    .text-\[\#FF5A36\], .text-\[\#FF7A5C\], .text-\[\#FF8A6E\], .text-\[\#B33D14\] { color: var(--coral) !important; }
+    .bg-\[\#FFF8F6\], .bg-\[\#FFF0EB\] { background-color: rgba(var(--coral-rgb), 0.08) !important; }
+    .border-\[\#F5DDD5\], .border-l-\[\#FF5A36\] { border-color: rgba(var(--coral-rgb), 0.30) !important; }
+    .ring-\[\#FF5A36\] { --tw-ring-color: rgba(var(--coral-rgb), 0.72) !important; }
+    .editorial-input:focus { border-color: var(--coral) !important; box-shadow: 0 0 0 2px rgba(var(--coral-rgb), 0.18) !important; }
+    .coral-check:checked { accent-color: var(--coral); }
+    .hm-1 { background: rgba(var(--coral-rgb), 0.25) !important; }
+    .hm-2 { background: rgba(var(--coral-rgb), 0.50) !important; }
+    .hm-3 { background: rgba(var(--coral-rgb), 0.76) !important; }
+    .hm-4 { background: var(--coral) !important; }
     html.dark .hero-ambient {
       background:
-        radial-gradient(120% 70% at 50% 0%, rgba(255, 255, 255, 0.075) 0%, rgba(255, 255, 255, 0) 62%),
+        radial-gradient(120% 70% at 50% 0%, rgba(var(--coral-rgb), 0.085) 0%, rgba(var(--coral-rgb), 0) 62%),
         #141413 !important;
       border: 1px solid rgba(255, 255, 255, 0.09) !important;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 12px 30px -8px rgba(0, 0, 0, 0.6) !important;
     }
-    html.dark .bg-\[\#FF5A36\] { background-color: #F5F4F0 !important; color: #121210 !important; }
-    html.dark .bg-\[\#FF5A36\] svg { color: #121210 !important; }
-    html.dark .hover\:bg-\[\#EB4D2A\]:hover { background-color: #E0DED6 !important; color: #121210 !important; }
-    html.dark .text-\[\#FF5A36\], html.dark .text-\[\#FF7A5C\], html.dark .text-\[\#FF8A6E\], html.dark .text-\[\#B33D14\] { color: #E8E6DF !important; }
-    html.dark .bg-\[\#FFF8F6\], html.dark .bg-\[\#FFF0EB\] { background-color: rgba(255, 255, 255, 0.05) !important; }
-    html.dark .border-\[\#F5DDD5\], html.dark .border-l-\[\#FF5A36\] { border-color: rgba(255, 255, 255, 0.18) !important; }
-    html.dark .ring-\[\#FF5A36\] { --tw-ring-color: rgba(245, 244, 240, 0.75) !important; }
-    html.dark .editorial-input:focus { border-color: rgba(245, 244, 240, 0.55) !important; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.10) !important; }
-    html.dark #heroDuePill { background-color: rgba(255, 255, 255, 0.12) !important; color: #F5F4F0 !important; }
-    html.dark .coral-check:checked { accent-color: #F5F4F0; }
+    html.dark #heroDuePill { background-color: rgba(var(--coral-rgb), 0.15) !important; color: var(--coral) !important; }
     /* Precision Pomodoro Chronometer Ticks & Heatmap Intensity Cells */
     .pomo-tick { transition: background-color 0.25s ease, transform 0.25s ease, opacity 0.25s ease; }
     .digit-drum-wrap {
@@ -384,39 +389,45 @@
           </div>
         </div>
 
-        <!-- 2x2 Primary Category Bento Cards -->
-        <div id="tasteBentoCounts" class="lg:col-span-7 grid grid-cols-2 gap-3.5"></div>
+        <!-- Daily Command Center: Active Course + Study/Agenda + Latest Visual Explainer -->
+        <div id="tasteBentoCounts" class="lg:col-span-7 grid grid-cols-2 gap-3"></div>
       </div>
 
-      <!-- Search (Desktop) & Single-Row Scrollable Filter Strip -->
+      <!-- Ultra-Clean Editorial Feed Header (Category Pills + Collapsible Filters Tray) -->
       <div class="space-y-2.5">
-        <div class="flex flex-col md:flex-row gap-2">
-          <div class="hidden md:block relative flex-1">
-            <i data-lucide="search" class="w-4 h-4 text-[#6B6A66] absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-            <input id="searchInput" type="text" placeholder="Search notes, tools, #tags, concepts, or fun saves..." class="editorial-input w-full pl-10 pr-14 py-2.5 rounded-xl bg-white border border-[#E8E6E0] text-sm" />
-            <span class="hidden sm:inline-block absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#F4F3F1] text-[#6B6A66] border border-[#E8E6E0]">⌘K</span>
+        <div class="flex items-center justify-between gap-2">
+          <div id="categoryPills" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-0.5 flex-1"></div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button id="toggleHomeFiltersBtn" type="button" class="px-3 py-1.5 rounded-full bg-white border border-[#E8E6E0] hover:border-[#1C1B19] text-xs font-semibold text-[#1C1B19] inline-flex items-center gap-1.5 transition-colors">
+              <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5"></i>
+              <span>Filters</span>
+              <span id="activeFilterDot" class="hidden w-1.5 h-1.5 rounded-full bg-[#FF5A36]"></span>
+            </button>
+            <button id="clearFiltersBtn" type="button" class="hidden text-xs font-semibold text-[#FF5A36] hover:underline px-1">Reset</button>
           </div>
-          <div class="flex gap-2 flex-nowrap overflow-x-auto no-scrollbar pb-0.5">
-            <select id="topicFilter" aria-label="Filter by topic tag" class="shrink-0 editorial-input px-3 py-1.5 rounded-full bg-white border border-[#E8E6E0] text-xs font-semibold text-[#1C1B19]">
+        </div>
+
+        <div id="homeFiltersTray" class="hidden flex-col md:flex-row gap-2 p-2.5 rounded-2xl bg-[#F4F3F1] border border-[#E8E6E0] animate-pop">
+          <div class="relative flex-1">
+            <i data-lucide="search" class="w-4 h-4 text-[#6B6A66] absolute left-3 top-1/2 -translate-y-1/2"></i>
+            <input id="searchInput" type="text" placeholder="Filter feed by keyword, #tag, or tool..." class="editorial-input w-full pl-9 pr-3 py-1.5 rounded-xl bg-white border border-[#E8E6E0] text-xs" />
+          </div>
+          <div class="flex gap-2 flex-nowrap overflow-x-auto no-scrollbar">
+            <select id="topicFilter" aria-label="Filter by topic tag" class="shrink-0 editorial-input px-3 py-1.5 rounded-xl bg-white border border-[#E8E6E0] text-xs font-semibold text-[#1C1B19]">
               <option value="all"># All Topics</option>
             </select>
-            <select id="difficultyFilter" aria-label="Filter by difficulty" class="shrink-0 editorial-input px-3 py-1.5 rounded-full bg-white border border-[#E8E6E0] text-xs font-semibold text-[#1C1B19]">
+            <select id="difficultyFilter" aria-label="Filter by difficulty" class="shrink-0 editorial-input px-3 py-1.5 rounded-xl bg-white border border-[#E8E6E0] text-xs font-semibold text-[#1C1B19]">
               <option value="all">Level: All</option>
               <option value="Beginner">Beginner</option>
               <option value="Intermediate">Intermediate</option>
               <option value="Advanced">Advanced</option>
             </select>
-            <select id="statusFilter" aria-label="Filter by status" class="shrink-0 editorial-input px-3 py-1.5 rounded-full bg-white border border-[#E8E6E0] text-xs font-semibold text-[#1C1B19]">
+            <select id="statusFilter" aria-label="Filter by status" class="shrink-0 editorial-input px-3 py-1.5 rounded-xl bg-white border border-[#E8E6E0] text-xs font-semibold text-[#1C1B19]">
               <option value="all">Status: All</option>
               <option value="todo">Unreviewed</option>
               <option value="done">Reviewed</option>
             </select>
           </div>
-        </div>
-
-        <div class="flex items-center justify-between gap-2">
-          <div id="categoryPills" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-0.5"></div>
-          <button id="clearFiltersBtn" type="button" class="hidden shrink-0 text-xs font-semibold text-[#FF5A36] hover:underline">Reset filters</button>
         </div>
       </div>
 
@@ -758,18 +769,64 @@
         <p class="text-xs text-[#1C1B19] leading-relaxed">Aletheia runs 100% in your browser with your own free key (no credit card needed). Grab a free <strong>Gemini</strong>, <strong>Groq</strong>, or <strong>OpenRouter</strong> key using the links below, paste it, and tap <strong>Save &amp; Continue</strong>!</p>
       </div>
 
-      <!-- 1. Appearance -->
-      <div class="bento-card rounded-3xl p-5 space-y-3">
-        <div class="text-[10px] font-bold uppercase tracking-widest text-[#6B6A66]">Appearance</div>
+      <!-- 1. Appearance & Separate Light/Dark Color Schemes -->
+      <div class="bento-card rounded-3xl p-5 space-y-4">
+        <div class="flex items-center justify-between gap-2">
+          <div class="text-[10px] font-bold uppercase tracking-widest text-[#6B6A66]">Appearance &amp; Color Schemes</div>
+          <button id="resetAccentColorsBtn" type="button" class="text-[11px] font-semibold text-[#6B6A66] hover:text-[#1C1B19] hover:underline">Reset defaults</button>
+        </div>
+
         <div class="flex items-center justify-between gap-3 flex-wrap">
           <div>
-            <div class="text-sm font-bold text-[#1C1B19]">Theme</div>
-            <div class="text-xs text-[#6B6A66]">Warm Paper Light Mode or Pure Monochrome Silver Dark Mode</div>
+            <div class="text-sm font-bold text-[#1C1B19]">Theme Mode</div>
+            <div class="text-xs text-[#6B6A66]">Switch between Light, Dark, or match your phone</div>
           </div>
           <div class="inline-flex bg-[#EFEEEB] p-1 rounded-full">
             <button type="button" data-theme-pref="system" class="theme-pref-btn px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#6B6A66]">System</button>
             <button type="button" data-theme-pref="light" class="theme-pref-btn px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#6B6A66]">Light</button>
             <button type="button" data-theme-pref="dark" class="theme-pref-btn px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#6B6A66]">Dark</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-[#E8E6E0]">
+          <!-- Light Mode Accent -->
+          <div class="p-3.5 rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-[#1C1B19]">☀️ Light Mode Accent</span>
+              <span id="lightAccentLabel" class="text-[10px] font-mono text-[#6B6A66]">#FF5A36</span>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <button type="button" data-light-accent="#FF5A36" class="light-swatch w-7 h-7 rounded-full border-2 border-white shadow-sm transition-transform active:scale-90" style="background:#FF5A36" title="Terracotta Orange (Default)"></button>
+              <button type="button" data-light-accent="#1E6B47" class="light-swatch w-7 h-7 rounded-full border-2 border-white shadow-sm transition-transform active:scale-90" style="background:#1E6B47" title="Forest Green"></button>
+              <button type="button" data-light-accent="#2563EB" class="light-swatch w-7 h-7 rounded-full border-2 border-white shadow-sm transition-transform active:scale-90" style="background:#2563EB" title="Cobalt Blue"></button>
+              <button type="button" data-light-accent="#9F1239" class="light-swatch w-7 h-7 rounded-full border-2 border-white shadow-sm transition-transform active:scale-90" style="background:#9F1239" title="Editorial Crimson"></button>
+              <button type="button" data-light-accent="#B45309" class="light-swatch w-7 h-7 rounded-full border-2 border-white shadow-sm transition-transform active:scale-90" style="background:#B45309" title="Warm Ochre"></button>
+              <button type="button" data-light-accent="#1C1B19" class="light-swatch w-7 h-7 rounded-full border-2 border-white shadow-sm transition-transform active:scale-90" style="background:#1C1B19" title="Pure Ink"></button>
+              <label class="w-7 h-7 rounded-full border border-dashed border-[#6B6A66] flex items-center justify-center cursor-pointer text-[10px] font-bold text-[#6B6A66] overflow-hidden" title="Pick custom Light color">
+                <span>+</span>
+                <input id="customLightAccentInput" type="color" value="#FF5A36" class="sr-only" />
+              </label>
+            </div>
+          </div>
+
+          <!-- Dark Mode Accent -->
+          <div class="p-3.5 rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-[#1C1B19]">🌙 Dark Mode Accent</span>
+              <span id="darkAccentLabel" class="text-[10px] font-mono text-[#6B6A66]">#F5F4F0</span>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <button type="button" data-dark-accent="#F5F4F0" class="dark-swatch w-7 h-7 rounded-full border-2 border-[#333] shadow-sm transition-transform active:scale-90" style="background:#F5F4F0" title="Monochrome Silver (Default)"></button>
+              <button type="button" data-dark-accent="#D6C7B2" class="dark-swatch w-7 h-7 rounded-full border-2 border-[#333] shadow-sm transition-transform active:scale-90" style="background:#D6C7B2" title="Warm Champagne"></button>
+              <button type="button" data-dark-accent="#6EE7B7" class="dark-swatch w-7 h-7 rounded-full border-2 border-[#333] shadow-sm transition-transform active:scale-90" style="background:#6EE7B7" title="Soft Mint"></button>
+              <button type="button" data-dark-accent="#93C5FD" class="dark-swatch w-7 h-7 rounded-full border-2 border-[#333] shadow-sm transition-transform active:scale-90" style="background:#93C5FD" title="Ice Blue"></button>
+              <button type="button" data-dark-accent="#C4B5FD" class="dark-swatch w-7 h-7 rounded-full border-2 border-[#333] shadow-sm transition-transform active:scale-90" style="background:#C4B5FD" title="Soft Lavender"></button>
+              <button type="button" data-dark-accent="#FF7A5C" class="dark-swatch w-7 h-7 rounded-full border-2 border-[#333] shadow-sm transition-transform active:scale-90" style="background:#FF7A5C" title="Warm Coral"></button>
+              <label class="w-7 h-7 rounded-full border border-dashed border-[#6B6A66] flex items-center justify-center cursor-pointer text-[10px] font-bold text-[#6B6A66] overflow-hidden" title="Pick custom Dark color">
+                <span>+</span>
+                <input id="customDarkAccentInput" type="color" value="#F5F4F0" class="sr-only" />
+              </label>
+            </div>
           </div>
         </div>
       </div>
@@ -1776,34 +1833,85 @@
       document.getElementById('completionBar').style.width = `${pct}%`;
       document.getElementById('showUncompletedLink').textContent = `Show unreviewed (${todoCount}) →`;
 
-      // 2x2 Bento (Study, Projects, Tools, Watch & Read)
-      const bentoKeys = ['study', 'projects', 'tools', 'media'];
-      document.getElementById('tasteBentoCounts').innerHTML = bentoKeys.map(k => {
-        const cat = CATEGORIES[k];
-        const items = state.items.filter(i => normalizeCategory(i.category) === k);
-        const todo = items.filter(i => !i.done).length;
-        const active = filters.category === k ? 'ring-2 ring-[#FF5A36]' : '';
-        return `
-          <button type="button" data-bento-cat="${k}" class="bento-cat-btn bento-card rounded-2xl p-3 sm:p-4 text-left flex flex-col justify-between ${active}">
-            <div class="flex items-center justify-between gap-1.5 w-full">
-              <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-[#1C1B19] min-w-0">
-                <span class="w-6 h-6 rounded-lg bg-[#F4F3F1] border border-[#E8E6E0] flex items-center justify-center shrink-0">
-                  <i data-lucide="${cat.icon}" class="w-3.5 h-3.5 ${filters.category === k ? 'text-[#FF5A36]' : 'text-[#1C1B19]'}"></i>
-                </span>
-                <span class="truncate">${cat.short}</span>
+      // Daily Command Center: Active Course + Study/Agenda Pulse + Latest Explainer & Watch Queue Strip
+      const activeCourse = (state.courses || [])[0] || null;
+      const cTot = activeCourse ? (activeCourse.lessons || []).length : 0;
+      const cDone = activeCourse ? (activeCourse.lessons || []).filter(l => l.done).length : 0;
+      const cPct = cTot > 0 ? Math.round((cDone / cTot) * 100) : 0;
+      const cNextIdx = activeCourse ? Math.max(0, (activeCourse.lessons || []).findIndex(l => !l.done)) : 0;
+
+      const dueCardsCount = getAllFlashcards().filter(c => c.isDue).length;
+      const scheduledNext = (state.items || []).filter(i => i.scheduledDate && !i.done).sort((a, b) => a.scheduledDate.localeCompare(b.scheduledDate))[0] || null;
+      const latestExp = (state.explainers || [])[0] || null;
+      const expTot = latestExp ? (latestExp.branches || []).length : 0;
+      const expMast = latestExp ? (latestExp.branches || []).filter(b => b.mastered).length : 0;
+      const expPct = expTot > 0 ? Math.round((expMast / expTot) * 100) : 0;
+      const unwatchedYt = (state.watchQueue || []).filter(v => !v.watched).length;
+
+      document.getElementById('tasteBentoCounts').innerHTML = `
+        <!-- Tile 1: Active Course Spotlight -->
+        <button type="button" data-home-jump="${activeCourse ? 'course:' + activeCourse.id : 'new-course'}" class="bento-card rounded-2xl p-3.5 sm:p-4 text-left flex flex-col justify-between gap-2.5 group">
+          <div class="flex items-center justify-between gap-1.5 w-full">
+            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#6B6A66]">
+              <i data-lucide="graduation-cap" class="w-3.5 h-3.5 text-[#FF5A36]"></i> ${activeCourse ? 'Active Course' : 'Courses'}
+            </span>
+            ${activeCourse ? `<span class="text-[11px] font-bold text-[#1C1B19] tabular-nums">${cPct}%</span>` : ''}
+          </div>
+          <div class="space-y-1.5">
+            <div class="font-editorial text-lg sm:text-xl font-medium text-[#1C1B19] leading-snug line-clamp-2">${escapeHtml(activeCourse ? activeCourse.title : 'Build a Custom Course')}</div>
+            ${activeCourse
+              ? `<div class="h-1 rounded-full bg-[#EFEEEB] overflow-hidden"><div class="h-full bg-[#FF5A36] rounded-full" style="width:${cPct}%"></div></div>
+                 <div class="text-[11px] font-semibold text-[#6B6A66] group-hover:text-[#1C1B19] truncate">Resume Step ${cNextIdx + 1} →</div>`
+              : `<div class="text-[11px] text-[#6B6A66]">AI syllabus + YouTube embeds →</div>`}
+          </div>
+        </button>
+
+        <!-- Tile 2: Due Flashcards & Scheduled Agenda -->
+        <button type="button" data-home-jump="${dueCardsCount > 0 ? 'study' : (scheduledNext ? 'note:' + scheduledNext.id : 'study')}" class="bento-card rounded-2xl p-3.5 sm:p-4 text-left flex flex-col justify-between gap-2.5 group">
+          <div class="flex items-center justify-between gap-1.5 w-full">
+            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#6B6A66]">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#FF5A36]"></i> Study &amp; Agenda
+            </span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#F4F3F1] text-[#1C1B19] tabular-nums">${dueCardsCount} due</span>
+          </div>
+          <div class="space-y-1">
+            <div class="font-editorial text-2xl sm:text-3xl font-medium text-[#1C1B19] leading-none tabular-nums">${dueCardsCount > 0 ? dueCardsCount + ' cards' : (scheduledNext ? scheduledNext.scheduledDate.slice(5) : 'All clear')}</div>
+            <div class="text-[11px] text-[#6B6A66] group-hover:text-[#1C1B19] truncate">${dueCardsCount > 0 ? 'Tap to drill active recall →' : (scheduledNext ? '📅 ' + escapeHtml(scheduledNext.title) : 'Quiz any Course or note →')}</div>
+          </div>
+        </button>
+
+        <!-- Tile 3: Full-Width Latest Visual Explainer + Watch Queue Strip -->
+        <div class="col-span-2 grid grid-cols-1 sm:grid-cols-12 gap-3">
+          <button type="button" data-home-jump="${latestExp ? 'explainer:' + latestExp.id : 'new-explainer'}" class="sm:col-span-8 bento-card rounded-2xl px-4 py-3 text-left flex items-center justify-between gap-3 group">
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="w-9 h-9 rounded-xl bg-[#F4F3F1] border border-[#E8E6E0] flex items-center justify-center shrink-0">
+                <i data-lucide="git-fork" class="w-4 h-4 text-[#FF5A36]"></i>
               </span>
-              <span class="text-[11px] text-[#6B6A66] font-medium tabular-nums">${items.length}</span>
-            </div>
-            <div class="mt-2 sm:mt-3">
-              <div class="flex items-baseline gap-1.5">
-                <span class="font-editorial text-2xl sm:text-3xl font-medium text-[#1C1B19] tabular-nums leading-none">${todo}</span>
-                <span class="text-[11px] text-[#6B6A66]">to review</span>
+              <div class="min-w-0">
+                <div class="text-[10px] font-bold uppercase tracking-wider text-[#6B6A66]">${latestExp ? `Visual Explainer • ${expPct}% understood` : 'Visual Explainers'}</div>
+                <div class="text-xs sm:text-sm font-bold text-[#1C1B19] truncate">${escapeHtml(latestExp ? latestExp.title : 'Map any concept into a vertical flowchart')}</div>
               </div>
-              <p class="hidden sm:block text-[11px] text-[#6B6A66] mt-1 truncate">${cat.desc}</p>
             </div>
+            <span class="text-xs font-semibold text-[#6B6A66] group-hover:text-[#1C1B19] shrink-0">${latestExp ? 'Open →' : 'Create →'}</span>
           </button>
-        `;
-      }).join('');
+
+          <button type="button" data-home-jump="watch" class="sm:col-span-4 bento-card rounded-2xl px-4 py-3 text-left flex items-center justify-between gap-2 group">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <span class="w-9 h-9 rounded-xl bg-[#F4F3F1] border border-[#E8E6E0] flex items-center justify-center shrink-0">
+                <i data-lucide="play-square" class="w-4 h-4 text-[#1C1B19]"></i>
+              </span>
+              <div class="min-w-0">
+                <div class="text-[10px] font-bold uppercase tracking-wider text-[#6B6A66]">Watch Queue</div>
+                <div class="text-xs font-bold text-[#1C1B19] tabular-nums">${unwatchedYt} unwatched</div>
+              </div>
+            </div>
+            <span class="text-xs font-semibold text-[#6B6A66] group-hover:text-[#1C1B19] shrink-0">→</span>
+          </button>
+        </div>
+      `;
+
+      const fDot = document.getElementById('activeFilterDot');
+      if (fDot) fDot.classList.toggle('hidden', !(filters.search || filters.topic !== 'all' || filters.difficulty !== 'all' || filters.status !== 'all'));
 
       // Topic Filter Dropdown
       const allTags = Array.from(new Set(state.items.flatMap(i => (i.tags || []).map(t => t.replace(/^#/, '').trim())).filter(Boolean))).sort();
@@ -3334,6 +3442,26 @@ Context:
     document.getElementById('topicFilter').addEventListener('change', e => { filters.topic = e.target.value; renderHome(); });
     document.getElementById('difficultyFilter').addEventListener('change', e => { filters.difficulty = e.target.value; renderHome(); });
     document.getElementById('statusFilter').addEventListener('change', e => { filters.status = e.target.value; renderHome(); });
+    document.getElementById('toggleHomeFiltersBtn').addEventListener('click', () => {
+      const tray = document.getElementById('homeFiltersTray');
+      tray.classList.toggle('hidden');
+      tray.classList.toggle('flex');
+    });
+
+    document.getElementById('tasteBentoCounts').addEventListener('click', e => {
+      const jmp = e.target.closest('[data-home-jump]');
+      if (!jmp) return;
+      triggerHaptic(8);
+      const val = jmp.dataset.homeJump;
+      if (val === 'study') switchView('decide');
+      else if (val === 'watch') switchView('watch');
+      else if (val === 'new-course') { courseSubtab = 'ai'; activeCourseId = null; switchView('courses'); }
+      else if (val === 'new-explainer') { courseSubtab = 'explainers'; activeExplainerId = null; switchView('courses'); }
+      else if (val.startsWith('course:')) { activeCourseId = val.slice(7); activeCoursePage = 'lessons'; switchView('courses'); }
+      else if (val.startsWith('explainer:')) { activeExplainerId = val.slice(10); courseSubtab = 'explainers'; switchView('courses'); }
+      else if (val.startsWith('note:')) { openDetailModal(val.slice(5)); }
+    });
+
     document.getElementById('clearFiltersBtn').addEventListener('click', () => {
       filters = { search: '', category: 'all', topic: 'all', difficulty: 'all', status: 'all' };
       document.getElementById('searchInput').value = ''; document.getElementById('statusFilter').value = 'all'; document.getElementById('difficultyFilter').value = 'all';
@@ -4109,11 +4237,27 @@ Video: ${text}`;
       lucide.createIcons();
     }
 
+    async function verifyRealYouTubeId(vid, fallbackQuery) {
+      if (!vid || !/^[A-Za-z0-9_-]{11}$/.test(vid) || /^X{11}$/i.test(vid)) return null;
+      const watchUrl = `https://www.youtube.com/watch?v=${vid}`;
+      const oe = await fetchPublicOembed(watchUrl);
+      // Strict gate: ONLY accept videos confirmed live & embeddable by oEmbed!
+      if (!oe || !oe.title) return null;
+      return {
+        ytId: vid,
+        url: watchUrl,
+        videoTitle: oe.title,
+        channel: oe.author_name || 'YouTube',
+        thumbnail: oe.thumbnail_url || `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`
+      };
+    }
+
     async function searchRealYouTubeVideo(query) {
-      const ytApiKey = (DEFAULT_FIREBASE_CONFIG && DEFAULT_FIREBASE_CONFIG.apiKey) || getGeminiKey();
-      if (ytApiKey) {
+      // 1. Official YouTube Data API v3 (checks both Firebase project key & Gemini key)
+      const keysToTry = Array.from(new Set([DEFAULT_FIREBASE_CONFIG && DEFAULT_FIREBASE_CONFIG.apiKey, getGeminiKey()].filter(Boolean)));
+      for (const k of keysToTry) {
         try {
-          const r = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=1&q=${encodeURIComponent(query)}&key=${encodeURIComponent(ytApiKey)}`);
+          const r = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoEmbeddable=true&maxResults=1&q=${encodeURIComponent(query)}&key=${encodeURIComponent(k)}`);
           if (r.ok) {
             const d = await r.json();
             const item = d && d.items && d.items[0];
@@ -4132,30 +4276,31 @@ Video: ${text}`;
           }
         } catch (e) {}
       }
-      // Fallback: use Gemini Google Search grounding to find a real youtube.com/watch?v=... link!
-      const gKey = getGeminiKey();
-      if (gKey) {
-        try {
-          const sr = await runGeminiRequest(gKey, [{ text: `Find ONE real, public, high-quality YouTube video URL for learning: "${query}". Reply ONLY with the exact https://www.youtube.com/watch?v=XXXXXXXXXXX URL and nothing else.` }], { useSearch: true, json: false, maxTokens: 120, timeoutMs: 14000 });
-          const m = (sr.text || '').match(/(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/i);
-          if (m && m[1]) {
-            const vid = m[1];
-            const watchUrl = `https://www.youtube.com/watch?v=${vid}`;
-            const oe = await fetchPublicOembed(watchUrl);
-            return {
-              ytId: vid, url: watchUrl,
-              videoTitle: (oe && oe.title) || query,
-              channel: (oe && oe.author_name) || 'YouTube',
-              thumbnail: (oe && oe.thumbnail_url) || `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`
-            };
+
+      // 2. Free Live YouTube Search via Jina Reader (no API key needed) + strict oEmbed verification!
+      try {
+        const ctrl = new AbortController();
+        const t = setTimeout(() => ctrl.abort(), 11000);
+        const jr = await fetch('https://r.jina.ai/https://www.youtube.com/results?search_query=' + encodeURIComponent(query), {
+          headers: { 'Accept': 'text/plain' }, signal: ctrl.signal
+        });
+        clearTimeout(t);
+        if (jr.ok) {
+          const txt = await jr.text();
+          const ids = Array.from(new Set(Array.from(txt.matchAll(/youtube\.com\/watch\?v=([A-Za-z0-9_-]{11})/g)).map(m => m[1]))).slice(0, 4);
+          for (const vid of ids) {
+            const verified = await verifyRealYouTubeId(vid, query);
+            if (verified) return verified;
           }
-        } catch (e) {}
-      }
+        }
+      } catch (e) {}
+
+      // 3. Clean fallback: never emit a broken embed — link directly to YouTube search results
       return {
         ytId: '',
         url: `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`,
-        videoTitle: query,
-        channel: 'YouTube Search (enable YT API v3 in Settings for instant embeds)',
+        videoTitle: `Find on YouTube: ${query}`,
+        channel: 'YouTube (enable YT API v3 in Settings for 1-click embeds)',
         thumbnail: ''
       };
     }
@@ -4307,7 +4452,8 @@ Video: ${text}`;
         <div class="bento-card rounded-3xl p-5 sm:p-6 space-y-4">
           <div class="flex items-center justify-between gap-2 flex-wrap">
             <button type="button" id="backToCoursesBtn" class="px-3 py-1.5 rounded-full bg-[#F4F3F1] text-xs font-semibold text-[#1C1B19] inline-flex items-center gap-1">← All Courses</button>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
+              <button type="button" data-refresh-course-vids="${course.id}" class="px-3 py-1.5 rounded-full bg-[#F4F3F1] border border-[#E8E6E0] hover:border-[#1C1B19] text-xs font-semibold text-[#1C1B19] inline-flex items-center gap-1"><i data-lucide="refresh-cw" class="w-3 h-3"></i> Fix Videos</button>
               <button type="button" data-course-to-explainer="${course.id}" class="px-3 py-1.5 rounded-full bg-[#1C1B19] text-white text-xs font-semibold inline-flex items-center gap-1.5"><i data-lucide="git-fork" class="w-3 h-3"></i> Visual Explainer</button>
               <button type="button" data-delete-course="${course.id}" class="text-xs font-semibold text-red-600 hover:underline">Delete</button>
             </div>
@@ -4519,6 +4665,24 @@ Return ONLY valid JSON:
       const pageBtn = e.target.closest('[data-course-page]');
       if (pageBtn) { activeCoursePage = pageBtn.dataset.coursePage; renderCoursesView(); return; }
 
+      const refVids = e.target.closest('[data-refresh-course-vids]');
+      if (refVids) {
+        const c = (state.courses || []).find(x => x.id === refVids.dataset.refreshCourseVids);
+        if (!c) return;
+        refVids.disabled = true; refVids.textContent = 'Finding real videos...';
+        (async () => {
+          let fixed = 0;
+          for (const l of (c.lessons || [])) {
+            const vid = await searchRealYouTubeVideo(l.youtubeQuery || `${c.title} ${l.title}`);
+            l.ytId = vid.ytId; l.url = vid.url; l.videoTitle = vid.videoTitle; l.channel = vid.channel; l.thumbnail = vid.thumbnail;
+            if (vid.ytId) fixed++;
+          }
+          saveState();
+          renderCourseDetail(c);
+          showToast(fixed ? `✓ Verified ${fixed} real YouTube videos!` : 'Opened clean YouTube links — enable YT API v3 in Settings for direct embeds.');
+        })();
+        return;
+      }
       const delC = e.target.closest('[data-delete-course]');
       if (delC) {
         state.courses = (state.courses || []).filter(c => c.id !== delC.dataset.deleteCourse);
@@ -4686,18 +4850,46 @@ Return ONLY valid JSON:
         </div>`;
     }
 
-    function renderExplainerViewer(ex) {
+    function buildExplainerObsidianMarkdown(ex) {
+      const dt = new Date(ex.createdAt || Date.now()).toISOString().slice(0, 10);
+      let out = `---\ntitle: "${(ex.title || '').replace(/"/g, '\\"')}"\ntype: "explainer-flowchart"\ndate: "${dt}"\n---\n\n# ${ex.title}\n\n`;
+      if (ex.brief) out += `> ${ex.brief}\n\n`;
+      if (ex.howItExplains) out += `**Flowchart Map:** ${ex.howItExplains}\n\n`;
+      (ex.branches || []).forEach((b, idx) => {
+        out += `## ${String(idx + 1).padStart(2, '0')}. ${b.title}${b.mastered ? ' ✓' : ''}\n\n`;
+        if (b.summary) out += `${b.summary}\n\n`;
+        if (b.imageUrl) out += `![${b.imageCaption || b.title}](${b.imageUrl})\n\n`;
+        if (b.table && Array.isArray(b.table.headers) && Array.isArray(b.table.rows)) {
+          out += `| ${b.table.headers.join(' | ')} |\n| ${b.table.headers.map(() => '---').join(' | ')} |\n`;
+          b.table.rows.forEach(r => { if (Array.isArray(r)) out += `| ${r.join(' | ')} |\n`; });
+          out += '\n';
+        }
+        if (b.code) out += '```' + (b.codeLang || '') + '\n' + b.code.trim() + '\n```\n\n';
+        (b.subBranches || []).forEach(sub => {
+          out += `### ${sub.title}\n\n`;
+          if (sub.detail) out += `${sub.detail}\n\n`;
+          if (sub.code) out += '```' + (sub.codeLang || '') + '\n' + sub.code.trim() + '\n```\n\n';
+        });
+      });
+      return out;
+    }
+
+    function renderExplainerViewer(ex, openIdxOverride) {
       const viewer = document.getElementById('explainerViewerPanel');
       const branches = ex.branches || [];
+      const masteredCount = branches.filter(b => b.mastered).length;
+      const pct = branches.length ? Math.round((masteredCount / branches.length) * 100) : 0;
+
       viewer.innerHTML = `
-        <!-- Top Brief + How Flowchart Explains It -->
+        <!-- Top Brief + Mastery Bar + How Flowchart Explains It -->
         <div class="bento-card rounded-3xl p-5 sm:p-6 space-y-4">
           <div class="flex items-center justify-between gap-2 flex-wrap">
             <button type="button" id="backToExplainersBtn" class="px-3 py-1.5 rounded-full bg-[#F4F3F1] text-xs font-semibold text-[#1C1B19]">← All Explainers</button>
-            <div class="flex items-center gap-2">
-              <button type="button" id="expExpandAllBtn" class="px-3 py-1 rounded-full bg-[#F4F3F1] text-[11px] font-semibold text-[#1C1B19]">Expand All</button>
-              <button type="button" id="expCollapseAllBtn" class="px-3 py-1 rounded-full bg-[#F4F3F1] text-[11px] font-semibold text-[#6B6A66]">Collapse</button>
-              <button type="button" data-delete-explainer="${ex.id}" class="text-xs font-semibold text-red-600 hover:underline">Delete</button>
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <button type="button" data-copy-explainer-md="${ex.id}" class="px-3 py-1 rounded-full bg-[#F4F3F1] border border-[#E8E6E0] hover:border-[#1C1B19] text-[11px] font-semibold text-[#1C1B19] inline-flex items-center gap-1"><i data-lucide="copy" class="w-3 h-3"></i> Copy .md</button>
+              <button type="button" id="expExpandAllBtn" class="px-2.5 py-1 rounded-full bg-[#F4F3F1] text-[11px] font-semibold text-[#1C1B19]">Expand</button>
+              <button type="button" id="expCollapseAllBtn" class="px-2.5 py-1 rounded-full bg-[#F4F3F1] text-[11px] font-semibold text-[#6B6A66]">Collapse</button>
+              <button type="button" data-delete-explainer="${ex.id}" class="text-xs font-semibold text-red-600 hover:underline ml-1">Delete</button>
             </div>
           </div>
 
@@ -4705,6 +4897,17 @@ Return ONLY valid JSON:
             ${ex.linkedCourseTitle ? `<span class="inline-block text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-[#F4F3F1] text-[#1C1B19]">Course: ${escapeHtml(ex.linkedCourseTitle)}</span>` : ''}
             <h3 class="font-editorial text-3xl font-medium text-[#1C1B19] leading-tight">${escapeHtml(ex.title)}</h3>
             <p class="text-xs sm:text-sm text-[#6B6A66] leading-relaxed">${escapeHtml(ex.brief || '')}</p>
+          </div>
+
+          <!-- Branch Mastery Progress Bar -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between text-[11px] font-bold">
+              <span class="text-[#1C1B19] tabular-nums">${pct}% understood</span>
+              <span class="text-[#6B6A66] font-semibold tabular-nums">${masteredCount} / ${branches.length} branches mastered</span>
+            </div>
+            <div class="h-1.5 rounded-full bg-[#E8E6E0] overflow-hidden">
+              <div class="h-full bg-[#FF5A36] rounded-full transition-all duration-300" style="width:${pct}%"></div>
+            </div>
           </div>
 
           <div class="p-4 rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] space-y-1">
@@ -4724,11 +4927,13 @@ Return ONLY valid JSON:
             ${branches.map((b, idx) => `
               <div class="exp-branch">
                 <span class="exp-node-dot"></span>
-                <details class="exp-node-details rounded-2xl overflow-hidden" ${idx === 0 ? 'open' : ''}>
-                  <summary class="flex items-center justify-between gap-2.5 px-4 py-3 cursor-pointer list-none select-none">
+                <details class="exp-node-details rounded-2xl overflow-hidden ${b.mastered ? 'opacity-85' : ''}" ${(openIdxOverride !== undefined ? idx === openIdxOverride : idx === 0) ? 'open' : ''}>
+                  <summary class="flex items-center justify-between gap-2.5 px-3.5 py-3 cursor-pointer list-none select-none">
                     <div class="flex items-center gap-2.5 min-w-0">
-                      <span class="text-[11px] font-mono font-bold text-[#FF5A36] shrink-0">${String(idx + 1).padStart(2, '0')}</span>
-                      <span class="text-xs sm:text-sm font-bold text-[#1C1B19] truncate">${escapeHtml(b.title)}</span>
+                      <button type="button" data-exp-toggle-mastered="${ex.id}|${idx}" class="w-6 h-6 rounded-full text-[10px] font-mono font-bold flex items-center justify-center shrink-0 transition-all active:scale-90 ${b.mastered ? 'bg-[#1E5E3A] text-white' : 'bg-white border border-[#E8E6E0] text-[#FF5A36] hover:border-[#1C1B19]'}" title="Tap to mark branch understood">
+                        ${b.mastered ? '✓' : String(idx + 1).padStart(2, '0')}
+                      </button>
+                      <span class="text-xs sm:text-sm font-bold text-[#1C1B19] truncate ${b.mastered ? 'line-through text-[#6B6A66]' : ''}">${escapeHtml(b.title)}</span>
                     </div>
                     <div class="flex items-center gap-1.5 shrink-0">
                       ${b.imageUrl ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-white border border-[#E8E6E0] text-[#6B6A66]">Diagram</span>` : ''}
@@ -4771,14 +4976,28 @@ Return ONLY valid JSON:
                       </div>
                     ` : ''}
 
-                    <!-- Inline Ask AI inside every branch -->
-                    <div class="pt-2 border-t border-[#F4F3F1] space-y-2">
-                      <button type="button" data-toggle-branch-ai="${idx}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F4F3F1] hover:bg-[#1C1B19] hover:text-white text-[11px] font-semibold text-[#1C1B19] transition-colors">
-                        <i data-lucide="sparkles" class="w-3 h-3 text-[#FF5A36]"></i> Ask AI about this branch
-                      </button>
+                    <!-- Branch Action Bar: Ask AI, + Go Deeper, + Flashcards -->
+                    <div class="pt-2.5 border-t border-[#F4F3F1] space-y-2.5">
+                      <div class="flex items-center gap-1.5 flex-wrap">
+                        <button type="button" data-toggle-branch-ai="${idx}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F4F3F1] hover:bg-[#1C1B19] hover:text-white text-[11px] font-semibold text-[#1C1B19] transition-colors">
+                          <i data-lucide="sparkles" class="w-3 h-3 text-[#FF5A36]"></i> Ask AI
+                        </button>
+                        <button type="button" data-exp-go-deeper="${ex.id}|${idx}" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#F4F3F1] border border-[#E8E6E0] hover:border-[#1C1B19] text-[11px] font-semibold text-[#1C1B19] transition-colors">
+                          <i data-lucide="git-branch" class="w-3 h-3"></i> + Go Deeper
+                        </button>
+                        <button type="button" data-exp-branch-fc="${ex.id}|${idx}" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#F4F3F1] border border-[#E8E6E0] hover:border-[#1C1B19] text-[11px] font-semibold text-[#1C1B19] transition-colors">
+                          <i data-lucide="layers" class="w-3 h-3"></i> + Flashcards
+                        </button>
+                      </div>
                       <div id="branchAiBox_${idx}" class="hidden space-y-2">
+                        <div class="flex flex-wrap gap-1">
+                          <button type="button" data-branch-chip="${ex.id}|${idx}|Explain this like I am 12 using super simple intuition." class="px-2.5 py-1 rounded-full bg-[#FAF9F6] border border-[#E8E6E0] hover:border-[#1C1B19] text-[10.5px] font-semibold text-[#1C1B19]">ELI12</button>
+                          <button type="button" data-branch-chip="${ex.id}|${idx}|Show the exact math, formulas, and equations in LaTeX ($...$ / $$...$$)." class="px-2.5 py-1 rounded-full bg-[#FAF9F6] border border-[#E8E6E0] hover:border-[#1C1B19] text-[10.5px] font-semibold text-[#1C1B19]">Show Math</button>
+                          <button type="button" data-branch-chip="${ex.id}|${idx}|Give a clean, minimal, runnable Python code example illustrating this concept." class="px-2.5 py-1 rounded-full bg-[#FAF9F6] border border-[#E8E6E0] hover:border-[#1C1B19] text-[10.5px] font-semibold text-[#1C1B19]">Python Example</button>
+                          <button type="button" data-branch-chip="${ex.id}|${idx}|Give a memorable real-world analogy for this concept." class="px-2.5 py-1 rounded-full bg-[#FAF9F6] border border-[#E8E6E0] hover:border-[#1C1B19] text-[10.5px] font-semibold text-[#1C1B19]">Real Analogy</button>
+                        </div>
                         <div class="flex gap-1.5">
-                          <input id="branchAiInput_${idx}" type="text" placeholder="e.g. Explain simpler, give a Python example, or connect to ML..." class="editorial-input flex-1 px-3 py-1.5 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-xs" />
+                          <input id="branchAiInput_${idx}" type="text" placeholder="Ask anything about this branch..." class="editorial-input flex-1 px-3 py-1.5 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-xs" />
                           <button type="button" data-run-branch-ai="${ex.id}|${idx}" class="px-3.5 py-1.5 rounded-xl bg-[#1C1B19] text-white text-xs font-bold shrink-0">Ask</button>
                         </div>
                         <div id="branchAiAns_${idx}" class="hidden p-3 rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] text-xs obsidian-note"></div>
@@ -5105,6 +5324,50 @@ Return ONLY valid JSON:
     const THEME_STORAGE = 'aletheia_theme_v1';
     function triggerHaptic(ms) { try { if (getPrefs().haptics !== false && navigator.vibrate) navigator.vibrate(ms || 8); } catch (e) {} }
 
+    function hexToRgbTuple(hex) {
+      const h = (hex || '#FF5A36').replace('#', '').trim();
+      const full = h.length === 3 ? h.split('').map(c => c + c).join('') : h.padEnd(6, '0').slice(0, 6);
+      const r = parseInt(full.slice(0, 2), 16) || 0;
+      const g = parseInt(full.slice(2, 4), 16) || 0;
+      const b = parseInt(full.slice(4, 6), 16) || 0;
+      return [r, g, b];
+    }
+
+    function applyAccentScheme() {
+      const prefs = getPrefs();
+      const isDark = document.documentElement.classList.contains('dark');
+      const lightHex = prefs.lightAccent || '#FF5A36';
+      const darkHex = prefs.darkAccent || '#F5F4F0';
+      const activeHex = isDark ? darkHex : lightHex;
+      const [r, g, b] = hexToRgbTuple(activeHex);
+      const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      const inkColor = luminance > 0.62 ? '#121210' : '#FFFFFF';
+      const root = document.documentElement.style;
+      root.setProperty('--coral', activeHex);
+      root.setProperty('--coral-rgb', `${r}, ${g}, ${b}`);
+      root.setProperty('--coral-ink', inkColor);
+
+      const lLbl = document.getElementById('lightAccentLabel');
+      const dLbl = document.getElementById('darkAccentLabel');
+      if (lLbl) lLbl.textContent = lightHex.toUpperCase();
+      if (dLbl) dLbl.textContent = darkHex.toUpperCase();
+      const lInp = document.getElementById('customLightAccentInput');
+      const dInp = document.getElementById('customDarkAccentInput');
+      if (lInp) lInp.value = lightHex;
+      if (dInp) dInp.value = darkHex;
+
+      document.querySelectorAll('.light-swatch').forEach(btn => {
+        btn.classList.toggle('ring-2', btn.dataset.lightAccent.toLowerCase() === lightHex.toLowerCase());
+        btn.classList.toggle('ring-offset-2', btn.dataset.lightAccent.toLowerCase() === lightHex.toLowerCase());
+        btn.classList.toggle('ring-[#1C1B19]', btn.dataset.lightAccent.toLowerCase() === lightHex.toLowerCase());
+      });
+      document.querySelectorAll('.dark-swatch').forEach(btn => {
+        btn.classList.toggle('ring-2', btn.dataset.darkAccent.toLowerCase() === darkHex.toLowerCase());
+        btn.classList.toggle('ring-offset-2', btn.dataset.darkAccent.toLowerCase() === darkHex.toLowerCase());
+        btn.classList.toggle('ring-[#1C1B19]', btn.dataset.darkAccent.toLowerCase() === darkHex.toLowerCase());
+      });
+    }
+
     function applyTheme(mode) {
       const isDark = mode === 'dark';
       document.documentElement.classList.toggle('dark', isDark);
@@ -5113,6 +5376,7 @@ Return ONLY valid JSON:
       const ic = document.getElementById('themeToggleIcon');
       if (ic) { ic.setAttribute('data-lucide', isDark ? 'sun' : 'moon'); lucide.createIcons(); }
       try { localStorage.setItem(THEME_STORAGE, mode); } catch (e) {}
+      applyAccentScheme();
     }
     const savedTheme = (() => { try { return localStorage.getItem(THEME_STORAGE); } catch (e) { return null; } })();
     const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -5711,8 +5975,26 @@ Give a concise score out of 10, what they nailed, and 1–2 specific things they
         if (b.dataset.themePref === themePref) { b.classList.add('bg-[#1C1B19]', 'text-white'); b.classList.remove('text-[#6B6A66]'); }
         else { b.classList.remove('bg-[#1C1B19]', 'text-white'); b.classList.add('text-[#6B6A66]'); }
       });
+      applyAccentScheme();
       lucide.createIcons();
     }
+
+    // Separate Light & Dark Accent Swatches + Custom Color Pickers
+    document.querySelectorAll('.light-swatch').forEach(btn => {
+      btn.addEventListener('click', () => { triggerHaptic(8); savePrefs({ lightAccent: btn.dataset.lightAccent }); applyAccentScheme(); showToast('Light Mode accent updated!'); });
+    });
+    document.querySelectorAll('.dark-swatch').forEach(btn => {
+      btn.addEventListener('click', () => { triggerHaptic(8); savePrefs({ darkAccent: btn.dataset.darkAccent }); applyAccentScheme(); showToast('Dark Mode accent updated!'); });
+    });
+    document.getElementById('customLightAccentInput').addEventListener('input', e => {
+      savePrefs({ lightAccent: e.target.value }); applyAccentScheme();
+    });
+    document.getElementById('customDarkAccentInput').addEventListener('input', e => {
+      savePrefs({ darkAccent: e.target.value }); applyAccentScheme();
+    });
+    document.getElementById('resetAccentColorsBtn').addEventListener('click', () => {
+      savePrefs({ lightAccent: '#FF5A36', darkAccent: '#F5F4F0' }); applyAccentScheme(); showToast('Reset to default Orange (Light) & Silver (Dark)!');
+    });
 
     document.getElementById('openSettingsPageBtn').addEventListener('click', () => {
       triggerHaptic(8);
@@ -5736,6 +6018,7 @@ Give a concise score out of 10, what they nailed, and 1–2 specific things they
           document.documentElement.classList.toggle('dark', sysDark);
           const meta = document.querySelector('meta[name="theme-color"]');
           if (meta) meta.setAttribute('content', sysDark ? '#0E0E0D' : '#FAF9F6');
+          applyAccentScheme();
         } else {
           applyTheme(pref);
         }
@@ -5814,12 +6097,130 @@ Give a concise score out of 10, what they nailed, and 1–2 specific things they
       showToast(`Exported ${state.items.length} notes as Markdown!`);
     });
 
-    // In-Branch Ask AI inside Explainers
+    // Explainers Interactive Actions: Mastery Checkmarks, Copy .md, + Go Deeper, + Flashcards, In-Branch Ask AI & Quick Chips
+    async function runExplainerBranchQuestion(exId, idx, questionText) {
+      const ans = document.getElementById('branchAiAns_' + idx);
+      const runBtn = document.querySelector(`[data-run-branch-ai="${exId}|${idx}"]`);
+      if (!questionText) { showToast('Type a question about this branch first.'); return; }
+      if (!hasAnyAiKey()) { openSettingsForApiOnboarding(null); return; }
+      const ex = (state.explainers || []).find(x => x.id === exId);
+      const br = ex && ex.branches && ex.branches[idx];
+      if (!br || !ans) return;
+      if (runBtn) { runBtn.disabled = true; runBtn.textContent = '...'; }
+      ans.classList.remove('hidden'); ans.innerHTML = '<span class="text-[#6B6A66]">Thinking...</span>';
+      try {
+        const prompt = `Topic: "${ex.title}"\nBranch: "${br.title}"\nBranch Content: ${br.summary || ''}\nCode: ${br.code || 'None'}\n\nUser Question: ${questionText}\nAnswer concisely and clearly in Markdown (use LaTeX $...$ or fenced code blocks if helpful).`;
+        const res = await runGeminiRequest(getGeminiKey(), [{ text: prompt }], { json: false, useSearch: false, maxTokens: 1100, timeoutMs: 24000 });
+        ans.innerHTML = renderObsidianMarkdown(res.text);
+      } catch (err) {
+        ans.textContent = 'Could not answer: ' + (err && err.message ? err.message : 'Check API key');
+      } finally {
+        if (runBtn) { runBtn.disabled = false; runBtn.textContent = 'Ask'; }
+      }
+    }
+
     document.getElementById('view-courses').addEventListener('click', async e => {
+      // 1. Copy Explainer as Obsidian / Markmap .md
+      const copyMd = e.target.closest('[data-copy-explainer-md]');
+      if (copyMd) {
+        const ex = (state.explainers || []).find(x => x.id === copyMd.dataset.copyExplainerMd);
+        if (ex) { copyText(buildExplainerObsidianMarkdown(ex)); showToast('Copied Obsidian / Markmap Markdown!'); }
+        return;
+      }
+
+      // 2. Toggle Branch Mastered Checkmark
+      const togMast = e.target.closest('[data-exp-toggle-mastered]');
+      if (togMast) {
+        e.preventDefault(); e.stopPropagation();
+        const [exId, idxStr] = togMast.dataset.expToggleMastered.split('|');
+        const idx = Number(idxStr);
+        const ex = (state.explainers || []).find(x => x.id === exId);
+        if (ex && ex.branches && ex.branches[idx]) {
+          ex.branches[idx].mastered = !ex.branches[idx].mastered;
+          triggerHaptic(10);
+          saveState();
+          renderExplainerViewer(ex, idx);
+        }
+        return;
+      }
+
+      // 3. + Go Deeper (Spawn 3 nested sub-branches inline)
+      const deeper = e.target.closest('[data-exp-go-deeper]');
+      if (deeper) {
+        const [exId, idxStr] = deeper.dataset.expGoDeeper.split('|');
+        const idx = Number(idxStr);
+        if (!hasAnyAiKey()) { openSettingsForApiOnboarding(null); return; }
+        const ex = (state.explainers || []).find(x => x.id === exId);
+        const br = ex && ex.branches && ex.branches[idx];
+        if (!br) return;
+        deeper.disabled = true; deeper.textContent = 'Expanding...';
+        try {
+          const existingSubs = (br.subBranches || []).map(s => s.title).join(', ');
+          const prompt = `Topic: "${ex.title}"\nBranch: "${br.title}"\nSummary: ${br.summary || ''}\nAlready covered sub-branches: ${existingSubs || 'None'}\nGenerate 3 NEW deeper, concrete sub-branches unpacking this branch further. Return ONLY valid JSON: {"subBranches":[{"title":"Sub-branch title","detail":"Clear 2-3 sentence explanation in Markdown (LaTeX allowed)","codeLang":"python or empty","code":"short example or empty"}]}`;
+          const res = await runGeminiRequest(getGeminiKey(), [{ text: prompt }], { json: true, useSearch: false, maxTokens: 1600, timeoutMs: 26000 });
+          const parsed = extractJsonObject(res.text);
+          const added = Array.isArray(parsed.subBranches) ? parsed.subBranches : [];
+          if (added.length) {
+            br.subBranches = [...(br.subBranches || []), ...added];
+            saveState();
+            renderExplainerViewer(ex, idx);
+            showToast(`🌿 Added ${added.length} deeper sub-branches!`);
+          }
+        } catch (err) {
+          showToast('Could not expand branch — try again.');
+          deeper.disabled = false; deeper.innerHTML = '<i data-lucide="git-branch" class="w-3 h-3"></i> + Go Deeper';
+          lucide.createIcons();
+        }
+        return;
+      }
+
+      // 4. + Flashcards from any branch -> Study Tab SRS
+      const mkFc = e.target.closest('[data-exp-branch-fc]');
+      if (mkFc) {
+        const [exId, idxStr] = mkFc.dataset.expBranchFc.split('|');
+        const idx = Number(idxStr);
+        if (!hasAnyAiKey()) { openSettingsForApiOnboarding(null); return; }
+        const ex = (state.explainers || []).find(x => x.id === exId);
+        const br = ex && ex.branches && ex.branches[idx];
+        if (!br) return;
+        mkFc.disabled = true; mkFc.textContent = 'Creating...';
+        try {
+          const prompt = `Create 2 crisp active-recall flashcards testing understanding of this branch:\nTopic: ${ex.title}\nBranch: ${br.title}\nContent: ${br.summary || ''}\nReturn ONLY valid JSON: {"flashcards":[{"q":"Question?","a":"Concise clear answer."}]}`;
+          const res = await runGeminiRequest(getGeminiKey(), [{ text: prompt }], { json: true, useSearch: false, maxTokens: 800, timeoutMs: 20000 });
+          const parsed = extractJsonObject(res.text);
+          const cards = Array.isArray(parsed.flashcards) ? parsed.flashcards : [];
+          if (cards.length) {
+            let holder = state.items.find(i => i.explainerDeckId === ex.id);
+            if (!holder) {
+              holder = { id: 'item-edeck-' + Date.now(), explainerDeckId: ex.id, title: ex.title + ' (Flashcards)', category: 'study', difficulty: '', tags: ['ExplainerCards'], source: 'Explainer Deck', url: '', image: '', notes: `Active-recall cards from ${ex.title}`, explanation: '', personalNote: '', tools: [], projectAngle: '', flashcards: [], collectionIds: [], done: false, aiAnalyzed: true, createdAt: Date.now() };
+              state.items.unshift(holder);
+            }
+            holder.flashcards = [...cards, ...(holder.flashcards || [])];
+            saveState();
+            showToast(`🧠 Added ${cards.length} flashcards to your Study tab!`);
+          }
+        } catch (err) { showToast('Could not create flashcards.'); }
+        finally {
+          mkFc.disabled = false; mkFc.innerHTML = '<i data-lucide="layers" class="w-3 h-3"></i> + Flashcards';
+          lucide.createIcons();
+        }
+        return;
+      }
+
+      // 5. Toggle Ask AI Box + 1-Tap Quick-Prompt Chips + Run Ask AI
       const togAi = e.target.closest('[data-toggle-branch-ai]');
       if (togAi) {
         const box = document.getElementById('branchAiBox_' + togAi.dataset.toggleBranchAi);
         if (box) { box.classList.toggle('hidden'); if (!box.classList.contains('hidden')) document.getElementById('branchAiInput_' + togAi.dataset.toggleBranchAi)?.focus(); }
+        return;
+      }
+      const chip = e.target.closest('[data-branch-chip]');
+      if (chip) {
+        const parts = chip.dataset.branchChip.split('|');
+        const exId = parts[0], idx = Number(parts[1]), qText = parts.slice(2).join('|');
+        const inp = document.getElementById('branchAiInput_' + idx);
+        if (inp) inp.value = qText;
+        runExplainerBranchQuestion(exId, idx, qText);
         return;
       }
       const runAi = e.target.closest('[data-run-branch-ai]');
@@ -5827,24 +6228,7 @@ Give a concise score out of 10, what they nailed, and 1–2 specific things they
         const [exId, idxStr] = runAi.dataset.runBranchAi.split('|');
         const idx = Number(idxStr);
         const inp = document.getElementById('branchAiInput_' + idx);
-        const ans = document.getElementById('branchAiAns_' + idx);
-        const q = (inp?.value || '').trim();
-        if (!q) { showToast('Type a question about this branch first.'); return; }
-        if (!hasAnyAiKey()) { openSettingsForApiOnboarding(null); return; }
-        const ex = (state.explainers || []).find(x => x.id === exId);
-        const br = ex && ex.branches && ex.branches[idx];
-        if (!br) return;
-        runAi.disabled = true; runAi.textContent = '...';
-        ans.classList.remove('hidden'); ans.innerHTML = '<span class="text-[#6B6A66]">Thinking...</span>';
-        try {
-          const prompt = `Topic: "${ex.title}"\nBranch: "${br.title}"\nBranch Content: ${br.summary || ''}\nCode: ${br.code || 'None'}\n\nUser Question: ${q}\nAnswer concisely and clearly in Markdown (use LaTeX $...$ or fenced code blocks if helpful).`;
-          const res = await runGeminiRequest(getGeminiKey(), [{ text: prompt }], { json: false, useSearch: false, maxTokens: 900, timeoutMs: 22000 });
-          ans.innerHTML = renderObsidianMarkdown(res.text);
-        } catch (err) {
-          ans.textContent = 'Could not answer: ' + (err && err.message ? err.message : 'Check API key');
-        } finally {
-          runAi.disabled = false; runAi.textContent = 'Ask';
-        }
+        runExplainerBranchQuestion(exId, idx, (inp?.value || '').trim());
       }
     });
 

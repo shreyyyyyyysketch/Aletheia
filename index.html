@@ -185,25 +185,76 @@
     html.dark .hm-2 { background: rgba(245, 244, 240, 0.48); }
     html.dark .hm-3 { background: rgba(245, 244, 240, 0.74); }
     html.dark .hm-4 { background: #F5F4F0; }
-    /* Vertical Clickable Explainer Flowchart Tree */
-    .exp-spine { position: relative; padding-left: 22px; }
-    .exp-spine::before {
-      content: ''; position: absolute; left: 9px; top: 0; bottom: 18px; width: 2px;
-      background: var(--border-soft); border-radius: 2px;
+    /* Architectural Vertical Flowchart Canvas & Nodes */
+    .exp-canvas {
+      background-color: var(--surface);
+      background-image: radial-gradient(rgba(28, 27, 25, 0.12) 1px, transparent 1px);
+      background-size: 18px 18px;
+      border: 1px solid var(--border-soft);
     }
-    .exp-branch { position: relative; }
-    .exp-branch::before {
-      content: ''; position: absolute; left: -13px; top: 20px; width: 13px; height: 14px;
-      border-left: 2px solid var(--border-soft); border-bottom: 2px solid var(--border-soft);
-      border-bottom-left-radius: 10px;
+    html.dark .exp-canvas {
+      background-color: #10100F;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.085) 1px, transparent 1px);
+      border-color: rgba(255, 255, 255, 0.08);
     }
-    .exp-node-dot {
-      position: absolute; left: -17px; top: 29px; width: 9px; height: 9px; border-radius: 9999px;
-      background: var(--surface-card); border: 2px solid var(--coral); z-index: 2;
-      transition: transform 0.2s ease, background-color 0.2s ease;
+    .exp-flow-connector {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 28px; position: relative;
+    }
+    .exp-flow-connector::before {
+      content: ''; width: 1.5px; height: 18px;
+      background: linear-gradient(to bottom, var(--border-soft), var(--coral));
+      opacity: 0.7;
+    }
+    .exp-flow-arrow {
+      width: 0; height: 0;
+      border-left: 4.5px solid transparent; border-right: 4.5px solid transparent;
+      border-top: 6px solid var(--coral); opacity: 0.85;
+    }
+    .exp-card-node {
+      background: var(--surface-card);
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 4px 16px -4px rgba(28, 27, 25, 0.06);
+      transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.22s ease, box-shadow 0.22s ease;
+    }
+    html.dark .exp-card-node {
+      background: #171715;
+      border-color: rgba(255, 255, 255, 0.09);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 10px 24px -8px rgba(0, 0, 0, 0.55);
+    }
+    .exp-card-node[open] {
+      border-color: rgba(255, 90, 54, 0.45);
+      box-shadow: 0 10px 28px -8px rgba(28, 27, 25, 0.12);
+    }
+    html.dark .exp-card-node[open] {
+      border-color: rgba(245, 244, 240, 0.28);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 14px 32px -8px rgba(0, 0, 0, 0.7);
+    }
+    .exp-step-badge {
+      background: var(--surface-low); color: var(--ink); border: 1px solid var(--border-soft);
+      transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+    .exp-card-node[open] > summary .exp-step-badge {
+      background: var(--coral); color: #FFFFFF; border-color: transparent;
+    }
+    html.dark .exp-card-node[open] > summary .exp-step-badge {
+      background: #F5F4F0; color: #121210;
+    }
+    @keyframes expUnfold { 0% { opacity: 0; transform: translateY(-4px); } 100% { opacity: 1; transform: translateY(0); } }
+    .exp-card-node[open] > .exp-body { animation: expUnfold 0.24s cubic-bezier(0.22, 1, 0.36, 1); }
+    .exp-sub-spine { position: relative; padding-left: 20px; }
+    .exp-sub-spine::before {
+      content: ''; position: absolute; left: 7px; top: 0; bottom: 16px; width: 1.5px;
+      background: var(--border-soft);
+    }
+    .exp-sub-branch { position: relative; }
+    .exp-sub-branch::before {
+      content: ''; position: absolute; left: -13px; top: 13px; width: 13px; height: 11px;
+      border-left: 1.5px solid var(--border-soft); border-bottom: 1.5px solid var(--border-soft);
+      border-bottom-left-radius: 8px;
     }
     details[open] > summary .exp-chevron { transform: rotate(90deg); }
-    .exp-chevron { transition: transform 0.2s ease; }
+    .exp-chevron { transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1); }
   </style>
 </head>
 <body class="min-h-screen flex flex-col pb-28 md:pb-10">
@@ -4424,65 +4475,83 @@ Return ONLY valid JSON:
           </div>
         </div>
 
-        <!-- Vertical Clickable Flowchart Tree -->
-        <div class="bento-card rounded-3xl p-5 sm:p-6 space-y-4">
-          <!-- Root Node -->
-          <div class="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-[#1C1B19] text-white shadow-sm">
-            <span class="w-2 h-2 rounded-full bg-[#FF5A36]"></span>
-            <span class="font-editorial text-lg font-medium">${escapeHtml(ex.title)}</span>
-          </div>
-
-          <div id="explainerTreeRoot" class="exp-spine space-y-3 pt-1">
-            ${branches.map((b, idx) => `
-              <div class="exp-branch">
-                <span class="exp-node-dot"></span>
-                <details class="exp-node-details rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] overflow-hidden transition-colors open:border-[#1C1B19]/30" ${idx === 0 ? 'open' : ''}>
-                  <summary class="flex items-center justify-between gap-2.5 px-4 py-3 cursor-pointer list-none select-none">
-                    <div class="flex items-center gap-2.5 min-w-0">
-                      <span class="text-[11px] font-mono font-bold text-[#FF5A36] shrink-0">${String(idx + 1).padStart(2, '0')}</span>
-                      <span class="text-xs sm:text-sm font-bold text-[#1C1B19] truncate">${escapeHtml(b.title)}</span>
-                    </div>
-                    <div class="flex items-center gap-1.5 shrink-0">
-                      ${b.imageUrl ? `<span class="text-[10px] px-1.5 py-0.5 rounded bg-white border border-[#E8E6E0] text-[#6B6A66]">Diagram</span>` : ''}
-                      ${b.code ? `<span class="text-[10px] px-1.5 py-0.5 rounded bg-white border border-[#E8E6E0] text-[#6B6A66] font-mono">&lt;/&gt;</span>` : ''}
-                      <i data-lucide="chevron-right" class="exp-chevron w-4 h-4 text-[#6B6A66]"></i>
-                    </div>
-                  </summary>
-                  <div class="px-4 pb-4 pt-1 space-y-3 border-t border-[#E8E6E0]/70 bg-white">
-                    ${b.summary ? `<div class="obsidian-note text-xs text-[#2B2B28] leading-relaxed">${renderObsidianMarkdown(b.summary)}</div>` : ''}
-                    ${b.imageUrl ? `
-                      <figure class="my-2 rounded-2xl overflow-hidden border border-[#E8E6E0] bg-[#FAF9F6]">
-                        <img src="${escapeHtml(b.imageUrl)}" alt="${escapeHtml(b.imageCaption || b.title)}" class="w-full max-h-60 object-contain bg-white p-2" loading="lazy" />
-                        <figcaption class="px-3 py-1.5 flex items-center justify-between text-[10.5px] text-[#6B6A66] border-t border-[#E8E6E0]">
-                          <span class="truncate">${escapeHtml(b.imageCaption || b.title)}</span>
-                          ${b.imageSourceUrl ? `<a href="${escapeHtml(b.imageSourceUrl)}" target="_blank" rel="noopener noreferrer" class="underline shrink-0 ml-2 hover:text-[#1C1B19]">Wikipedia ↗</a>` : ''}
-                        </figcaption>
-                      </figure>
-                    ` : ''}
-                    ${renderBranchTableHtml(b.table)}
-                    ${renderBranchCodeHtml(b.code, b.codeLang)}
-                    ${(Array.isArray(b.subBranches) && b.subBranches.length) ? `
-                      <div class="exp-spine space-y-2 pt-1">
-                        ${b.subBranches.map(sub => `
-                          <div class="exp-branch">
-                            <details class="exp-node-details rounded-xl bg-[#FAF9F6] border border-[#E8E6E0] overflow-hidden">
-                              <summary class="flex items-center justify-between gap-2 px-3 py-2 cursor-pointer list-none text-xs font-semibold text-[#1C1B19]">
-                                <span class="truncate">${escapeHtml(sub.title || '')}</span>
-                                <i data-lucide="chevron-right" class="exp-chevron w-3.5 h-3.5 text-[#6B6A66] shrink-0"></i>
-                              </summary>
-                              <div class="px-3 pb-3 pt-1.5 border-t border-[#E8E6E0]/60 bg-white space-y-2">
-                                ${sub.detail ? `<div class="obsidian-note text-xs text-[#6B6A66] leading-relaxed">${renderObsidianMarkdown(sub.detail)}</div>` : ''}
-                                ${renderBranchCodeHtml(sub.code, sub.codeLang)}
-                              </div>
-                            </details>
-                          </div>
-                        `).join('')}
-                      </div>
-                    ` : ''}
-                  </div>
-                </details>
+        <!-- Architectural Dot-Grid Vertical Flowchart Canvas -->
+        <div class="exp-canvas rounded-[28px] p-4 sm:p-7">
+          <div id="explainerTreeRoot" class="max-w-2xl mx-auto flex flex-col items-stretch">
+            <!-- Centered Editorial Start / Root Node -->
+            <div class="flex justify-center">
+              <div class="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-[#1C1B19] text-white shadow-md">
+                <span class="w-2 h-2 rounded-full bg-[#FF5A36]"></span>
+                <span class="font-editorial text-lg sm:text-xl font-medium tracking-tight">${escapeHtml(ex.title)}</span>
               </div>
+            </div>
+
+            ${branches.map((b, idx) => `
+              <!-- Directional Flow Connector -->
+              <div class="exp-flow-connector" aria-hidden="true"><span class="exp-flow-arrow"></span></div>
+
+              <details class="exp-node-details exp-card-node rounded-[22px] overflow-hidden" ${idx === 0 ? 'open' : ''}>
+                <summary class="flex items-center justify-between gap-3 px-4 py-3.5 cursor-pointer list-none select-none active:scale-[0.99] transition-transform">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <span class="exp-step-badge w-7 h-7 rounded-full text-[11px] font-mono font-bold flex items-center justify-center shrink-0">${String(idx + 1).padStart(2, '0')}</span>
+                    <div class="min-w-0">
+                      <span class="block text-sm font-bold text-[#1C1B19] leading-snug truncate">${escapeHtml(b.title)}</span>
+                      ${(Array.isArray(b.subBranches) && b.subBranches.length) ? `<span class="block text-[10.5px] text-[#6B6A66]">${b.subBranches.length} sub-branch${b.subBranches.length > 1 ? 'es' : ''} • tap to unpack</span>` : ''}
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-1.5 shrink-0">
+                    ${b.imageUrl ? `<span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#F4F3F1] border border-[#E8E6E0] text-[#1C1B19]">Diagram</span>` : ''}
+                    ${b.code ? `<span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-[#F4F3F1] border border-[#E8E6E0] text-[#1C1B19]">&lt;/&gt;</span>` : ''}
+                    ${b.table ? `<span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#F4F3F1] border border-[#E8E6E0] text-[#1C1B19]">Table</span>` : ''}
+                    <i data-lucide="chevron-right" class="exp-chevron w-4 h-4 text-[#6B6A66]"></i>
+                  </div>
+                </summary>
+
+                <div class="exp-body px-4 sm:px-5 pb-4 pt-3 space-y-3 border-t border-[#E8E6E0]/70">
+                  ${b.summary ? `<div class="obsidian-note text-xs sm:text-[13px] text-[#2B2B28] leading-relaxed">${renderObsidianMarkdown(b.summary)}</div>` : ''}
+                  ${b.imageUrl ? `
+                    <figure class="my-2 rounded-2xl overflow-hidden border border-[#E8E6E0] shadow-sm">
+                      <div class="prog-pill-white bg-white p-3 flex items-center justify-center">
+                        <img src="${escapeHtml(b.imageUrl)}" alt="${escapeHtml(b.imageCaption || b.title)}" class="w-full max-h-64 object-contain" loading="lazy" />
+                      </div>
+                      <figcaption class="px-3.5 py-2 flex items-center justify-between text-[10.5px] text-[#6B6A66] bg-[#FAF9F6] border-t border-[#E8E6E0]">
+                        <span class="truncate font-medium">${escapeHtml(b.imageCaption || b.title)}</span>
+                        ${b.imageSourceUrl ? `<a href="${escapeHtml(b.imageSourceUrl)}" target="_blank" rel="noopener noreferrer" class="underline shrink-0 ml-2 font-semibold text-[#1C1B19]">Wikipedia ↗</a>` : ''}
+                      </figcaption>
+                    </figure>
+                  ` : ''}
+                  ${renderBranchTableHtml(b.table)}
+                  ${renderBranchCodeHtml(b.code, b.codeLang)}
+                  ${(Array.isArray(b.subBranches) && b.subBranches.length) ? `
+                    <div class="exp-sub-spine space-y-2 pt-1.5">
+                      ${b.subBranches.map(sub => `
+                        <div class="exp-sub-branch">
+                          <details class="exp-node-details rounded-2xl bg-[#FAF9F6] border border-[#E8E6E0] overflow-hidden">
+                            <summary class="flex items-center justify-between gap-2 px-3.5 py-2.5 cursor-pointer list-none text-xs font-semibold text-[#1C1B19]">
+                              <span class="flex items-center gap-2 min-w-0">
+                                <span class="w-1.5 h-1.5 rounded-full bg-[#FF5A36] shrink-0"></span>
+                                <span class="truncate">${escapeHtml(sub.title || '')}</span>
+                              </span>
+                              <i data-lucide="chevron-right" class="exp-chevron w-3.5 h-3.5 text-[#6B6A66] shrink-0"></i>
+                            </summary>
+                            <div class="exp-body px-3.5 pb-3 pt-2 border-t border-[#E8E6E0]/60 bg-white space-y-2">
+                              ${sub.detail ? `<div class="obsidian-note text-xs text-[#6B6A66] leading-relaxed">${renderObsidianMarkdown(sub.detail)}</div>` : ''}
+                              ${renderBranchCodeHtml(sub.code, sub.codeLang)}
+                            </div>
+                          </details>
+                        </div>
+                      `).join('')}
+                    </div>
+                  ` : ''}
+                </div>
+              </details>
             `).join('')}
+
+            <!-- Terminal Finish Node -->
+            <div class="exp-flow-connector" aria-hidden="true"><span class="exp-flow-arrow"></span></div>
+            <div class="flex justify-center">
+              <span class="px-4 py-1.5 rounded-full bg-[#F4F3F1] border border-[#E8E6E0] text-[11px] font-semibold text-[#6B6A66]">✓ End of Flowchart (${branches.length} steps)</span>
+            </div>
           </div>
         </div>
       `;
